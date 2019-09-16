@@ -1,12 +1,16 @@
 package src
 
+import (
+	"io"
+	"net/http"
+)
+
 type Candidate struct {
 	Name string
 }
-func Main() {
 
-}
+func GetCandidatesHandler(writer http.ResponseWriter, reqest *http.Request) {
+	writer.Header().Set("Content-Type", "application/json")
 
-func GetCandidatesHandler()  (*Candidate, error){
-	return &Candidate{"Riley"}, nil
+	io.WriteString(writer, `HI`)
 }
