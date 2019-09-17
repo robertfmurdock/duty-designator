@@ -74,16 +74,13 @@ describe('fetch service', () => {
         test('should return rejected promise for Abort Errors', async () => {
             var error = { name: "AbortError" };
             fetch.mockReject(error);
-
             const response = await FetchService.fetch('url').catch(err => err);
-
             expect(response).toEqual(error);
         });
 
         test('should handle timeout errors', async () => {
-            fetch.mockResponseOnce(() => new Promise(resolve => setTimeout(() => resolve({ body: 'ok' }), 100)))
+            fetch.mockResponseOnce(() => new Promise(resolve => setTimeout(() => resolve({ body: 'ok' }), 100)));
             const response = await FetchService.timedFetch('url', undefined, 0).catch(err => err);
-
             expect(response).toEqual({ name: "Timeout Error" });
         });
     });
