@@ -1,10 +1,22 @@
-## Install
+## Install Tools
 - [Install go](https://golang.org/doc/install)
 - [Install Node](https://nodejs.org/en/)
 - `brew install dep`
-- `npm install`
+
+## Setup project
+
+
+Clone the project into somewhere within your $GOPATH/src, so that the Go tools work correctly.
+
+Then,
+
+In the server directory
+
 - `dep ensure`
 
+In the client directory
+
+- `yarn`
 
 
 
