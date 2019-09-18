@@ -3,6 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.9.7
+      - image: mongo:latest
     working_directory: /go/src/duty-designator
     steps:
       - checkout

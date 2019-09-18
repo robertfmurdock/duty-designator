@@ -2,6 +2,8 @@
 - [Install go](https://golang.org/doc/install)
 - [Install Node](https://nodejs.org/en/)
 - `brew install dep`
+- `brew tap mongodb/brew`
+- `brew install mongodb-community`
 
 ## Setup project
 
@@ -18,6 +20,11 @@ In the client directory
 
 - `yarn install`
 
+
+## MongoDB
+
+Start MongoDB: `brew services start mongodb-community`
+Stop MongoDB: `brew services stop mongodb-community`
 
 
 ## React Scripts
