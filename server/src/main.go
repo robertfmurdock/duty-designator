@@ -18,10 +18,6 @@ type CandidateRecord struct {
 	Id   string `json:"id"`
 }
 
-func main() {
-
-}
-
 func initializeMux() http.Handler {
 	client, err := GetDBClient()
 	if err != nil {
