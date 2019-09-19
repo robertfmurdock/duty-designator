@@ -26,9 +26,12 @@ func initializeMux() http.Handler {
 	}
 
 	mux := http.NewServeMux()
+	mux.Handle("/", http.FileServer(http.Dir("../client/build")))
 	mux.Handle("/api/candidate", candidateHandler(client))
 	return mux
 }
+
+
 
 func candidateHandler(dbClient *mongo.Client) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

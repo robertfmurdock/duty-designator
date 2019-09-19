@@ -17,24 +17,13 @@ export default class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        FetchService.get(0, "url", undefined)
-            .then( response => {
-                const { rows } = response;
-                this.setState({ rows });
-            })
+        FetchService.get(0, "/api/candidate", undefined)
+            .then( response => this.setState({rows: response}))
             .catch(err => console.warn(err));
-
-        // Fake Data
-        // this.setState({
-        //     rows: [
-        //         { task: "Dishses", candidate: "Friday Jeb" },
-        //         { task: "Wipe Down", candidate: "Everyday Natalie" },
-        //         { task: "Tablecloth", candidate: "Odd Day Rob" }]
-        // });
     }
 
-    render = () =>
-        <Paper>
+    render() {
+        return <Paper>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -45,11 +34,11 @@ export default class Dashboard extends React.Component {
                 <TableBody>
                     {this.state.rows.map(row => (
                         <TableRow key={row.task}>
-                            <TableCell className="task" component="th" scope="row">{row.task}</TableCell>
-                            <TableCell className="candidate" align="right">{row.candidate}</TableCell>
+                            <TableCell className="candidate" align="right" candidateId={row.id}>{row.name}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
         </Paper>
+    }
 }

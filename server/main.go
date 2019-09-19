@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"duty-designator/server/src"
+	"log"
+	"net/http"
+)
 
 func main() {
-	fmt.Print("MAIN TIME")
+	err := http.ListenAndServe(":8080", src.ServeMux)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
