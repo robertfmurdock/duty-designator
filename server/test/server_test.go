@@ -35,7 +35,7 @@ func TestGetCandidatesHandler_RespondsWithCandidateJson(t *testing.T) {
 	bobsId := uuid.New()
 
 	_, err := assignmentCollection.InsertOne(
-		context.Background(), bson.M{"Candidate": "bob", "Task": "dishes", "id": bobsId.String()})
+		context.Background(), bson.M{"Name": "bob", "id": bobsId.String()})
 
 	if err != nil {
 		t.Error("Could not insert")
@@ -43,12 +43,16 @@ func TestGetCandidatesHandler_RespondsWithCandidateJson(t *testing.T) {
 	}
 
 	responseRecorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(src.GetTaskAssignmentsHandler)
-	handler.ServeHTTP(responseRecorder, nil)
+	request, err := http.NewRequest(http.MethodGet, "/api/candidate", nil)
+	if err != nil {
+		t.Error("Could not build get request.")
+	}
 
-	expectedCandidate := src.Row{Candidate: "bob", Task: "dishes", Id: bobsId.String()}
+	src.ServeMux.ServeHTTP(responseRecorder, request)
 
-	var actualResponse []src.Row
+	expectedCandidate := src.CandidateRecord{Name: "bob", Id: bobsId.String()}
+
+	var actualResponse []src.CandidateRecord
 	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponse); err != nil {
 		t.Error("Could not parse server results.")
 	}
@@ -63,8 +67,8 @@ func getDutyDB() *mongo.Database {
 	return database
 }
 
-func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T){
-	candidateToPOST := src.Row{Candidate:"Alice", Task:"Clean", Id: uuid.New().String()}
+func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
+	candidateToPOST := src.CandidateRecord{Name: "Alice", Id: uuid.New().String()}
 
 	rawCandidate, e := json.Marshal(candidateToPOST)
 	if e != nil {
@@ -72,25 +76,30 @@ func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T){
 		return
 	}
 
-	req, err := http.NewRequest("POST", "/", bytes.NewReader(rawCandidate))
+	req, err := http.NewRequest("POST", "/api/candidate", bytes.NewReader(rawCandidate))
 	if err != nil {
 		t.Error("Could not construct candidate POST request")
 		return
 	}
 
 	postResponseRecorder := httptest.NewRecorder()
-	postHandler := http.HandlerFunc(src.PostTaskAssignmentsHandler)
-	postHandler.ServeHTTP(postResponseRecorder, req)
+
+	src.ServeMux.ServeHTTP(postResponseRecorder, req)
 
 	if postResponseRecorder.Code != 200 {
 		t.Error("Post was not successful")
 		return
 	}
 	getResponseRecorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(src.GetTaskAssignmentsHandler)
-	handler.ServeHTTP(getResponseRecorder, nil)
 
-	var actualResponse []src.Row
+	getRequest, err := http.NewRequest(http.MethodGet, "/api/candidate", nil)
+	if err != nil {
+		t.Error("Could not build get request.")
+	}
+
+	src.ServeMux.ServeHTTP(getResponseRecorder, getRequest)
+
+	var actualResponse []src.CandidateRecord
 	if err := json.Unmarshal(getResponseRecorder.Body.Bytes(), &actualResponse); err != nil {
 		t.Error("Could not parse server results.")
 	}
@@ -101,7 +110,7 @@ func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T){
 
 }
 
-func contains(s []src.Row, e src.Row) bool {
+func contains(s []src.CandidateRecord, e src.CandidateRecord) bool {
 	for _, a := range s {
 		if a == e {
 			return true

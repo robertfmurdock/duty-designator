@@ -10,14 +10,30 @@ import (
 	"net/http"
 )
 
-type Row struct {
-	Candidate string `json:"candidate"`
-	Task      string `json:"task"`
-	Id string `json:"id"`
+var ServeMux = initializeMux()
+
+type CandidateRecord struct {
+	Name string `json:"name"`
+	Id   string `json:"id"`
 }
 
 func main() {
 
+}
+
+func initializeMux() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/candidate", candidateHandler)
+	return mux
+}
+
+func candidateHandler(writer http.ResponseWriter, request *http.Request) {
+	switch request.Method {
+	case http.MethodGet:
+		getTaskAssignmentsHandler(writer, request)
+	case http.MethodPost:
+		postTaskAssignmentsHandler(writer, request)
+	}
 }
 
 func GetDBClient() (*mongo.Client, error) {
@@ -50,7 +66,7 @@ func DisconnectClient(client *mongo.Client) error {
 	return nil
 }
 
-func GetTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request) {
+func getTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 	client, err := GetDBClient()
 
@@ -67,7 +83,7 @@ func GetTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request
 		log.Fatal(err)
 	}
 
-	var rows []Row
+	var rows []CandidateRecord
 	err = cursor.All(context.TODO(), &rows)
 
 	if err != nil {
@@ -87,9 +103,9 @@ func GetTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request
 	_ = DisconnectClient(client)
 }
 
-func PostTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request) {
+func postTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request) {
 	decoder := json.NewDecoder(request.Body)
-	var t Row
+	var t CandidateRecord
 	err := decoder.Decode(&t)
 	if err != nil {
 		http.Error(writer, "Bad request", http.StatusInternalServerError)
