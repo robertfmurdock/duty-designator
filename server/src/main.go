@@ -96,15 +96,15 @@ func getTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request
 
 func postTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
 	decoder := json.NewDecoder(request.Body)
-	var t CandidateRecord
-	err := decoder.Decode(&t)
+	var candidateRecord CandidateRecord
+	err := decoder.Decode(&candidateRecord)
 	if err != nil {
 		http.Error(writer, "Bad request", http.StatusInternalServerError)
 	}
 
 	collection := dbClient.Database("dutyDB").Collection("assignments")
 
-	if _, err := collection.InsertOne(context.Background(), t); err != nil {
+	if _, err := collection.InsertOne(context.Background(), candidateRecord); err != nil {
 		http.Error(writer, fmt.Sprintf("Insert error %v", err), http.StatusInternalServerError)
 		return
 	}

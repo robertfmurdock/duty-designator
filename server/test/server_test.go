@@ -30,36 +30,52 @@ func initConnection() *mongo.Client {
 }
 
 func TestGetCandidatesHandler_RespondsWithCandidateJson(t *testing.T) {
-	database := getDutyDB()
-	assignmentCollection := database.Collection("assignments")
-	bobsId := uuid.New()
-
-	_, err := assignmentCollection.InsertOne(
-		context.Background(), bson.M{"Name": "bob", "id": bobsId.String()})
-
+	expectedCandidate, err := insertNewCandidate(t)
 	if err != nil {
-		t.Error("Could not insert")
+		t.Errorf("Setup failed. %v", err)
 		return
 	}
 
+	candidateRecords, err := performGetCandidatesRequest(t)
+	if err != nil {
+		t.Errorf("Get Candidate Request failed. %v", err)
+		return
+	}
+
+	if !contains(candidateRecords, expectedCandidate) {
+		t.Errorf("%v, %v", candidateRecords, expectedCandidate)
+	}
+}
+
+func performGetCandidatesRequest(t *testing.T) ([]src.CandidateRecord, error) {
 	responseRecorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/api/candidate", nil)
 	if err != nil {
 		t.Error("Could not build get request.")
+		return nil, err
 	}
-
 	src.ServeMux.ServeHTTP(responseRecorder, request)
 
-	expectedCandidate := src.CandidateRecord{Name: "bob", Id: bobsId.String()}
-
-	var actualResponse []src.CandidateRecord
-	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponse); err != nil {
+	var actualResponseBody []src.CandidateRecord
+	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
 		t.Error("Could not parse server results.")
 	}
 
-	if !contains(actualResponse, expectedCandidate) {
-		t.Errorf("%v, %v", actualResponse, expectedCandidate)
+	return actualResponseBody, nil
+}
+
+func insertNewCandidate(t *testing.T) (src.CandidateRecord, error) {
+	database := getDutyDB()
+	assignmentCollection := database.Collection("assignments")
+	bobsId := uuid.New()
+	_, err := assignmentCollection.InsertOne(
+		context.Background(), bson.M{"Name": "bob", "id": bobsId.String()})
+	if err != nil {
+		t.Error("Could not insert")
+		return src.CandidateRecord{}, err
 	}
+
+	return src.CandidateRecord{Name: "bob", Id: bobsId.String()}, nil
 }
 
 func getDutyDB() *mongo.Database {
@@ -70,44 +86,40 @@ func getDutyDB() *mongo.Database {
 func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 	candidateToPOST := src.CandidateRecord{Name: "Alice", Id: uuid.New().String()}
 
+	if err := performPostCandidate(candidateToPOST, t); err != nil {
+		t.Errorf("Post Candidate Request failed. %v", err)
+		return
+	}
+
+	candidateRecords, err := performGetCandidatesRequest(t)
+	if err != nil {
+		t.Errorf("Get Candidate Request failed. %v", err)
+		return
+	}
+
+	if !contains(candidateRecords, candidateToPOST) {
+		t.Errorf("Slice %v\n did not contain: %v", candidateRecords, candidateToPOST)
+	}
+}
+
+func performPostCandidate(candidateToPOST src.CandidateRecord, t *testing.T) error {
 	rawCandidate, e := json.Marshal(candidateToPOST)
 	if e != nil {
 		t.Error("Could not marshal candidate struct")
-		return
+		return e
 	}
-
 	req, err := http.NewRequest(http.MethodPost, "/api/candidate", bytes.NewReader(rawCandidate))
 	if err != nil {
 		t.Error("Could not construct candidate POST request")
-		return
+		return err
 	}
-
 	postResponseRecorder := httptest.NewRecorder()
-
 	src.ServeMux.ServeHTTP(postResponseRecorder, req)
-
 	if postResponseRecorder.Code != 200 {
 		t.Error("Post was not successful", postResponseRecorder.Body.String())
-		return
+		return nil
 	}
-	getResponseRecorder := httptest.NewRecorder()
-
-	getRequest, err := http.NewRequest(http.MethodGet, "/api/candidate", nil)
-	if err != nil {
-		t.Error("Could not build get request.")
-	}
-
-	src.ServeMux.ServeHTTP(getResponseRecorder, getRequest)
-
-	var actualResponse []src.CandidateRecord
-	if err := json.Unmarshal(getResponseRecorder.Body.Bytes(), &actualResponse); err != nil {
-		t.Error("Could not parse server results.")
-	}
-
-	if !contains(actualResponse, candidateToPOST) {
-		t.Errorf("Slice %v\n did not contain: %v", actualResponse, candidateToPOST)
-	}
-
+	return err
 }
 
 func contains(s []src.CandidateRecord, e src.CandidateRecord) bool {
