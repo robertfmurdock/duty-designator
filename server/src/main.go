@@ -11,14 +11,13 @@ import (
 )
 
 type Row struct {
-	Candidate string
-	Task      string
+	Candidate string `json:"candidate"`
+	Task      string `json:"task"`
 	Id string `json:"id"`
 }
 
 func main() {
-	http.HandleFunc("/", GetTaskAssignmentsHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
 }
 
 func GetDBClient() (*mongo.Client, error) {
@@ -61,7 +60,7 @@ func GetTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request
 	}
 
 	collection := client.Database("dutyDB").Collection("assignments")
-	cursor, err := collection.Find(context.TODO(), bson.D{{"Candidate", "bob"}})
+	cursor, err := collection.Find(context.TODO(), bson.D{})
 
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
@@ -86,4 +85,27 @@ func GetTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request
 	writer.Header().Set("Content-Type", "application/json")
 	_, _ = writer.Write(candidateJson)
 	_ = DisconnectClient(client)
+}
+
+func PostTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request) {
+	decoder := json.NewDecoder(request.Body)
+	var t Row
+	err := decoder.Decode(&t)
+	if err != nil {
+		http.Error(writer, "Bad request", http.StatusInternalServerError)
+	}
+
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		http.Error(writer, "Bad DB Connection", http.StatusInternalServerError)
+		return
+	}
+
+	collection := client.Database("dutyDB").Collection("assignments")
+
+	if _, err := collection.InsertOne(context.Background(), t); err != nil {
+		http.Error(writer, "Insert error", http.StatusInternalServerError)
+		return
+	}
 }

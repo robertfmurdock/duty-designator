@@ -1,6 +1,7 @@
 package test
 
 import (
+	"bytes"
 	"context"
 	"duty-designator/server/src"
 	"encoding/json"
@@ -29,7 +30,7 @@ func initConnection() *mongo.Client {
 }
 
 func TestGetCandidatesHandler_RespondsWithCandidateJson(t *testing.T) {
-	database := client.Database("dutyDB")
+	database := getDutyDB()
 	assignmentCollection := database.Collection("assignments")
 	bobsId := uuid.New()
 
@@ -55,6 +56,49 @@ func TestGetCandidatesHandler_RespondsWithCandidateJson(t *testing.T) {
 	if !contains(actualResponse, expectedCandidate) {
 		t.Errorf("%v, %v", actualResponse, expectedCandidate)
 	}
+}
+
+func getDutyDB() *mongo.Database {
+	database := client.Database("dutyDB")
+	return database
+}
+
+func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T){
+	candidateToPOST := src.Row{Candidate:"Alice", Task:"Clean", Id: uuid.New().String()}
+
+	rawCandidate, e := json.Marshal(candidateToPOST)
+	if e != nil {
+		t.Error("Could not marshal candidate struct")
+		return
+	}
+
+	req, err := http.NewRequest("POST", "/", bytes.NewReader(rawCandidate))
+	if err != nil {
+		t.Error("Could not construct candidate POST request")
+		return
+	}
+
+	postResponseRecorder := httptest.NewRecorder()
+	postHandler := http.HandlerFunc(src.PostTaskAssignmentsHandler)
+	postHandler.ServeHTTP(postResponseRecorder, req)
+
+	if postResponseRecorder.Code != 200 {
+		t.Error("Post was not successful")
+		return
+	}
+	getResponseRecorder := httptest.NewRecorder()
+	handler := http.HandlerFunc(src.GetTaskAssignmentsHandler)
+	handler.ServeHTTP(getResponseRecorder, nil)
+
+	var actualResponse []src.Row
+	if err := json.Unmarshal(getResponseRecorder.Body.Bytes(), &actualResponse); err != nil {
+		t.Error("Could not parse server results.")
+	}
+
+	if !contains(actualResponse, candidateToPOST) {
+		t.Errorf("Slice %v\n did not contain: %v", actualResponse, candidateToPOST)
+	}
+
 }
 
 func contains(s []src.Row, e src.Row) bool {
