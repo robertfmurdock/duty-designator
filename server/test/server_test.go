@@ -76,7 +76,7 @@ func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", "/api/candidate", bytes.NewReader(rawCandidate))
+	req, err := http.NewRequest(http.MethodPost, "/api/candidate", bytes.NewReader(rawCandidate))
 	if err != nil {
 		t.Error("Could not construct candidate POST request")
 		return
@@ -87,7 +87,7 @@ func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 	src.ServeMux.ServeHTTP(postResponseRecorder, req)
 
 	if postResponseRecorder.Code != 200 {
-		t.Error("Post was not successful")
+		t.Error("Post was not successful", postResponseRecorder.Body.String())
 		return
 	}
 	getResponseRecorder := httptest.NewRecorder()
