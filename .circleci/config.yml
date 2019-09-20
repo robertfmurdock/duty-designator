@@ -9,7 +9,10 @@ jobs:
       - checkout
       - run: cd server; dep ensure
       - run: go test ./server/test
-      - run: cd client; yarn;
+      - node/with-cache:
+          steps:
+            - run: cd client; npm install
+      - run: cd client; yarn
 orbs:
   node: circleci/node@1.1.6
 
