@@ -66,7 +66,7 @@ func performGetCandidatesRequest(t *testing.T) ([]src.CandidateRecord, error) {
 
 func insertNewCandidate(t *testing.T) (src.CandidateRecord, error) {
 	database := getDutyDB()
-	assignmentCollection := database.Collection("assignments")
+	assignmentCollection := database.Collection("candidates")
 	bobsId := uuid.New()
 	_, err := assignmentCollection.InsertOne(
 		context.Background(), bson.M{"Name": "bob", "id": bobsId.String()})

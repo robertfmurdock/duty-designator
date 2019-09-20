@@ -1,12 +1,14 @@
 import React from 'react';
 import FetchService from '../services/fetchService';
 
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Paper
+} from '@material-ui/core';
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -18,7 +20,7 @@ export default class Dashboard extends React.Component {
 
     componentDidMount() {
         FetchService.get(0, "/api/candidate", undefined)
-            .then( response => this.setState({rows: response}))
+            .then(response => this.setState({rows: response}))
             .catch(err => console.warn(err));
     }
 

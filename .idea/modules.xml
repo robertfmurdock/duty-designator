@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/duty-designator.iml" filepath="$PROJECT_DIR$/duty-designator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/client/duty-designator.client.iml" filepath="$PROJECT_DIR$/.idea/modules/client/duty-designator.client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/e2e/duty-designator.e2e.iml" filepath="$PROJECT_DIR$/.idea/modules/e2e/duty-designator.e2e.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/duty-designator.server.iml" filepath="$PROJECT_DIR$/.idea/modules/server/duty-designator.server.iml" />
     </modules>
   </component>
 </project>

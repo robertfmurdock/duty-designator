@@ -37,9 +37,9 @@ func candidateHandler(dbClient *mongo.Client) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case http.MethodGet:
-			getTaskAssignmentsHandler(writer, request, dbClient)
+			getCandidateHandler(writer, request, dbClient)
 		case http.MethodPost:
-			postTaskAssignmentsHandler(writer, request, dbClient)
+			postCandidateHandler(writer, request, dbClient)
 		}
 	})
 }
@@ -63,10 +63,10 @@ func GetDBClient() (*mongo.Client, error) {
 	return client, nil
 }
 
-func getTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
+func getCandidateHandler(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
 	writer.Header().Set("Content-Type", "application/json")
 
-	collection := dbClient.Database("dutyDB").Collection("assignments")
+	collection := getCandidatesCollection(dbClient)
 	cursor, err := collection.Find(context.TODO(), bson.D{})
 
 	if err != nil {
@@ -93,7 +93,7 @@ func getTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request
 	_, _ = writer.Write(candidateJson)
 }
 
-func postTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
+func postCandidateHandler(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
 	decoder := json.NewDecoder(request.Body)
 	var candidateRecord CandidateRecord
 	err := decoder.Decode(&candidateRecord)
@@ -101,10 +101,14 @@ func postTaskAssignmentsHandler(writer http.ResponseWriter, request *http.Reques
 		http.Error(writer, "Bad request", http.StatusInternalServerError)
 	}
 
-	collection := dbClient.Database("dutyDB").Collection("assignments")
+	collection := getCandidatesCollection(dbClient)
 
 	if _, err := collection.InsertOne(context.Background(), candidateRecord); err != nil {
 		http.Error(writer, fmt.Sprintf("Insert error %v", err), http.StatusInternalServerError)
 		return
 	}
+}
+
+func getCandidatesCollection(dbClient *mongo.Client) *mongo.Collection {
+	return dbClient.Database("dutyDB").Collection("candidates")
 }
