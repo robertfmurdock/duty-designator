@@ -23,6 +23,9 @@ e2e/cypress/videos
 .env.test.local
 .env.production.local
 
+build
+.gradle
+
 node_modules/
 vendor
 
