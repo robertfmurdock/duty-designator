@@ -10,6 +10,7 @@
 /e2e/cypress/integration/examples
 /e2e/cypress/screenshots
 e2e/cypress/videos
+.circleci/dummy.yml
 
 # production
 /build
