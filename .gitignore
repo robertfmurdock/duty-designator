@@ -13,6 +13,7 @@ e2e/cypress/videos
 
 # production
 /build
+/server/server
 
 # misc
 .DS_Store

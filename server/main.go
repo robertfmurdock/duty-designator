@@ -9,7 +9,7 @@ import (
 
 func main() {
 	fmt.Println("Server start!")
-	err := http.ListenAndServe(":8080", src.ServeMux)
+	err := http.ListenAndServe("localhost:8080", src.ServeMux)
 	if err != nil {
 		log.Fatal(err)
 	}

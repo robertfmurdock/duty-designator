@@ -3,11 +3,15 @@ const uuid = require('uuid/v4');
 context('Actions', () => {
 
     async function insertCandidate(candidate) {
-        await fetch("http://localhost:8080/api/candidate", {
-            method: "POST",
-            body: JSON.stringify(candidate),
-            signal: undefined
-        });
+        try {
+            await fetch("http://localhost:8080/api/candidate", {
+                method: "POST",
+                body: JSON.stringify(candidate),
+                signal: undefined
+            });
+        } catch (e) {
+            console.warn(e);
+        }
     }
 
     it('when a new candidate is posted, it shows up on the page', async () => {

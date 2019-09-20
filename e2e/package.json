@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "cypress": "^3.4.1",
+    "tree-kill": "^1.2.1",
     "uuid": "^3.3.3"
+  },
+  "scripts": {
+    "e2e": "node run.js"
   }
 }
