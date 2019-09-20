@@ -1,11 +1,11 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import {shallow} from 'enzyme';
 import FetchService from '../services/fetchService';
 import Dashboard from './Dashboard';
 
 let fetchMock = FetchService.get = jest.fn();
 fetchMock.mockReturnValue(
-    new Promise((resolve, reject) => resolve({ tasks: [], candidates: [] }))
+    new Promise((resolve, reject) => resolve({tasks: [], candidates: []}))
 );
 
 describe('Dashboard', () => {
@@ -13,10 +13,10 @@ describe('Dashboard', () => {
 
     test('handles null task and candidate lists', () => {
         fetchMock.mockReturnValue(
-            new Promise((resolve, reject) => resolve({ rows: [] }))
+            new Promise((resolve, reject) => resolve([]))
         );
 
-        const dash = shallow(<Dashboard />);
+        const dash = shallow(<Dashboard/>);
         expect(dash.find('.task').length).toEqual(0);
         expect(dash.find('.candidate').length).toEqual(0);
     });
@@ -26,20 +26,16 @@ describe('Dashboard', () => {
 
         beforeEach(() => {
             rows = [
-                { task: "Dishses", candidate: "Friday Jeb" },
-                { task: "Wipe Down", candidate: "Everyday Natalie" },
-                { task: "Tablecloth", candidate: "Odd Day Rob" }
+                {task: "Dishses", candidate: "Friday Jeb"},
+                {task: "Wipe Down", candidate: "Everyday Natalie"},
+                {task: "Tablecloth", candidate: "Odd Day Rob"}
             ]
 
             fetchMock.mockReturnValue(
-                new Promise((resolve, reject) => resolve({ rows }))
+                new Promise((resolve, reject) => resolve(rows))
             );
 
-            dash = shallow(<Dashboard />);
-        });
-
-        test('shows list of tasks', () => {
-            expect(dash.find('.task').length).toEqual(rows.length);
+            dash = shallow(<Dashboard/>);
         });
 
         test('shows a list of candidates', () => {
