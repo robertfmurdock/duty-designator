@@ -49,3 +49,4 @@ yarn-error.log*
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 server/main
+e2e/results/my-test-output.xml
