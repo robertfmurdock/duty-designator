@@ -28,9 +28,8 @@ function run() {
     buildClient();
     buildServer();
     const serverSpawn = spawnServer();
-    //runCypress();
-    // serverSpawn.kill();
-    childProcess.execSync("exit 0", {stdio: "inherit"});
+    runCypress();
+    serverSpawn.kill();
 }
 
 run();
