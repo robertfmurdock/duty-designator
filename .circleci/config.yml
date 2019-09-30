@@ -29,11 +29,11 @@ jobs:
       - run: go test ./server/test
       - node/install-node
       - node/install-yarn
-      - run: cd client; yarn
-      - run: cd e2e; yarn
+      - run: cd client && yarn
+      - run: cd e2e && yarn
       - run:
-        - working_directory: e2e/
-        - command: yarn e2e
+        working_directory: e2e/
+        command: yarn e2e
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
