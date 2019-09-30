@@ -32,10 +32,6 @@ jobs:
       - node/install-yarn
       - run: cd client && yarn
       - run: cd e2e && yarn && yarn e2e
-      - cypress/run:
-          working_directory: /go/src/duty-designator/e2e
-          yarn: true
-      - run: cd e2e && yarn killserver
  
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
@@ -46,3 +42,6 @@ workflows:
   build_and_test:
     jobs:
       - build
+      - cypress/run:
+          working_directory: /go/src/duty-designator/e2e
+          yarn: true
