@@ -19,10 +19,10 @@ context('Actions', () => {
           .should('have.text', candidate.name)
     });
 
-    // it('fail', () => {
-    //     cy.visit('http://localhost:8080');
-    //     cy.get(`.candidate[candidateId="7"]`)
-    //         .should('have.text', 'jim joe jon')
-    // })
+    it('fail', () => {
+        cy.visit('http://localhost:8080');
+        cy.get(`.candidate[candidateId="7"]`)
+            .should('have.text', 'jim joe jon')
+    })
 
 });
