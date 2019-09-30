@@ -30,7 +30,7 @@ jobs:
       - node/install-node
       - node/install-yarn
       - run: cd client; yarn
-      - run: cd e2e; yarn; yarn e2e
+      - run: cd e2e; yarn; yarn e2e; yarn run cypress run;
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
