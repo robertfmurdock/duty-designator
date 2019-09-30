@@ -27,7 +27,6 @@ jobs:
             - cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
       - run: cd server; dep ensure
       - run: go test ./server/test
-      - node/install-node
       - node/install-yarn
       - run: cd client; yarn
       - run: cd e2e; yarn; yarn e2e
