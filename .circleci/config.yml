@@ -32,7 +32,7 @@ jobs:
       - run: cd client && yarn
       - run: cd e2e && yarn
       - run:
-          working_directory: ~/duty-designator
+          working_directory: /go/src/duty-designator/e2e
           command: yarn e2e 
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
