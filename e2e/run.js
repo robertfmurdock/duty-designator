@@ -18,7 +18,7 @@ function spawnServer() {
 
 function runCypress() {
     try {
-        childProcess.execSync("cd ../e2e && yarn run cypress run", {stdio: "inherit"});
+        childProcess.execSync("yarn run cypress run", {stdio: "inherit"});
     } catch (e) {
         console.log(e)
     }
@@ -28,7 +28,7 @@ function run() {
     buildClient();
     buildServer();
     const serverSpawn = spawnServer();
-    // runCypress();
+    runCypress();
     serverSpawn.kill();
 }
 
