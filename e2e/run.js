@@ -28,7 +28,7 @@ function run() {
     buildClient();
     buildServer();
     const serverSpawn = spawnServer();
-    runCypress();
+    // runCypress();
     serverSpawn.kill();
 }
 
