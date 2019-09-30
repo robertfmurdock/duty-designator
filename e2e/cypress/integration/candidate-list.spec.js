@@ -10,12 +10,19 @@ context('Actions', () => {
         });
     }
 
-    it('when a new candidate is posted, it shows up on the page', async () => {
+    it('when a new candidate is posted, it shows up on the page',  () => {
         const candidate = {name: "Jimmy Cypress", id: uuid()};
-        await insertCandidate(candidate);
-
-        cy.visit('http://localhost:8080');
+        insertCandidate(candidate);
+        
+        cy.visit('http://localhost:8080')
         cy.get(`.candidate[candidateId=${candidate.id}]`)
-            .should('have.text', candidate.name)
+          .should('have.text', candidate.name)
+    });
+
+    it('fail', () => {
+        cy.visit('http://localhost:8080');
+        cy.get(`.candidate[candidateId="7"]`)
+            .should('have.text', 'jim joe jon')
     })
+
 });
