@@ -18,7 +18,7 @@ function spawnServer() {
 
 function runCypress() {
     try {
-        childProcess.execSync("cd ../e2e && npx cypress run", {stdio: "inherit"});
+        childProcess.execSync("cd ../e2e && yarn run cypress run", {stdio: "inherit"});
     } catch (e) {
         console.log(e)
     }

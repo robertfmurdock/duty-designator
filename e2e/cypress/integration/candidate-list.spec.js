@@ -9,7 +9,7 @@ context('Actions', () => {
             signal: undefined
         });
     }
-
+ 
     it('when a new candidate is posted, it shows up on the page',  () => {
         const candidate = {name: "Jimmy Cypress", id: uuid()};
         insertCandidate(candidate);
