@@ -31,7 +31,9 @@ jobs:
       - node/install-yarn
       - run: cd client && yarn
       - run: cd e2e && yarn
-      - run: cd e2e && yarn e2e || exit 0
+      - run:
+          working_directory: ~/duty-designator
+          command: yarn e2e 
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
