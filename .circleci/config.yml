@@ -31,6 +31,7 @@ jobs:
       - node/install-yarn
       - run: cd client && yarn
       - run: cd e2e && yarn && yarn e2e
+      - run: ! grep '<failure' results/test-output.xml
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:

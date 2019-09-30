@@ -18,7 +18,7 @@ function spawnServer() {
 
 function runCypress() {
     try {
-        childProcess.execSync("yarn run cypress run", {stdio: "inherit"});
+        childProcess.execSync("yarn run cypress run --reporder junit", {stdio: "inherit"});
     } catch (e) {
         console.log(e)
     }
