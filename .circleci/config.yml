@@ -32,6 +32,7 @@ jobs:
       - run: cd client && yarn
       - run: cd e2e && yarn
       - run: cd e2e && yarn e2e
+      - run: exit 1
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
