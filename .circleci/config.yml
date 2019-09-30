@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
+  cypress: cypress-io/cypress@1
 jobs:
   build:
     docker:
@@ -30,10 +31,12 @@ jobs:
       - node/install-node
       - node/install-yarn
       - run: cd client && yarn
-      - run: cd e2e && yarn
-      - run:
+      - run: cd e2e && yarn && yarn e2e
+      - cypress/run:
           working_directory: /go/src/duty-designator/e2e
-          command: yarn e2e 
+          yarn: true
+      - run: cd e2e && yarn killserver
+ 
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
