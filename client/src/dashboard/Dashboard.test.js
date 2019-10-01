@@ -2,7 +2,8 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import FetchService from '../services/fetchService';
 import Dashboard from './Dashboard';
-import {TableHead} from '@material-ui/core'
+import {Dialog, TableHead} from '@material-ui/core'
+import AddChoreModal from "./AddChoreModal";
 
 let fetchMock = FetchService.get = jest.fn();
 fetchMock.mockReturnValue(
@@ -18,8 +19,16 @@ describe('Dashboard', () => {
         );
 
         const dash = shallow(<Dashboard/>);
-        expect(dash.find('.task').length).toEqual(0);
+        expect(dash.find('.chore').length).toEqual(0);
         expect(dash.find('.candidate').length).toEqual(0);
+    });
+
+    test('add chore button opens modal', () => {
+       const dash = shallow(<Dashboard/>);
+
+       dash.find('#add-chore-button').simulate('click');
+
+       expect(dash.find(AddChoreModal).prop('open')).toEqual(true);
     });
 
     describe('with candidate data', () => {
@@ -81,7 +90,6 @@ describe('Dashboard', () => {
             dash = dash.dive();
             expect(dash.find(TableHead).at(1).text()).toEqual("Today\'s Chores");
         })
-        
 
     });
 
