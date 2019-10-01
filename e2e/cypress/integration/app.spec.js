@@ -42,4 +42,20 @@ context('Actions', () => {
           .should('have.text', chore.name)
     });
 
+    // it('when adding new chore through modal, saving adds new chore',  () => {
+    //     const chore = {name: "Rootin' Tootin' Rag Cleanin'", id: uuid()};
+    //     insertChore(chore)
+    //
+    //     cy.visit('http://localhost:8080');
+    //     cy.get('.chore').should('have.length', 1)
+    //
+    //     cy.get('#add-chore-button').click();
+    //
+    //     cy.get('#chore-name').type(chore.name)
+    //     cy.get('#save-chore-button').click();
+    //
+    //     cy.get(`.chore[choreId=${chore.id}]`)
+    //         .should('have.text', chore.name)
+    // });
+
 });
