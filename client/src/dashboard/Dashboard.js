@@ -7,15 +7,18 @@ import {
     TableCell,
     TableHead,
     TableRow,
+    Button,
     Paper
 } from '@material-ui/core';
+import AddChoreModal from "./AddChoreModal";
 
 export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             pioneers: [],
-            chores: []
+            chores: [],
+            modalOpen: false
         }
     }
 
@@ -29,7 +32,16 @@ export default class Dashboard extends React.Component {
             .catch(err => console.warn(err));
     }
 
+
     render() {
+        const handleClickOpen = () => {
+            this.setState({modalOpen: true})
+        };
+
+        const handleClose = () => {
+            this.setState({modalOpen: false})
+        };
+
         return <Paper>
             <Table>
                 <TableHead>
@@ -46,7 +58,7 @@ export default class Dashboard extends React.Component {
                 </TableBody>
             </Table>
             <Table>
-            <TableHead>
+                <TableHead>
                     <TableRow>
                         <TableCell align="right">Today's Chores</TableCell>
                     </TableRow>
@@ -56,10 +68,16 @@ export default class Dashboard extends React.Component {
                         <TableRow key={row.id}>
                             <TableCell className="chore" align="right">{row.name}</TableCell>
                         </TableRow>
-                    ))} 
-
+                    ))}
+                    <TableRow>
+                        <TableCell>
+                            <Button  id="add-chore-button" onClick={handleClickOpen}>
+                                Add new Chore to the list</Button>
+                        </TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
+            <AddChoreModal open={this.state.modalOpen} onClose={handleClose}/>
         </Paper>
     }
 }
