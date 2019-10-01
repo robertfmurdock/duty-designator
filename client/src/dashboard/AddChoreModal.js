@@ -2,8 +2,7 @@ import React from "react";
 import {
     TextField,
     Button,
-    Dialog,
-    DialogTitle
+    Dialog
 } from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
