@@ -13,7 +13,14 @@ import (
 
 var ServeMux = initializeMux()
 
+var insertedChores [] ChoreRecord
+
 type CandidateRecord struct {
+	Name string `json:"name"`
+	Id   string `json:"id"`
+}
+
+type ChoreRecord struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
 }
@@ -28,10 +35,9 @@ func initializeMux() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.Dir("../client/build")))
 	mux.Handle("/api/candidate", candidateHandler(client))
+	mux.Handle("/api/chore", choreHandler(client))
 	return mux
 }
-
-
 
 func candidateHandler(dbClient *mongo.Client) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -40,6 +46,17 @@ func candidateHandler(dbClient *mongo.Client) http.Handler {
 			getCandidateHandler(writer, request, dbClient)
 		case http.MethodPost:
 			postCandidateHandler(writer, request, dbClient)
+		}
+	})
+}
+
+func choreHandler(dbClient *mongo.Client) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		switch request.Method {
+		case http.MethodGet:
+			GetChore(writer, request, dbClient)
+		case http.MethodPost:
+			InsertChoreFromHTTP(writer, request, dbClient)
 		}
 	})
 }
@@ -111,4 +128,34 @@ func postCandidateHandler(writer http.ResponseWriter, request *http.Request, dbC
 
 func getCandidatesCollection(dbClient *mongo.Client) *mongo.Collection {
 	return dbClient.Database("dutyDB").Collection("candidates")
+}
+
+func GetChore(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
+	writer.Header().Set("Content-Type", "application/json")
+	choreCollection := dbClient.Database("dutyDB").Collection("chores")
+
+	cursor, _ := choreCollection.Find(context.TODO(), bson.D{})
+	var rows []CandidateRecord
+	_ = cursor.All(context.TODO(), &rows)
+	choreRows, _ := json.Marshal(rows)
+	writer.Write(choreRows)
+}
+
+func InsertChore(record ChoreRecord) {
+	dbClient, _ := GetDBClient()
+
+	collection := dbClient.Database("dutyDB").Collection("chores")
+	collection.InsertOne(context.Background(), record)
+}
+
+func InsertChoreFromHTTP(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
+	decoder := json.NewDecoder(request.Body)
+	var choreRecord ChoreRecord
+	err := decoder.Decode(&choreRecord)
+	if err != nil {
+		writer.WriteHeader(400)
+	}
+
+	collection := dbClient.Database("dutyDB").Collection("chores")
+	collection.InsertOne(context.Background(), choreRecord)
 }

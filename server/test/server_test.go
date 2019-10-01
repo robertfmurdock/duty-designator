@@ -130,3 +130,83 @@ func contains(s []src.CandidateRecord, e src.CandidateRecord) bool {
 	}
 	return false
 }
+
+func TestInsertInteractsWithMongoDB(t *testing.T) {
+	responseRecorder := httptest.NewRecorder()
+
+	choreId := uuid.New()
+	chore := src.ChoreRecord{
+		Name: "Compiled Cans",
+		Id:   choreId.String(),
+	}
+
+
+	choreJSON, _ := json.Marshal(chore)
+	request, _ := http.NewRequest(http.MethodPost, "/api/chore", bytes.NewReader(choreJSON))
+
+
+	src.ServeMux.ServeHTTP(responseRecorder, request )
+
+//	src.InsertChore(chore)
+
+	client, err := src.GetDBClient()
+
+	if err != nil {
+		t.Errorf("Could not get mongo client: %s", err)
+	}
+
+	collection := client.Database("dutyDB").Collection("chores")
+
+	cursor, err := collection.Find(context.TODO(), bson.D{})
+
+	if err != nil {
+		t.Errorf("MongoDB find error: %s", err)
+	}
+
+	var rows []src.ChoreRecord
+	err = cursor.All(context.TODO(), &rows)
+
+	if ! containsChoreID(rows, choreId.String()) {
+		t.Log(rows)
+		t.Errorf("MongoDB did not return chore from InsertChore")
+	}
+}
+
+func TestGetChore_GetChoreReturnsAChoreThatWasInserted(t *testing.T)  {
+	responseRecorder := httptest.NewRecorder()
+	request, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
+
+	choreId := uuid.New()
+	chore := src.ChoreRecord{
+		Name: "Compiled Cans",
+		Id:   choreId.String(),
+	}
+
+	src.InsertChore(chore)
+
+	src.ServeMux.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != 200 {
+		t.Error("Post was not successful", responseRecorder.Body.String())
+	}
+
+
+	var choreList [] src.ChoreRecord
+	var body = responseRecorder.Body.Bytes()
+	json.Unmarshal(body, &choreList)
+
+	if ! containsChoreID(choreList, choreId.String()) {
+		t.Log(choreList)
+		t.Errorf("GetChore did not return chore from InsertChore")
+	}
+}
+
+
+func containsChoreID(s []src.ChoreRecord, id string) bool {
+	for _, a := range s {
+		if a.Id == id {
+			return true
+		}
+	}
+	return false
+}
