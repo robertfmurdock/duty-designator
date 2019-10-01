@@ -20,7 +20,8 @@ jobs:
           libnss3 \
           libxss1 \
           libasound2 \
-          xvfb
+          xvfb \
+          libxml2-utils
       - run: rm -rf /var/lib/apt/lists/*
       - restore_cache:
           keys:
