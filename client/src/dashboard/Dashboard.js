@@ -14,13 +14,18 @@ export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            rows: []
+            pioneers: [],
+            chores: []
         }
     }
 
     componentDidMount() {
         FetchService.get(0, "/api/candidate", undefined)
-            .then(response => this.setState({rows: response}))
+            .then(response => this.setState({pioneers: response}))
+            .catch(err => console.warn(err));
+
+        FetchService.get(0, "/api/chore", undefined)
+            .then(response => this.setState({chores: response}))
             .catch(err => console.warn(err));
     }
 
@@ -29,16 +34,30 @@ export default class Dashboard extends React.Component {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Tasks</TableCell>
-                        <TableCell align="right">Candidates</TableCell>
+                        <TableCell align="right">Today's Pioneers</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {this.state.rows.map(row => (
-                        <TableRow key={row.task}>
+                    {this.state.pioneers.map(row => (
+                        <TableRow key={row.id}>
                             <TableCell className="candidate" align="right" candidateId={row.id}>{row.name}</TableCell>
                         </TableRow>
                     ))}
+                </TableBody>
+            </Table>
+            <Table>
+            <TableHead>
+                    <TableRow>
+                        <TableCell align="right">Today's Chores</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {this.state.chores.map(row => (
+                        <TableRow key={row.id}>
+                            <TableCell className="chore" align="right">{row.name}</TableCell>
+                        </TableRow>
+                    ))} 
+
                 </TableBody>
             </Table>
         </Paper>

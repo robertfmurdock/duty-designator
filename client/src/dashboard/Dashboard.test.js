@@ -2,6 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import FetchService from '../services/fetchService';
 import Dashboard from './Dashboard';
+import {TableHead} from '@material-ui/core'
 
 let fetchMock = FetchService.get = jest.fn();
 fetchMock.mockReturnValue(
@@ -21,14 +22,14 @@ describe('Dashboard', () => {
         expect(dash.find('.candidate').length).toEqual(0);
     });
 
-    describe('with data', () => {
+    describe('with candidate data', () => {
         let dash, rows;
 
         beforeEach(() => {
             rows = [
-                {task: "Dishses", candidate: "Friday Jeb"},
-                {task: "Wipe Down", candidate: "Everyday Natalie"},
-                {task: "Tablecloth", candidate: "Odd Day Rob"}
+                {id:" at thing", candidate: "Friday Jeb"},
+                {id: "somethign else", candidate: "Everyday Natalie"},
+                {id: "nothing", candidate: "Odd Day Rob"}
             ]
 
             fetchMock.mockReturnValue(
@@ -39,7 +40,50 @@ describe('Dashboard', () => {
         });
 
         test('shows a list of candidates', () => {
-            expect(dash.find('.candidate').length).toEqual(rows.length);
+            expect(dash.find('.candidate').length).toBe(rows.length);
         });
+
+        test('Has header of Today\'s Pioneers', () => {
+            dash = dash.dive();
+            expect(dash.find(TableHead).at(0).text()).toEqual("Today\'s Pioneers");
+        })
+
     });
+
+    describe('with task data', () => {
+        let dash, rows;
+
+        beforeEach(() => {
+            rows = [
+                {id: "1", task: "Move chairs"},
+                {id: "2", task: "Turn off coffee pot"},
+                {id: "3", task: "Stock fridge with soda"},
+                {id: "4", task: "Put away dishes"},
+            ]
+
+            fetchMock.mockReturnValue(
+                new Promise((resolve, reject) => resolve(rows))
+            );
+
+            dash = shallow(<Dashboard/>);
+        });
+
+        test('calls /api/chore', () => {
+            expect(fetchMock).toBeCalledWith(0, "/api/chore", undefined)
+        }
+        )
+        
+        test('shows a list of chores', () => {
+            expect(dash.find('.chore').length).toBe(rows.length);
+        });
+
+        test('Has header of Today\'s Chores', () => {
+            dash = dash.dive();
+            expect(dash.find(TableHead).at(1).text()).toEqual("Today\'s Chores");
+        })
+        
+
+    });
+
+
 });
