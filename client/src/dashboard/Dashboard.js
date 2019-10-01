@@ -54,7 +54,7 @@ export default class Dashboard extends React.Component {
                 <TableBody>
                     {this.state.chores.map(row => (
                         <TableRow key={row.id}>
-                            <TableCell className="chore" align="right">{row.name}</TableCell>
+                            <TableCell className="chore" align="right" choreID={row.id}>{row.name}</TableCell>
                         </TableRow>
                     ))} 
 
