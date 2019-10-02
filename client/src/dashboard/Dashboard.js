@@ -11,6 +11,7 @@ import {
     Paper
 } from '@material-ui/core';
 import AddChoreModal from "./AddChoreModal";
+import PioneerTable from "./PioneerTable";
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -43,41 +44,34 @@ export default class Dashboard extends React.Component {
         };
 
         return <Paper>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell align="right">Today's Pioneers</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {this.state.pioneers.map(row => (
-                        <TableRow key={row.id}>
-                            <TableCell className="candidate" align="right" candidateId={row.id}>{row.name}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell align="right">Today's Chores</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {this.state.chores.map(row => (
-                        <TableRow key={row.id}>
-                            <TableCell className="chore" align="right" choreID={row.id}>{row.name}</TableCell>
-                        </TableRow>
-                    ))}
-                    <TableRow>
-                        <TableCell>
-                            <Button  id="add-chore-button" onClick={handleClickOpen}>
-                                Add new Chore to the list</Button>
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+            <PioneerTable pioneers={this.state.pioneers}/>
+            {this.getChoreTable(handleClickOpen)}
             <AddChoreModal open={this.state.modalOpen} onClose={handleClose}/>
         </Paper>
     }
+
+    getChoreTable(handleClickOpen) {
+        return <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell align="right">Today's Chores</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {this.state.chores.map(row => (
+                    <TableRow key={row.id}>
+                        <TableCell className="chore" align="right" choreID={row.id}>{row.name}</TableCell>
+                    </TableRow>
+                ))}
+                <TableRow>
+                    <TableCell>
+                        <Button id="add-chore-button" onClick={handleClickOpen}>
+                            Add new Chore to the list</Button>
+                    </TableCell>
+                </TableRow>
+            </TableBody>
+        </Table>;
+    }
+
 }
+

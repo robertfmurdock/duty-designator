@@ -24,11 +24,11 @@ describe('Dashboard', () => {
     });
 
     test('add chore button opens modal', () => {
-       const dash = shallow(<Dashboard/>);
+        const dash = shallow(<Dashboard/>);
 
-       dash.find('#add-chore-button').simulate('click');
+        dash.find('#add-chore-button').simulate('click');
 
-       expect(dash.find(AddChoreModal).prop('open')).toEqual(true);
+        expect(dash.find(AddChoreModal).prop('open')).toEqual(true);
     });
 
     describe('with candidate data', () => {
@@ -36,10 +36,10 @@ describe('Dashboard', () => {
 
         beforeEach(() => {
             rows = [
-                {id:" at thing", candidate: "Friday Jeb"},
+                {id: " at thing", candidate: "Friday Jeb"},
                 {id: "somethign else", candidate: "Everyday Natalie"},
                 {id: "nothing", candidate: "Odd Day Rob"}
-            ]
+            ];
 
             fetchMock.mockReturnValue(
                 new Promise((resolve, reject) => resolve(rows))
@@ -49,12 +49,13 @@ describe('Dashboard', () => {
         });
 
         test('shows a list of candidates', () => {
-            expect(dash.find('.candidate').length).toBe(rows.length);
+            expect(dash.find('PioneerTable').dive().find('.candidate').length)
+                .toBe(rows.length);
         });
 
         test('Has header of Today\'s Pioneers', () => {
-            dash = dash.dive();
-            expect(dash.find(TableHead).at(0).text()).toEqual("Today\'s Pioneers");
+            expect(dash.find('PioneerTable').dive().find(TableHead).at(0).text())
+                .toEqual("Today\'s Pioneers");
         })
 
     });
@@ -78,17 +79,17 @@ describe('Dashboard', () => {
         });
 
         test('calls /api/chore', () => {
-            expect(fetchMock).toBeCalledWith(0, "/api/chore", undefined)
-        }
+                expect(fetchMock).toBeCalledWith(0, "/api/chore", undefined)
+            }
         )
-        
+
         test('shows a list of chores', () => {
             expect(dash.find('.chore').length).toBe(rows.length);
         });
 
         test('Has header of Today\'s Chores', () => {
             dash = dash.dive();
-            expect(dash.find(TableHead).at(1).text()).toEqual("Today\'s Chores");
+            expect(dash.find(TableHead).at(0).text()).toEqual("Today\'s Chores");
         })
 
     });
