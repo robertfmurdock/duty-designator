@@ -5,6 +5,7 @@ import Dashboard from './Dashboard';
 import {Dialog, TableHead} from '@material-ui/core'
 import AddChoreModal from "./AddChoreModal";
 
+
 let fetchMock = FetchService.get = jest.fn();
 fetchMock.mockReturnValue(
     new Promise((resolve, reject) => resolve({tasks: [], candidates: []}))
