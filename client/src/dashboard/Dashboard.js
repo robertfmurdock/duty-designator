@@ -8,7 +8,8 @@ import {
     TableHead,
     TableRow,
     Button,
-    Paper
+    Paper,
+    Grid
 } from '@material-ui/core';
 import AddChoreModal from "./AddChoreModal";
 
@@ -42,7 +43,9 @@ export default class Dashboard extends React.Component {
             this.setState({modalOpen: false})
         };
 
-        return <Paper>
+        return <Grid container spacing={2}>  
+        <Grid item xs={6}>
+        <Paper>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -57,6 +60,10 @@ export default class Dashboard extends React.Component {
                     ))}
                 </TableBody>
             </Table>
+        </Paper>
+        </Grid> 
+        <Grid item xs={6}>
+        <Paper>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -78,6 +85,8 @@ export default class Dashboard extends React.Component {
                 </TableBody>
             </Table>
             <AddChoreModal open={this.state.modalOpen} onClose={handleClose}/>
-        </Paper>
+            </Paper>
+            </Grid>
+        </Grid>     
     }
 }
