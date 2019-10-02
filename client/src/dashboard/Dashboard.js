@@ -26,22 +26,22 @@ export default class Dashboard extends React.Component {
 
     componentDidMount() {
         FetchService.get(0, "/api/candidate", undefined)
-            .then(response => this.setState({pioneers: response}))
+            .then(response => this.setState({ pioneers: response }))
             .catch(err => console.warn(err));
 
         FetchService.get(0, "/api/chore", undefined)
-            .then(response => this.setState({chores: response}))
+            .then(response => this.setState({ chores: response }))
             .catch(err => console.warn(err));
     }
 
 
     render() {
         const handleClickOpen = () => {
-            this.setState({modalOpen: true})
+            this.setState({ modalOpen: true })
         };
 
         const handleClose = () => {
-            this.setState({modalOpen: false})
+            this.setState({ modalOpen: false })
         };
 
         return <Grid container spacing={2}>
