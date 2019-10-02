@@ -31,6 +31,7 @@ describe('Dashboard', () => {
         expect(dash.find(AddChoreModal).prop('open')).toEqual(true);
     });
 
+
     describe('with candidate data', () => {
         let dash, rows;
 
@@ -49,14 +50,10 @@ describe('Dashboard', () => {
         });
 
         test('shows a list of candidates', () => {
-            expect(dash.find('PioneerTable').dive().find('.candidate').length)
-                .toBe(rows.length);
+            const pioneerTable = dash.find('PioneerTable');
+            expect(pioneerTable.props().pioneers)
+                .toBe(rows);
         });
-
-        test('Has header of Today\'s Pioneers', () => {
-            expect(dash.find('PioneerTable').dive().find(TableHead).at(0).text())
-                .toEqual("Today\'s Pioneers");
-        })
 
     });
 
