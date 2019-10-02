@@ -11,7 +11,6 @@ import {
     Paper,
     Grid
 } from '@material-ui/core';
-import { Add } from '@material-ui/icons';
 import AddChoreModal from "./AddChoreModal";
 import PioneerTable from "./PioneerTable";
 
