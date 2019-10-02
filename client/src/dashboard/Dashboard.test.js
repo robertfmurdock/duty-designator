@@ -12,6 +12,13 @@ fetchMock.mockReturnValue(
     new Promise((resolve, reject) => resolve({tasks: [], candidates: []}))
 );
 
+async function waitUntil(hasAllPioneers) {
+    const start = new Date();
+    while (!hasAllPioneers() && (new Date() - start) < 300) {
+        await yield25()
+    }
+}
+
 describe('Dashboard', () => {
     beforeEach(jest.clearAllMocks);
 
@@ -20,18 +27,20 @@ describe('Dashboard', () => {
             new Promise((resolve, reject) => resolve([]))
         );
 
-        const dash = shallow(<Dashboard/>);
-        expect(dash.find('.chore').length).toEqual(0);
-        expect(dash.find('.candidate').length).toEqual(0);
+        const dashboard = shallow(<Dashboard/>);
+        expect(dashboard.find('.chore').length).toEqual(0);
+        expect(dashboard.find('.candidate').length).toEqual(0);
     });
 
     test('add chore button opens modal', () => {
-        const dash = shallow(<Dashboard/>);
+        const dashboard = shallow(<Dashboard/>);
 
-        dash.find('#add-chore-button').simulate('click');
+        dashboard.find('#add-chore-button').simulate('click');
 
-        expect(dash.find(AddChoreModal).prop('open')).toEqual(true);
+        expect(dashboard.find(AddChoreModal).prop('open')).toEqual(true);
     });
+
+
 
 
     describe('with candidate data', () => {
@@ -78,6 +87,22 @@ describe('Dashboard', () => {
                 toEqual(expectedRemaining)
         })
 
+        test('Reset button presents default page', async () => {
+            let pioneerToRemove = rows[0]
+            simulateRemovePioneer(pioneerToRemove);
+            dashboard.update()
+
+            dashboard.find('#reset-button').simulate('click')
+
+            await waitUntil(() => {
+                dashboard.update();
+                return dashboard.find(PioneerTable).props().pioneers === rows;
+            });
+
+            expect(dashboard.find(PioneerTable).props().pioneers).
+                toEqual(rows)
+        });
+
         function simulateRemovePioneer(pioneerToRemove) {
             let removeFunction = dashboard.find('PioneerTable').props().onRemove;
             removeFunction(pioneerToRemove)
@@ -120,3 +145,9 @@ describe('Dashboard', () => {
 
 
 });
+
+function yield25() {
+    return new Promise((resolve, reject) => {
+        setInterval(resolve, 25)
+    });
+}

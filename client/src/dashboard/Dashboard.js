@@ -25,6 +25,11 @@ export default class Dashboard extends React.Component {
     }
 
     componentDidMount() {
+        this.populateTableState();
+    }
+
+
+    populateTableState() {
         FetchService.get(0, "/api/candidate", undefined)
             .then(response => this.setState({pioneers: response}))
             .catch(err => console.warn(err));
@@ -33,7 +38,6 @@ export default class Dashboard extends React.Component {
             .then(response => this.setState({chores: response}))
             .catch(err => console.warn(err));
     }
-
 
     render() {
         const handleClickOpen = () => {
@@ -48,9 +52,11 @@ export default class Dashboard extends React.Component {
             <Grid item xs={6}>
                 <Paper>
                     <PioneerTable pioneers={this.state.pioneers} onRemove={removedPioneer => {
-                        this.setState({pioneers: this.state.pioneers.filter(
+                        this.setState({
+                            pioneers: this.state.pioneers.filter(
                                 pioneer => pioneer !== removedPioneer
-                            )})
+                            )
+                        })
                     }}/>
                 </Paper>
             </Grid>
@@ -60,7 +66,9 @@ export default class Dashboard extends React.Component {
                     <AddChoreModal open={this.state.modalOpen} onClose={handleClose}/>
                 </Paper>
             </Grid>
+            <p id="reset-button" onClick={() => this.populateTableState()}>BIG BUTTON</p>
         </Grid>
+
     }
 
     getChoreTable(handleClickOpen) {
