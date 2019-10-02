@@ -14,7 +14,9 @@ export default function PioneerTable(props) {
             {props.pioneers.map(row => (
                 <TableRow key={row.id}>
                     <TableCell className="candidate" align="right" candidateId={row.id}>{row.name}</TableCell>
-                    <TableCell><Icon path={mdiClose} size={1}/></TableCell>
+                    <TableCell>
+                        <Icon path={mdiClose} size={1} onClick={() => props.onRemove(row)}/>
+                    </TableCell>
                 </TableRow>
             ))}
         </TableBody>

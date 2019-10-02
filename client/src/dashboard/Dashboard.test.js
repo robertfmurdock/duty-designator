@@ -2,8 +2,9 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import FetchService from '../services/fetchService';
 import Dashboard from './Dashboard';
-import {Dialog, TableHead} from '@material-ui/core'
+import {TableHead} from '@material-ui/core'
 import AddChoreModal from "./AddChoreModal";
+import PioneerTable from "./PioneerTable";
 
 
 let fetchMock = FetchService.get = jest.fn();
@@ -34,7 +35,7 @@ describe('Dashboard', () => {
 
 
     describe('with candidate data', () => {
-        let dash, rows;
+        let dashboard, rows;
 
         beforeEach(() => {
             rows = [
@@ -47,15 +48,40 @@ describe('Dashboard', () => {
                 new Promise((resolve, reject) => resolve(rows))
             );
 
-            dash = shallow(<Dashboard/>);
+            dashboard = shallow(<Dashboard/>);
         });
 
         test('shows a list of candidates', () => {
-            const pioneerTable = dash.find('PioneerTable');
+            const pioneerTable = dashboard.find('PioneerTable');
             expect(pioneerTable.props().pioneers)
                 .toBe(rows);
         });
 
+        test('When PioneerTable remove last Pioneer, last Pioneer row is removed', () => {
+            let pioneerToRemove = rows[2]
+            simulateRemovePioneer(pioneerToRemove);
+            dashboard.update()
+
+            expect(dashboard.find(PioneerTable).props().pioneers).
+                toEqual(rows.slice(0,2))
+        })
+
+
+        test('When PioneerTable remove middle Pioneer, middle Pioneer row is removed', () => {
+            let pioneerToRemove = rows[1]
+            simulateRemovePioneer(pioneerToRemove);
+            dashboard.update()
+
+            const expectedRemaining = [rows[0], rows[2]]
+
+            expect(dashboard.find(PioneerTable).props().pioneers).
+                toEqual(expectedRemaining)
+        })
+
+        function simulateRemovePioneer(pioneerToRemove) {
+            let removeFunction = dashboard.find('PioneerTable').props().onRemove;
+            removeFunction(pioneerToRemove)
+        }
     });
 
     describe('with task data', () => {
