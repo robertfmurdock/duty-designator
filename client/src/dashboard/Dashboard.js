@@ -8,7 +8,8 @@ import {
     TableHead,
     TableRow,
     Button,
-    Paper
+    Paper,
+    Grid
 } from '@material-ui/core';
 import AddChoreModal from "./AddChoreModal";
 import PioneerTable from "./PioneerTable";
@@ -43,11 +44,19 @@ export default class Dashboard extends React.Component {
             this.setState({modalOpen: false})
         };
 
-        return <Paper>
-            <PioneerTable pioneers={this.state.pioneers}/>
-            {this.getChoreTable(handleClickOpen)}
-            <AddChoreModal open={this.state.modalOpen} onClose={handleClose}/>
-        </Paper>
+        return <Grid container spacing={2}>
+            <Grid item xs={6}>
+                <Paper>
+                    <PioneerTable pioneers={this.state.pioneers}/>
+                </Paper>
+            </Grid>
+            <Grid item xs={6}>
+                <Paper>
+                    {this.getChoreTable(handleClickOpen)}
+                    <AddChoreModal open={this.state.modalOpen} onClose={handleClose}/>
+                </Paper>
+            </Grid>
+        </Grid>
     }
 
     getChoreTable(handleClickOpen) {
@@ -72,6 +81,5 @@ export default class Dashboard extends React.Component {
             </TableBody>
         </Table>;
     }
-
 }
 
