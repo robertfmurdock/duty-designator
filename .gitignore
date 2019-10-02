@@ -25,6 +25,7 @@ e2e/cypress/videos
 
 build
 .gradle
+.gogradle
 
 node_modules/
 vendor
