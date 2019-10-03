@@ -2,11 +2,6 @@ import React from 'react';
 import FetchService from '../services/fetchService';
 
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
     Button,
     Paper,
     Grid

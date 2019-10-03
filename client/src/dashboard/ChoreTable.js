@@ -14,9 +14,9 @@ export default function (props) {
             {props.chores.map(row => (
                 <TableRow key={row.id}>
                     <TableCell className="chore" align="right" choreID={row.id}>{row.name}</TableCell>
-                <TableCell>
-                    <Icon path={mdiClose} size={1}/>
-                </TableCell>
+                    <TableCell>
+                        <Icon path={mdiClose} size={1}/>
+                    </TableCell>
                 </TableRow>
             ))}
             <TableRow>
