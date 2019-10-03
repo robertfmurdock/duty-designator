@@ -19,13 +19,15 @@ import (
 var client = initConnection()
 
 func initConnection() *mongo.Client {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 
 	if err != nil {
 		log.Fatal("Could not connect to Mongo")
 		return nil
 	}
+
+	defer cancel()
 	return client
 }
 
@@ -140,14 +142,12 @@ func TestInsertInteractsWithMongoDB(t *testing.T) {
 		Id:   choreId.String(),
 	}
 
-
 	choreJSON, _ := json.Marshal(chore)
 	request, _ := http.NewRequest(http.MethodPost, "/api/chore", bytes.NewReader(choreJSON))
 
+	src.ServeMux.ServeHTTP(responseRecorder, request)
 
-	src.ServeMux.ServeHTTP(responseRecorder, request )
-
-//	src.InsertChore(chore)
+	//	src.InsertChore(chore)
 
 	client, err := src.GetDBClient()
 
@@ -166,13 +166,13 @@ func TestInsertInteractsWithMongoDB(t *testing.T) {
 	var rows []src.ChoreRecord
 	err = cursor.All(context.TODO(), &rows)
 
-	if ! containsChoreID(rows, choreId.String()) {
+	if !containsChoreID(rows, choreId.String()) {
 		t.Log(rows)
 		t.Errorf("MongoDB did not return chore from InsertChore")
 	}
 }
 
-func TestGetChore_GetChoreReturnsAChoreThatWasInserted(t *testing.T)  {
+func TestGetChore_GetChoreReturnsAChoreThatWasInserted(t *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 	request, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
 
@@ -190,17 +190,15 @@ func TestGetChore_GetChoreReturnsAChoreThatWasInserted(t *testing.T)  {
 		t.Error("Post was not successful", responseRecorder.Body.String())
 	}
 
-
-	var choreList [] src.ChoreRecord
+	var choreList []src.ChoreRecord
 	var body = responseRecorder.Body.Bytes()
 	json.Unmarshal(body, &choreList)
 
-	if ! containsChoreID(choreList, choreId.String()) {
+	if !containsChoreID(choreList, choreId.String()) {
 		t.Log(choreList)
 		t.Errorf("GetChore did not return chore from InsertChore")
 	}
 }
-
 
 func containsChoreID(s []src.ChoreRecord, id string) bool {
 	for _, a := range s {

@@ -25,4 +25,8 @@ tasks {
         args = listOf("test")
     }
 
+    val check by creating {
+        dependsOn(test)
+    }
+
 }

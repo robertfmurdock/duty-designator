@@ -24,3 +24,13 @@ dependencies {
 goBuild {
     outputLocation = './.gogradle/server'
 }
+
+tasks {
+    task("check") {
+        dependsOn goCheck
+    }
+    
+    task("test") {
+        dependsOn goTest
+    }
+}
