@@ -2,7 +2,6 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import FetchService from '../services/fetchService';
 import Dashboard from './Dashboard';
-import {TableHead} from '@material-ui/core'
 import AddChoreModal from "./AddChoreModal";
 import PioneerTable from "./PioneerTable";
 import ChoreTable from "./ChoreTable";
@@ -10,7 +9,7 @@ import ChoreTable from "./ChoreTable";
 
 let fetchMock = FetchService.get = jest.fn();
 fetchMock.mockReturnValue(
-    new Promise((resolve, reject) => resolve({tasks: [], candidates: []}))
+    new Promise(resolve => resolve({tasks: [], candidates: []}))
 );
 
 async function waitUntil(hasAllPioneers) {
