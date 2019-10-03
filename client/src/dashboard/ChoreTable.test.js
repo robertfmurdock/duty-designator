@@ -20,6 +20,23 @@ describe("ChoreTable", () => {
         expect(handleAddWasCalled).toEqual(true);
     });
 
+    test('On click remove, wll use remove callback', () => {
+        const expectedChoreToRemove = {id: "uniqueId", name: 'CleanTheTHings'};
+
+        let actualRemovedChore = null;
+        const removeSpy = (removed) => actualRemovedChore = removed;
+        const table = shallow(<ChoreTable chores={[expectedChoreToRemove]} onRemove={removeSpy}/>);
+
+        const pioneerRow = table.find(TableBody)
+            .find(TableRow)
+            .findWhere(row => row.key() === expectedChoreToRemove.id);
+
+        pioneerRow.find(TableCell).last().find(Icon)
+            .simulate("click");
+
+        expect(actualRemovedChore).toBe(expectedChoreToRemove)
+    });
+
     describe('when given a list of chores', () => {
 
         let chores, choreTable;
@@ -42,26 +59,22 @@ describe("ChoreTable", () => {
             expect(choreTable.find(TableHead).at(0).text()).toEqual("Today\'s Chores");
         });
 
-        function choreIds() {
-            return chores.map(chore => chore.id);
-        }
+        const choreIds = () => chores.map(chore => chore.id);
 
         test('Each chore has a remove button in last cell position', () => {
-                const choreRows = choreTable.find(TableBody)
-                    .find(TableRow)
-                    .filterWhere(
-                        row => choreIds().includes(row.key())
-                    );
+            const choreRows = choreTable.find(TableBody)
+                .find(TableRow)
+                .filterWhere(
+                    row => choreIds().includes(row.key())
+                );
 
-                choreRows.forEach(element => {
-                    const lastTableCell = element.find(TableCell).last();
-                    const icon = lastTableCell.find(Icon);
-                    expect(icon.length).toBe(1);
-                    expect(icon.props().path).toBe(mdiClose);
-                    expect(icon.props().size).toBe(1)
-                })
-            }
-        );
-    })
-
+            choreRows.forEach(element => {
+                const lastTableCell = element.find(TableCell).last();
+                const icon = lastTableCell.find(Icon);
+                expect(icon.length).toBe(1);
+                expect(icon.props().path).toBe(mdiClose);
+                expect(icon.props().size).toBe(1)
+            });
+        });
+    });
 });

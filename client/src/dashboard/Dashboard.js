@@ -77,8 +77,16 @@ export default class Dashboard extends React.Component {
     }
 
     getChoreTable(handleClickOpen) {
-        return <ChoreTable chores={this.state.chores} addChoreHandler={handleClickOpen} />
-
+        return <ChoreTable chores={this.state.chores}
+                           addChoreHandler={handleClickOpen}
+                           onRemove={removedChore => {
+                               this.setState({
+                                   chores: this.state.chores.filter(
+                                       chore => chore !== removedChore
+                                   )
+                               })
+                           }}
+        />
     }
 }
 

@@ -7,7 +7,6 @@ import {mdiClose} from '@mdi/js';
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 
-
 describe('Pioneer Table', () => {
 
     describe('Given a PioneerTable With three pioneers', () => {

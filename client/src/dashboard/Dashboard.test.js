@@ -43,64 +43,60 @@ describe('Dashboard', () => {
         expect(dashboard.find(AddChoreModal).prop('open')).toEqual(true);
     });
 
-    describe('with candidate data', () => {
-        let dashboard, rows;
+    describe('with pioneer data', () => {
+        let dashboard, pioneers;
 
         beforeEach(() => {
-            rows = [
+            pioneers = [
                 {id: " at thing", candidate: "Friday Jeb"},
                 {id: "somethign else", candidate: "Everyday Natalie"},
                 {id: "nothing", candidate: "Odd Day Rob"}
             ];
 
             fetchMock.mockReturnValue(
-                new Promise((resolve, reject) => resolve(rows))
+                new Promise(resolve => resolve(pioneers))
             );
 
             dashboard = shallow(<Dashboard/>);
         });
 
-        test('shows a list of candidates', () => {
+        test('shows a list of pioneers', () => {
             const pioneerTable = dashboard.find('PioneerTable');
             expect(pioneerTable.props().pioneers)
-                .toBe(rows);
+                .toBe(pioneers);
         });
 
         test('When PioneerTable remove last Pioneer, last Pioneer row is removed', () => {
-            let pioneerToRemove = rows[2]
+            let pioneerToRemove = pioneers[2];
             simulateRemovePioneer(pioneerToRemove);
-            dashboard.update()
+            dashboard.update();
 
-            expect(dashboard.find(PioneerTable).props().pioneers).
-                toEqual(rows.slice(0,2))
-        })
-
+            expect(dashboard.find(PioneerTable).props().pioneers).toEqual(pioneers.slice(0, 2))
+        });
 
         test('When PioneerTable remove middle Pioneer, middle Pioneer row is removed', () => {
-            let pioneerToRemove = rows[1]
+            let pioneerToRemove = pioneers[1];
             simulateRemovePioneer(pioneerToRemove);
-            dashboard.update()
+            dashboard.update();
 
-            const expectedRemaining = [rows[0], rows[2]]
+            const expectedRemaining = [pioneers[0], pioneers[2]];
 
-            expect(dashboard.find(PioneerTable).props().pioneers).
-                toEqual(expectedRemaining)
-        })
+            expect(dashboard.find(PioneerTable).props().pioneers).toEqual(expectedRemaining)
+        });
 
         test('Reset button presents default page', async () => {
-            let pioneerToRemove = rows[0]
+            let pioneerToRemove = pioneers[0];
             simulateRemovePioneer(pioneerToRemove);
-            dashboard.update()
+            dashboard.update();
 
-            dashboard.find('#reset-button').simulate('click')
+            dashboard.find('#reset-button').simulate('click');
 
             await waitUntil(() => {
                 dashboard.update();
-                return dashboard.find(PioneerTable).props().pioneers === rows;
+                return dashboard.find(PioneerTable).props().pioneers === pioneers;
             });
 
-            expect(dashboard.find(PioneerTable).props().pioneers).
-                toEqual(rows)
+            expect(dashboard.find(PioneerTable).props().pioneers).toEqual(pioneers)
         });
 
         function simulateRemovePioneer(pioneerToRemove) {
@@ -109,7 +105,7 @@ describe('Dashboard', () => {
         }
     });
 
-    describe('with task data', () => {
+    describe('with chore data', () => {
         let dashboard, chores;
 
         beforeEach(() => {
@@ -127,18 +123,29 @@ describe('Dashboard', () => {
             dashboard = shallow(<Dashboard/>);
         });
 
-        test('calls /api/chore', () => {
-                expect(fetchMock).toBeCalledWith(0, "/api/chore", undefined)
-            }
-        );
+        it('calls /api/chore', () => {
+            expect(fetchMock).toBeCalledWith(0, "/api/chore", undefined)
+        });
 
-        test('will send chores to chore table', () => {
+        it('will send chores to chore table', () => {
             const chores = dashboard.find(ChoreTable).props().chores;
             expect(chores).toEqual(chores);
-        })
+        });
 
+        test('When ChoreTable remove a chore, the chore entry is removed', () => {
+            const choreToRemove = chores[1];
+            const expectedRemaining = [chores[0], chores[2], chores[3]];
+            simulateRemoveChore(choreToRemove);
+            dashboard.update();
+
+            expect(dashboard.find(ChoreTable).props().chores).toEqual(expectedRemaining)
+        });
+
+        function simulateRemoveChore(pioneerToRemove) {
+            let removeFunction = dashboard.find(ChoreTable).props().onRemove;
+            removeFunction(pioneerToRemove)
+        }
     });
-
 
 });
 

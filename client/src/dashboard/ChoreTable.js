@@ -15,7 +15,7 @@ export default function (props) {
                 <TableRow key={row.id}>
                     <TableCell className="chore" align="right" choreID={row.id}>{row.name}</TableCell>
                     <TableCell>
-                        <Icon path={mdiClose} size={1}/>
+                        <Icon path={mdiClose} size={1} onClick={() => props.onRemove(row)}/>
                     </TableCell>
                 </TableRow>
             ))}
