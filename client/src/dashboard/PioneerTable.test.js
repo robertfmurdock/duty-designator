@@ -1,11 +1,10 @@
 import {shallow} from "enzyme";
-import {TableHead, TableRow} from "@material-ui/core";
+import {TableCell, TableBody, Typography, TableRow} from "@material-ui/core";
 import Icon from "@mdi/react";
 import React from "react";
-import PioneerTable from "./PioneerTable";
 import {mdiClose} from '@mdi/js';
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
+
+import PioneerTable from "./PioneerTable";
 
 describe('Pioneer Table', () => {
 
@@ -28,8 +27,8 @@ describe('Pioneer Table', () => {
         });
 
         test('Has header of Today\'s Pioneers', () => {
-            expect(table.find(TableHead).at(0).text())
-                .toEqual("Today\'s Pioneers");
+            expect(table.find(Typography).text())
+                .toEqual("Today\'s PIONEERS");
         });
 
         test('Each candidate has a remove button in last cell position', () => {
