@@ -29,18 +29,17 @@ jobs:
             - cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
       - restore_cache:
           keys:
-            - cache-2-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
+            - cache-3-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
       - run: ./gradlew :server:goDependencies
       - save_cache:
-          key: cache-2-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
+          key: cache-3-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
           paths:
             - ./server/vendor
-            - ./server/.gogradle/project_gopath
+            - ./server/.gogradle
       - run: ./gradlew :server:goTest
       - node/install-node
       - node/install-yarn
-      - run: cd client && yarn
-      - run: cd e2e && yarn && yarn e2e
+      - run: ./gradlew check
       - run: cd e2e && xmllint --xpath "/testsuites/@failures" results/test-output.xml | sed 's/failures="\([[:digit:]+]\)"/\1/' | awk '{exit $0}'
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}

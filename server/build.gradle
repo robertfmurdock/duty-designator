@@ -33,4 +33,12 @@ tasks {
     task("test") {
         dependsOn goTest
     }
+
+    task("build") {
+        dependsOn goBuild
+    }
+
+    task("clean") {
+        dependsOn goClean
+    }
 }

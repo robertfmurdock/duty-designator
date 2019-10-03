@@ -19,10 +19,14 @@ tasks {
 
     val test by creating(YarnTask::class) {
         dependsOn(yarn)
-
         setEnvironment(mapOf("CI" to "true"))
-
         args = listOf("test")
+    }
+
+    val build by creating(YarnTask::class) {
+        dependsOn(yarn)
+        setEnvironment(mapOf("CI" to "true"))
+        args = listOf("build")
     }
 
     val check by creating {

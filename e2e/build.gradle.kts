@@ -18,10 +18,8 @@ tasks {
     }
 
     val endToEnd by creating(YarnTask::class) {
-        dependsOn(yarn)
-
+        dependsOn(yarn, ":client:build", ":server:build")
         setEnvironment(mapOf("CI" to "true"))
-
         args = listOf("e2e")
     }
 
