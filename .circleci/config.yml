@@ -36,9 +36,6 @@ jobs:
           paths:
             - ./server/vendor
             - ./server/.gogradle
-      - run: ./gradlew :server:goTest
-      - node/install-node
-      - node/install-yarn
       - run: ./gradlew check
       - run: cd e2e && xmllint --xpath "/testsuites/@failures" results/test-output.xml | sed 's/failures="\([[:digit:]+]\)"/\1/' | awk '{exit $0}'
       - save_cache:
@@ -47,8 +44,12 @@ jobs:
             - ~/.cache
       - store_artifacts:
           path: /go/src/duty-designator/server/.gogradle/reports
+      - store_artifacts:
+          path: e2e/videos
       - store_test_results:
-          path: build/test-output
+          path: client/test-reports
+      - store_test_results:
+          path: e2e/results
 workflows:
   version: 2
   build_and_test:
