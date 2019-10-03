@@ -66,7 +66,16 @@ export default class Dashboard extends React.Component {
                     <AddChoreModal open={this.state.modalOpen} onClose={handleClose}/>
                 </Paper>
             </Grid>
-            <p id="reset-button" onClick={() => this.populateTableState()}>BIG BUTTON</p>
+
+            <Button
+                color={'primary'}
+                size={"large"}
+                variant={"contained"}
+                id="reset-button"
+                onClick={() => this.populateTableState()}
+            >
+                Reset
+            </Button>
         </Grid>
 
     }
