@@ -5,11 +5,11 @@ function buildClient() {
 }
 
 function buildServer() {
-    childProcess.execSync("cd ../server && go build", {stdio: "inherit"});
+    childProcess.execSync("cd ..; ./gradlew :server:goBuild", {stdio: "inherit"});
 }
 
 function spawnServer() {
-    const serverSpawn = childProcess.spawn("../server/server", [], {detached: true, stdio: "inherit"});
+    const serverSpawn = childProcess.spawn("../server/.gogradle/server", [], {detached: true, stdio: "inherit"});
     serverSpawn.on('exit', function () {
         process.exit()
     });

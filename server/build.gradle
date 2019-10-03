@@ -2,13 +2,10 @@ plugins {
     id("com.github.blindpirate.gogradle") version "0.11.4"
 }
 
-
 golang {
     packagePath = "duty-designator/server"
-
     goVersion = '1.13.1'
 }
-
 
 dependencies {
     golang {
@@ -22,4 +19,8 @@ dependencies {
         build(['pruneopts':'UT', 'digest':'1:382bb5a7fb4034db3b6a2d19e5a4a6bcf52f4750530603c01ca18a172fa3089b', 'name':'golang.org/x/sync', 'commit':'cd5d95a43a6e21273425c7ae415d3df9ea832eeb', 'branch':'master', 'subpackages':['semaphore']])
         build(['pruneopts':'UT', 'digest':'1:1093f2eb4b344996604f7d8b29a16c5b22ab9e1b25652140d3fede39f640d5cd', 'name':'golang.org/x/text', 'commit':'342b2e1fbaa52c93f31447ad2c6abc048c63e475', 'tag':'v0.3.2', 'subpackages':['internal/gen', 'internal/triegen', 'internal/ucd', 'transform', 'unicode/cldr', 'unicode/norm']])
     }
+}
+
+goBuild {
+    outputLocation = './.gogradle/server'
 }

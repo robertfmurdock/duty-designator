@@ -4,7 +4,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.9.7
+      - image: openjdk:8-jdk
         user: root
       - image: mongo:latest
     working_directory: /go/src/duty-designator
@@ -21,13 +21,22 @@ jobs:
           libxss1 \
           libasound2 \
           xvfb \
+          gcc \
           libxml2-utils
       - run: rm -rf /var/lib/apt/lists/*
       - restore_cache:
           keys:
             - cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
-      - run: cd server; dep ensure
-      - run: go test ./server/test
+      - restore_cache:
+          keys:
+            - cache-2-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
+      - run: ./gradlew :server:goDependencies
+      - save_cache:
+          key: cache-2-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
+          paths:
+            - ./server/vendor
+            - ./server/.gogradle/project_gopath
+      - run: ./gradlew :server:goTest
       - node/install-node
       - node/install-yarn
       - run: cd client && yarn
@@ -37,6 +46,10 @@ jobs:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
             - ~/.cache
+      - store_artifacts:
+          path: /go/src/duty-designator/server/.gogradle/reports
+      - store_test_results:
+          path: build/test-output
 workflows:
   version: 2
   build_and_test:
