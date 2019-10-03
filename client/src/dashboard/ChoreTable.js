@@ -1,5 +1,7 @@
 import {Button, Table, TableBody, TableCell, TableHead, TableRow} from "@material-ui/core";
 import React from "react";
+import {mdiClose} from "@mdi/js";
+import Icon from "@mdi/react";
 
 export default function (props) {
     return <Table>
@@ -12,6 +14,9 @@ export default function (props) {
             {props.chores.map(row => (
                 <TableRow key={row.id}>
                     <TableCell className="chore" align="right" choreID={row.id}>{row.name}</TableCell>
+                <TableCell>
+                    <Icon path={mdiClose} size={1}/>
+                </TableCell>
                 </TableRow>
             ))}
             <TableRow>
