@@ -1,9 +1,8 @@
-import {shallow} from "enzyme";
-import {TableCell, TableBody, Typography, TableRow} from "@material-ui/core";
-import Icon from "@mdi/react";
 import React from "react";
+import {shallow} from "enzyme";
+import {TableCell, TableBody, TableRow, Typography} from "@material-ui/core";
+import Icon from "@mdi/react";
 import {mdiClose} from '@mdi/js';
-
 import PioneerTable from "./PioneerTable";
 
 describe('Pioneer Table', () => {
@@ -17,7 +16,6 @@ describe('Pioneer Table', () => {
                 {id: "somethign else", candidate: "Everyday Natalie"},
                 {id: "nothing", candidate: "Odd Day Rob"}
             ];
-
             table = shallow(<PioneerTable pioneers={rows}/>);
         });
 
