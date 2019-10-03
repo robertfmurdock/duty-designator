@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import AddChoreModal from "./AddChoreModal";
 import PioneerTable from "./PioneerTable";
+import ChoreTable from "./ChoreTable";
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -81,26 +82,8 @@ export default class Dashboard extends React.Component {
     }
 
     getChoreTable(handleClickOpen) {
-        return <Table>
-            <TableHead>
-                <TableRow>
-                    <TableCell align="right">Today's Chores</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {this.state.chores.map(row => (
-                    <TableRow key={row.id}>
-                        <TableCell className="chore" align="right" choreID={row.id}>{row.name}</TableCell>
-                    </TableRow>
-                ))}
-                <TableRow>
-                    <TableCell>
-                        <Button id="add-chore-button" onClick={handleClickOpen}>
-                            Add new Chore to the list</Button>
-                    </TableCell>
-                </TableRow>
-            </TableBody>
-        </Table>;
+        return <ChoreTable chores={this.state.chores} addChoreHandler={handleClickOpen} />
+
     }
 }
 

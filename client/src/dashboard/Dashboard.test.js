@@ -5,6 +5,7 @@ import Dashboard from './Dashboard';
 import {TableHead} from '@material-ui/core'
 import AddChoreModal from "./AddChoreModal";
 import PioneerTable from "./PioneerTable";
+import ChoreTable from "./ChoreTable";
 
 
 let fetchMock = FetchService.get = jest.fn();
@@ -32,16 +33,15 @@ describe('Dashboard', () => {
         expect(dashboard.find('.candidate').length).toEqual(0);
     });
 
-    test('add chore button opens modal', () => {
+    test('ChoreTable can open modal', () => {
         const dashboard = shallow(<Dashboard/>);
 
-        dashboard.find('#add-chore-button').simulate('click');
+        dashboard.find(ChoreTable)
+            .props()
+            .addChoreHandler();
 
         expect(dashboard.find(AddChoreModal).prop('open')).toEqual(true);
     });
-
-
-
 
     describe('with candidate data', () => {
         let dashboard, rows;
@@ -110,35 +110,31 @@ describe('Dashboard', () => {
     });
 
     describe('with task data', () => {
-        let dash, rows;
+        let dashboard, chores;
 
         beforeEach(() => {
-            rows = [
+            chores = [
                 {id: "1", task: "Move chairs"},
                 {id: "2", task: "Turn off coffee pot"},
                 {id: "3", task: "Stock fridge with soda"},
                 {id: "4", task: "Put away dishes"},
-            ]
+            ];
 
             fetchMock.mockReturnValue(
-                new Promise((resolve, reject) => resolve(rows))
+                new Promise(resolve => resolve(chores))
             );
 
-            dash = shallow(<Dashboard/>);
+            dashboard = shallow(<Dashboard/>);
         });
 
         test('calls /api/chore', () => {
                 expect(fetchMock).toBeCalledWith(0, "/api/chore", undefined)
             }
-        )
+        );
 
-        test('shows a list of chores', () => {
-            expect(dash.find('.chore').length).toBe(rows.length);
-        });
-
-        test('Has header of Today\'s Chores', () => {
-            dash = dash.dive();
-            expect(dash.find(TableHead).at(0).text()).toEqual("Today\'s Chores");
+        test('will send chores to chore table', () => {
+            const chores = dashboard.find(ChoreTable).props().chores;
+            expect(chores).toEqual(chores);
         })
 
     });

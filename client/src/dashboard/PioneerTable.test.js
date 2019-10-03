@@ -31,7 +31,7 @@ describe('Pioneer Table', () => {
         test('Has header of Today\'s Pioneers', () => {
             expect(table.find(TableHead).at(0).text())
                 .toEqual("Today\'s Pioneers");
-        })
+        });
 
         test('Each candidate has a remove button in last cell position', () => {
                 const allRows = table.find(TableBody).find(TableRow);
@@ -39,7 +39,7 @@ describe('Pioneer Table', () => {
                 allRows.forEach((element) => {
                     const lastTableCell = element.find(TableCell).last();
                     const icon = lastTableCell.find(Icon);
-                    expect(icon.length).toBe(1)
+                    expect(icon.length).toBe(1);
                     expect(icon.props().path).toBe(mdiClose);
                     expect(icon.props().size).toBe(1)
                 })
@@ -56,13 +56,12 @@ describe('Pioneer Table', () => {
 
         const pioneerRow = table.find(TableBody)
             .find(TableRow)
-            .findWhere(row => row.key() === expectedPioneerToRemove.id)
+            .findWhere(row => row.key() === expectedPioneerToRemove.id);
 
         pioneerRow.find(TableCell).last().find(Icon)
             .simulate("click");
 
         expect(actualRemovedPioneer).toBe(expectedPioneerToRemove)
     });
-
 
 });
