@@ -6,7 +6,12 @@ import {teal} from "@material-ui/core/colors";
 import TodaysWagonWheel from "./TodaysWagonWheel";
 
 const theme = createMuiTheme({
-    palette: {primary: teal}
+    palette: {
+        main: teal,
+        text: {
+            primary: "#293845"
+        }
+    }
 });
 
 function App() {

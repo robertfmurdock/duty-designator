@@ -1,14 +1,7 @@
 import React from 'react';
 import FetchService from '../services/fetchService';
-
-import {
-    Button,
-    Paper,
-    Grid
-} from '@material-ui/core';
-import AddChoreModal from "./AddChoreModal";
-import PioneerTable from "./PioneerTable";
-import ChoreTable from "./ChoreTable";
+import {Box, Button} from '@material-ui/core';
+import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -24,7 +17,6 @@ export default class Dashboard extends React.Component {
         this.populateTableState();
     }
 
-
     populateTableState() {
         FetchService.get(0, "/api/candidate", undefined)
             .then(response => this.setState({pioneers: response}))
@@ -35,58 +27,63 @@ export default class Dashboard extends React.Component {
             .catch(err => console.warn(err));
     }
 
-    render() {
-        const handleClickOpen = () => {
-            this.setState({modalOpen: true})
-        };
+    handleClickOpen = () => {
+        this.setState({modalOpen: true})
+    };
 
-        const handleClose = () => {
-            this.setState({modalOpen: false})
-        };
+    handleClose = () => {
+        this.setState({modalOpen: false})
+    };
 
-        return <Grid container spacing={2}>
-            <Grid item xs={6}>
-                <Paper>
-                    <PioneerTable pioneers={this.state.pioneers} onRemove={removedPioneer => {
-                        this.setState({
-                            pioneers: this.state.pioneers.filter(
-                                pioneer => pioneer !== removedPioneer
-                            )
-                        })
-                    }}/>
-                </Paper>
-            </Grid>
-            <Grid item xs={6}>
-                <Paper>
-                    {this.getChoreTable(handleClickOpen)}
-                    <AddChoreModal open={this.state.modalOpen} onClose={handleClose}/>
-                </Paper>
-            </Grid>
-
-            <Button
-                color={'primary'}
-                size={"large"}
-                variant={"contained"}
-                id="reset-button"
-                onClick={() => this.populateTableState()}
-            >
-                Reset
-            </Button>
-        </Grid>
-
-    }
-
-    getChoreTable(handleClickOpen) {
-        return <ChoreTable chores={this.state.chores}
-                           addChoreHandler={handleClickOpen}
-                           onRemove={removedChore => {
-                               this.setState({
-                                   chores: this.state.chores.filter(
-                                       chore => chore !== removedChore
-                                   )
-                               })
-                           }}
+    getPioneerTable = () => (
+        <PioneerTable
+            pioneers={this.state.pioneers}
+            onRemove={removedPioneer => {
+                this.setState({
+                    pioneers: this.state.pioneers.filter(
+                        pioneer => pioneer !== removedPioneer
+                    )
+                })
+            }}
         />
-    }
+    );
+
+    getChoreTable = () => (
+        <ChoreTable
+            chores={this.state.chores}
+            addChoreHandler={this.handleClickOpen}
+            onRemove={removedChore => {
+                this.setState({
+                    chores: this.state.chores.filter(
+                        chore => chore !== removedChore
+                    )
+                })
+            }}
+        />
+    );
+
+    render = () => (
+        <Box display="flex" flexDirection="row" justifyContent="center">
+            <div>
+                {this.getPioneerTable()}
+            </div>
+
+            <div>
+                {this.getChoreTable()}
+
+                <Button
+                    color={'primary'}
+                    size={"large"}
+                    variant={"contained"}
+                    id="reset-button"
+                    onClick={() => this.populateTableState()}
+                >
+                    Reset
+                </Button>
+            </div>
+
+            <AddChoreModal open={this.state.modalOpen} onClose={this.handleClose}/>
+        </Box>
+    );
 }
 

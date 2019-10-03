@@ -10,8 +10,7 @@ describe('TodaysWagonWheel', () => {
 
         let wheelWrapper = shallow(<TodaysWagonWheel date={date}/>);
 
-        expect(wheelWrapper.find(Typography).text())
+        expect(wheelWrapper.find(Typography).at(1).text())
             .toBe('11/03/2020')
     });
-
 });

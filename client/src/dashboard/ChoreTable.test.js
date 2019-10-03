@@ -1,11 +1,10 @@
-import {shallow} from "enzyme";
 import React from "react";
-import ChoreTable from "./ChoreTable";
-import {TableHead, TableRow} from "@material-ui/core";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
+import {shallow} from "enzyme";
+import {TableCell, TableBody, TableRow, Typography} from "@material-ui/core";
 import Icon from "@mdi/react";
 import {mdiClose} from "@mdi/js";
+
+import ChoreTable from "./ChoreTable";
 
 describe("ChoreTable", () => {
 
@@ -56,7 +55,7 @@ describe("ChoreTable", () => {
         });
 
         test('Has header of Today\'s Chores', () => {
-            expect(choreTable.find(TableHead).at(0).text()).toEqual("Today\'s Chores");
+            expect(choreTable.find(Typography).text()).toEqual("Today\'s CHORES");
         });
 
         const choreIds = () => chores.map(chore => chore.id);

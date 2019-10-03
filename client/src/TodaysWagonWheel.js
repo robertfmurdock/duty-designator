@@ -16,8 +16,9 @@ export default function (props) {
     const containerClasses = useStyles();
     return <Box>
         <Container fixed className={containerClasses.root}>
-            <WheelSvg/>
-            <Typography variant="h4">
+            <WheelSvg width="100px" height="100px" maxWidth="100%"/>
+            <Typography variant="h4" color='textPrimary' gutterBottom>Chore Wagon Wheel</Typography>
+            <Typography variant="h4" color='textPrimary' gutterBottom>
                 {format(props.date, 'MM/dd/yyyy')}
             </Typography>
         </Container>
