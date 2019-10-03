@@ -14,8 +14,8 @@ context('Actions', () => {
         const candidate = {name: "Jimmy Cypress", id: uuid()};
         insertCandidate(candidate);
 
-        cy.visit('http://localhost:8080')
-        cy.get(`.candidate[candidateId=${candidate.id}]`)
+        cy.visit('http://localhost:8080');
+        cy.get(`.candidate[candidateId=${candidate.id}]`, { timeout: 2000})
             .should('have.text', candidate.name)
     });
 
@@ -33,7 +33,7 @@ context('Actions', () => {
         insertChore(chore);
 
         cy.visit('http://localhost:8080')
-        cy.get(`.chore[choreId=${chore.id}]`)
+        cy.get(`.chore[choreId=${chore.id}]`, { timeout: 2000})
             .should('have.text', chore.name)
     });
 

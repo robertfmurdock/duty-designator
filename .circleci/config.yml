@@ -38,7 +38,6 @@ jobs:
             - ./server/.gogradle
             - /root/.gradle
       - run: ./gradlew check
-      - run: cd e2e && xmllint --xpath "/testsuites/@failures" results/test-output.xml | sed 's/failures="\([[:digit:]+]\)"/\1/' | awk '{exit $0}'
       - save_cache:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
