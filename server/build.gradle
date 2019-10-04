@@ -43,4 +43,8 @@ tasks {
         dependsOn goClean
     }
 
+    task start(type: Exec) {
+        dependsOn build, ":client:build"
+        commandLine("./.gogradle/server")
+    }
 }
