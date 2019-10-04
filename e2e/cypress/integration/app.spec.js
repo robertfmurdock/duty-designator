@@ -8,12 +8,11 @@ context('Actions', () => {
             body: JSON.stringify(candidate),
             signal: undefined
         });
-        cy.wait(25);
     }
 
-    it('when a new candidate is posted, it shows up on the page',  () => {
+    it('when a new candidate is posted, it shows up on the page',  async () => {
         const candidate = {name: "Jimmy Cypress", id: uuid()};
-        insertCandidate(candidate);
+        await insertCandidate(candidate);
 
         cy.visit('http://localhost:8080');
         cy.get(`.candidate[candidateId=${candidate.id}]`, { timeout: 2000})
@@ -27,12 +26,11 @@ context('Actions', () => {
             body: JSON.stringify(chore),
             signal: undefined
         });
-        cy.wait(25);
     }
 
-    it('when a new chore is posted, it shows up on the page',  () => {
+    it('when a new chore is posted, it shows up on the page',  async () => {
         const chore = {name: "Dastardly Dishes", id: uuid()};
-        insertChore(chore);
+        await insertChore(chore);
 
         cy.visit('http://localhost:8080');
         cy.get(`.chore[choreId=${chore.id}]`, { timeout: 2000})
