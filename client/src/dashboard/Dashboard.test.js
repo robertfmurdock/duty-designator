@@ -132,6 +132,14 @@ describe('Dashboard', () => {
             expect(dashboard.find(ChoreTable).props().chores).toEqual(expectedRemaining)
         });
 
+        test('When AddChoreModal adds a chore, the chore entry is added to the list', () => {
+            const newChore = {id: "5", name: "Super Easy Chore", description: "Its so easy"};
+            const expectedChores = [...chores, newChore];
+            dashboard.find(AddChoreModal).props().addChore(newChore.name, newChore.description);
+
+            expect(dashboard.find(ChoreTable).props().chores).toEqual(expectedChores)
+        });
+
         function simulateRemoveChore(pioneerToRemove) {
             let removeFunction = dashboard.find(ChoreTable).props().onRemove;
             removeFunction(pioneerToRemove)

@@ -27,13 +27,15 @@ export default class Dashboard extends React.Component {
             .catch(err => console.warn(err));
     }
 
-    handleClickOpen = () => {
-        this.setState({modalOpen: true})
+    addChore = (name, description) => {
+        const id = (this.state.chores.length + 1).toString();
+        const newChore = {id, name, description};
+        this.setState({chores: [...this.state.chores, newChore]});
     };
 
-    handleClose = () => {
-        this.setState({modalOpen: false})
-    };
+    handleClickOpen = () => this.setState({modalOpen: true});
+
+    handleClose = () => this.setState({modalOpen: false});
 
     getPioneerTable = () => (
         <PioneerTable
@@ -82,6 +84,7 @@ export default class Dashboard extends React.Component {
                 < AddChoreModal
                     open={this.state.modalOpen}
                     onClose={this.handleClose}
+                    addChore={this.addChore}
                 />
             </Box>
         </Container>
