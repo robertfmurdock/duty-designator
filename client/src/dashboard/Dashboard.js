@@ -7,8 +7,8 @@ export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            pioneers: [],
-            chores: [],
+            pioneers: [{id: 1, name: "Person1"}, {id: 2, name: "Person2"}, {id: 3, name: "Person3"}],
+            chores: [{id: 1, name: "Chore1"}, {id: 2, name: "Chore2"}, {id: 3, name: "Chore3"}],
             modalOpen: false
         }
     }
@@ -30,7 +30,7 @@ export default class Dashboard extends React.Component {
     addChore = (name, description) => {
         const id = (this.state.chores.length + 1).toString();
         const newChore = {id, name, description};
-        this.setState({chores: [...this.state.chores, newChore]});
+        this.setState({modalOpen: false, chores: [...this.state.chores, newChore]});
     };
 
     handleClickOpen = () => this.setState({modalOpen: true});
