@@ -2,14 +2,17 @@ import React from 'react';
 import './App.css';
 import Dashboard from './dashboard/Dashboard.js';
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
-import {teal} from "@material-ui/core/colors";
 import TodaysWagonWheel from "./TodaysWagonWheel";
 
 const theme = createMuiTheme({
     palette: {
-        main: teal,
+        primary: {
+            main: "#1aae9f",
+            contrastText: "#fff"
+        },
         text: {
-            primary: "#293845"
+            primary: "#293845",
+            secondary: "#c3cfd9"
         }
     }
 });

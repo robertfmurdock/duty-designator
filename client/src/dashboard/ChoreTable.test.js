@@ -55,7 +55,7 @@ describe("ChoreTable", () => {
         });
 
         test('Has header of Today\'s Chores', () => {
-            expect(choreTable.find(Typography).text()).toEqual("Today\'s CHORES");
+            expect(choreTable.find(".table-title").text()).toEqual("Today\'s CHORES");
         });
 
         const choreIds = () => chores.map(chore => chore.id);

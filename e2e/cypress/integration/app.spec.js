@@ -15,7 +15,7 @@ context('Actions', () => {
         insertCandidate(candidate);
 
         cy.visit('http://localhost:8080')
-        cy.get(`.candidate[candidateId=${candidate.id}]`)
+        cy.get(`.candidate[data-candidate-id=${candidate.id}]`)
             .should('have.text', candidate.name)
     });
 
@@ -33,7 +33,7 @@ context('Actions', () => {
         insertChore(chore);
 
         cy.visit('http://localhost:8080')
-        cy.get(`.chore[choreId=${chore.id}]`)
+        cy.get(`.chore[data-chore-id=${chore.id}]`)
             .should('have.text', chore.name)
     });
 

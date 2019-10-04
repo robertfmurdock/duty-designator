@@ -1,6 +1,6 @@
 import React from 'react';
 import FetchService from '../services/fetchService';
-import {Box, Button} from '@material-ui/core';
+import {Box, Button, Container} from '@material-ui/core';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 
 export default class Dashboard extends React.Component {
@@ -63,27 +63,28 @@ export default class Dashboard extends React.Component {
     );
 
     render = () => (
-        <Box display="flex" flexDirection="row" justifyContent="center">
-            <div>
+        <Container>
+            <Box display="flex" flexDirection="row" justifyContent="center">
                 {this.getPioneerTable()}
-            </div>
-
-            <div>
                 {this.getChoreTable()}
+            </Box>
 
+            <Box>
                 <Button
-                    color={'primary'}
-                    size={"large"}
-                    variant={"contained"}
+                    color="primary"
+                    size="large"
+                    variant="contained"
                     id="reset-button"
                     onClick={() => this.populateTableState()}
                 >
                     Reset
                 </Button>
-            </div>
-
-            <AddChoreModal open={this.state.modalOpen} onClose={this.handleClose}/>
-        </Box>
+                < AddChoreModal
+                    open={this.state.modalOpen}
+                    onClose={this.handleClose}
+                />
+            </Box>
+        </Container>
     );
 }
 

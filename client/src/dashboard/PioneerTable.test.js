@@ -1,6 +1,6 @@
 import React from "react";
 import {shallow} from "enzyme";
-import {TableCell, TableBody, TableRow, Typography} from "@material-ui/core";
+import {TableCell, TableBody, TableRow} from "@material-ui/core";
 import Icon from "@mdi/react";
 import {mdiClose} from '@mdi/js';
 import PioneerTable from "./PioneerTable";
@@ -13,7 +13,7 @@ describe('Pioneer Table', () => {
         beforeEach(() => {
             rows = [
                 {id: " at thing", candidate: "Friday Jeb"},
-                {id: "somethign else", candidate: "Everyday Natalie"},
+                {id: "something else", candidate: "Everyday Natalie"},
                 {id: "nothing", candidate: "Odd Day Rob"}
             ];
             table = shallow(<PioneerTable pioneers={rows}/>);
@@ -25,7 +25,7 @@ describe('Pioneer Table', () => {
         });
 
         test('Has header of Today\'s Pioneers', () => {
-            expect(table.find(Typography).text())
+            expect(table.find(".table-title").text())
                 .toEqual("Today\'s PIONEERS");
         });
 

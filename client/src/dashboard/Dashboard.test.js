@@ -4,7 +4,7 @@ import FetchService from '../services/fetchService';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Dashboard from './Dashboard';
 
-
+// console.warn = jest.fn();
 let fetchMock = FetchService.get = jest.fn();
 
 async function waitUntil(hasAllPioneers) {
@@ -61,7 +61,7 @@ describe('Dashboard', () => {
         });
 
         test('shows a list of pioneers', () => {
-            const pioneerTable = dashboard.find('PioneerTable');
+            const pioneerTable = dashboard.find(PioneerTable);
             expect(pioneerTable.props().pioneers).toBe(pioneers);
         });
 
