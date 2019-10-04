@@ -7,8 +7,8 @@ export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            pioneers: [{id: 1, name: "Person1"}, {id: 2, name: "Person2"}, {id: 3, name: "Person3"}],
-            chores: [{id: 1, name: "Chore1"}, {id: 2, name: "Chore2"}, {id: 3, name: "Chore3"}],
+            pioneers: [],
+            chores: [],
             modalOpen: false
         }
     }
