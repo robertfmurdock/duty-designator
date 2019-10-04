@@ -16,17 +16,14 @@ function run() {
     const serverSpawn = spawnServer();
     try {
         runCypress();
-    } catch (e) {
-        console.log(e);
-        throw e;
     } finally {
         serverSpawn.kill();
     }
-
 }
 
 try {
     run();
 } catch (e) {
-    process.exit(e)
+    console.log(e);
+    process.exit(1)
 }
