@@ -41,7 +41,16 @@ jobs:
           paths:
             - ~/.cache
       - run: |
+          mkdir results
+          mkdir results/client
+          mkdir results/e2e
+          cp -r client/test-reports results/client
+          cp -r e2e/results results/e2e
+      - store_test_results:
+          path: results
+      - run: |
           mkdir artifacts
+          cp result artifacts/
           mkdir artifacts/serverReports
           mkdir artifacts/e2e
           mkdir artifacts/e2e/screenshots
@@ -51,16 +60,9 @@ jobs:
           cp -r /go/src/duty-designator/server/.gogradle/reports artifacts/serverReports/
           cp -r e2e/cypress/videos artifacts/e2e/
           cp -r e2e/cypress/screenshots artifacts/e2e/
-      - run: |
-          mkdir results
-          mkdir results/client
-          mkdir results/e2e
-          cp -r client/test-reports results/client
-          cp -r e2e/results results/e2e
       - store_artifacts:
           path: artifacts
-      - store_test_results:
-          path: results
+
 workflows:
   version: 2
   build_and_test:
