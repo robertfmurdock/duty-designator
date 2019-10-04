@@ -46,6 +46,8 @@ jobs:
           mkdir artifacts/e2e
           mkdir artifacts/e2e/screenshots
           mkdir artifacts/e2e/videos
+          mkdir e2e/videos
+          mkdir e2e/screenshots
           cp -r /go/src/duty-designator/server/.gogradle/reports artifacts/serverReports/
           cp -r e2e/videos artifacts/e2e/
           cp -r e2e/screenshots artifacts/e2e/
