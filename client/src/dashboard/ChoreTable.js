@@ -29,14 +29,14 @@ export default function (props) {
                     ))}
                     <TableRow>
                         <TableCell style={styles.cell}>
-                            <a
+                            <button
                                 id="add-chore-button"
                                 onClick={props.addChoreHandler}
                             >
                                 <Typography variant="h6" color='textPrimary'>
                                     <strong>Add new Chore to the list</strong>
                                 </Typography>
-                            </a>
+                            </button>
                         </TableCell>
 
                         <TableCell align="right" style={styles.cell}>

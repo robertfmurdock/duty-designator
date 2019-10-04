@@ -10,13 +10,13 @@ context('Actions', () => {
         });
     }
 
-    it('when a new candidate is posted, it shows up on the page',  () => {
+    it('when a new candidate is posted, it shows up on the page', async () => {
         const candidate = {name: "Jimmy Cypress", id: uuid()};
-        insertCandidate(candidate);
+        await insertCandidate(candidate);
 
-        cy.visit('http://localhost:8080')
-        cy.get(`.candidate[data-candidate-id=${candidate.id}]`)
-            .should('have.text', candidate.name)
+        cy.visit('http://localhost:8080');
+        cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
+            .should('have.text', candidate.name);
     });
 
 
@@ -28,13 +28,13 @@ context('Actions', () => {
         });
     }
 
-    it('when a new chore is posted, it shows up on the page',  () => {
+    it('when a new chore is posted, it shows up on the page', async () => {
         const chore = {name: "Dastardly Dishes", id: uuid()};
-        insertChore(chore);
+        await insertChore(chore);
 
-        cy.visit('http://localhost:8080')
-        cy.get(`.chore[data-chore-id=${chore.id}]`)
-            .should('have.text', chore.name)
+        cy.visit('http://localhost:8080');
+        cy.get(`.chore[data-chore-id=${chore.id}]`, {timeout: 2000})
+            .should('have.text', chore.name);
     });
 
 });

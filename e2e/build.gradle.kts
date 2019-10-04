@@ -17,20 +17,14 @@ tasks {
 
     }
 
-    val test by creating(YarnTask::class) {
-        dependsOn(yarn)
+    val endToEnd by creating(YarnTask::class) {
+        dependsOn(yarn, ":client:build", ":server:build")
         setEnvironment(mapOf("CI" to "true"))
-        args = listOf("test")
-    }
-
-    val build by creating(YarnTask::class) {
-        dependsOn(yarn)
-        setEnvironment(mapOf("CI" to "true"))
-        args = listOf("build")
+        args = listOf("e2e")
     }
 
     val check by creating {
-        dependsOn(test)
+        dependsOn(endToEnd)
     }
 
 }
