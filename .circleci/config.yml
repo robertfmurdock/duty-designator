@@ -42,14 +42,15 @@ jobs:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
             - ~/.cache
+      - run: cp /go/src/duty-designator/server/.gogradle/reports artifacts/serverReports/
+      - run: cp e2e/videos artifacts/e2e/
+      - run: cp e2e/screenshots artifacts/e2e/
+      - run: cp client/test-reports results/client
+      - run: cp e2e/results results/e2e
       - store_artifacts:
-          path: /go/src/duty-designator/server/.gogradle/reports
-      - store_artifacts:
-          path: e2e/videos
+          path: artifacts
       - store_test_results:
-          path: client/test-reports
-      - store_test_results:
-          path: e2e/results
+          path: results
 workflows:
   version: 2
   build_and_test:
