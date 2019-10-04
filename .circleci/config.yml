@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  node: circleci/node@1.1.6
 jobs:
   build:
     docker:
@@ -42,11 +40,11 @@ jobs:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
             - ~/.cache
-      - run: cp /go/src/duty-designator/server/.gogradle/reports artifacts/serverReports/
-      - run: cp e2e/videos artifacts/e2e/
-      - run: cp e2e/screenshots artifacts/e2e/
-      - run: cp client/test-reports results/client
-      - run: cp e2e/results results/e2e
+      - run: cp -r /go/src/duty-designator/server/.gogradle/reports artifacts/serverReports/
+      - run: cp -r e2e/videos artifacts/e2e/
+      - run: cp -r e2e/screenshots artifacts/e2e/
+      - run: cp -r client/test-reports results/client
+      - run: cp -r e2e/results results/e2e
       - store_artifacts:
           path: artifacts
       - store_test_results:
