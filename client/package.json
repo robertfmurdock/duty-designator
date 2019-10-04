@@ -21,7 +21,7 @@
     "eject": "react-scripts eject"
   },
   "jest-junit": {
-    "outputDirectory": "./test-reports",
+    "outputDirectory": "../test-results",
     "outputName": "junit.xml"
   },
   "eslintConfig": {

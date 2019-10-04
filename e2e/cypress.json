@@ -2,7 +2,7 @@
   "chromeWebSecurity": false,
     "reporter": "junit",
     "reporterOptions": {
-      "mochaFile": "results/test-output.xml",
+      "mochaFile": "../test-results/test-output.xml",
       "toConsole": true
     }
 }

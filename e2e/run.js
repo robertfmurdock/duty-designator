@@ -12,7 +12,8 @@ function runCypress() {
     try {
         childProcess.execSync("yarn run cypress run --reporter junit", {stdio: "inherit"});
     } catch (e) {
-        console.log(e)
+        console.log(e);
+        throw e;
     }
 }
 

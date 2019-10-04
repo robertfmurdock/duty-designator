@@ -40,26 +40,17 @@ jobs:
           key: cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
           paths:
             - ~/.cache
-      - run: |
-          mkdir -p results/client
-          mkdir -p results/e2e
-          cp -r client/test-reports results/client
-          cp -r e2e/results results/e2e
       - store_test_results:
-          path: results
-      - run: |
-          mkdir artifacts
-          mkdir -p artifacts/serverReports
-          mkdir -p artifacts/e2e/screenshots
-          mkdir -p artifacts/e2e/videos
-          mkdir -p e2e/cypress/videos
-          mkdir -p e2e/cypress/screenshots
-          cp -r results artifacts/
-          cp -r /go/src/duty-designator/server/.gogradle/reports artifacts/serverReports/
-          cp -r e2e/cypress/videos artifacts/e2e/
-          cp -r e2e/cypress/screenshots artifacts/e2e/
+          path: test-results
       - store_artifacts:
-          path: artifacts
+          destination: server
+          path: /go/src/duty-designator/server/.gogradle/reports
+      - store_artifacts:
+          destination: e2e-videos
+          path: e2e/cypress/videos
+      - store_artifacts:
+          destination: e2e-screenshots
+          path: e2e/cypress/screenshots
 
 workflows:
   version: 2
