@@ -27,10 +27,10 @@ jobs:
             - cache-{{ arch }}-{{ .Branch }}-{{ checksum "./e2e/package.json" }}
       - restore_cache:
           keys:
-            - cache-4-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
+            - cache-5-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
       - run: ./gradlew :server:goVendor
       - save_cache:
-          key: cache-4-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
+          key: cache-5-{{ arch }}-{{ .Branch }}-{{ checksum "./server/gogradle.lock" }}
           paths:
             - ./server/vendor
             - ./server/.gogradle
