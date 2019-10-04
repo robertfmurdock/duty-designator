@@ -9,18 +9,24 @@ function spawnServer() {
 }
 
 function runCypress() {
-    try {
-        childProcess.execSync("yarn run cypress run --reporter junit", {stdio: "inherit"});
-    } catch (e) {
-        console.log(e);
-        throw e;
-    }
+    childProcess.execSync("yarn run cypress run --reporter junit", {stdio: "inherit"});
 }
 
 function run() {
     const serverSpawn = spawnServer();
-    runCypress();
-    serverSpawn.kill();
+    try {
+        runCypress();
+    } catch (e) {
+        console.log(e);
+        throw e;
+    } finally {
+        serverSpawn.kill();
+    }
+
 }
 
-run();
+try {
+    run();
+} catch (e) {
+    process.exit(e)
+}
