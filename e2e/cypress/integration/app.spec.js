@@ -37,7 +37,7 @@ context('Actions', () => {
             .should('have.text', chore.name);
     });
 
-    it('saddle up!',  () => {
+    it('Saddle up!',  () => {
         cy.visit('http://localhost:8080');
 
         cy.get(`#saddle-up`, {timeout: 2000}).click();

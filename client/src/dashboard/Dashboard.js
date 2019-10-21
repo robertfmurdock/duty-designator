@@ -2,6 +2,7 @@ import React from 'react';
 import FetchService from '../services/fetchService';
 import {Box, Button, Container} from '@material-ui/core';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
+import Link from "@material-ui/core/Link";
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -80,6 +81,14 @@ export default class Dashboard extends React.Component {
                     onClick={() => this.populateTableState()}
                 >
                     Reset
+                </Button>
+                <Button
+                    color="primary"
+                    size="large"
+                    variant="contained"
+                    id="saddle-up"
+                >
+                    <Link to="/results">Saddle Up</Link>
                 </Button>
                 < AddChoreModal
                     open={this.state.modalOpen}
