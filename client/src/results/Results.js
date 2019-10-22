@@ -1,6 +1,6 @@
 import React from "react";
 import {Container, Box} from "@material-ui/core";
-// import DutyTable from "../tables/DutyTable";
+import DutyTable from "../tables/DutyTable";
 
 export default class Results extends React.Component {
     constructor(props) {
@@ -15,10 +15,9 @@ export default class Results extends React.Component {
     render = () => (
         <Container className="results">
             <Box>
-                {/* <DutyTable
+                <DutyTable
                     duties={this.state.duties}
-                /> */}
-    <p>Hello Results</p>
+                />
             </Box>
         </Container>
     );
