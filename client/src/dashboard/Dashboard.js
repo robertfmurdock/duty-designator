@@ -1,8 +1,8 @@
 import React from 'react';
 import FetchService from '../services/fetchService';
-import {Box, Button, Container} from '@material-ui/core';
-import {AddChoreModal, ChoreTable, PioneerTable} from './index';
-import Link from "@material-ui/core/Link";
+import { Box, Button, Container } from '@material-ui/core';
+import {Link } from 'react-router-dom';
+import { AddChoreModal, ChoreTable, PioneerTable } from './index';
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -13,6 +13,8 @@ export default class Dashboard extends React.Component {
             modalOpen: false
         }
     }
+    
+    
 
     componentDidMount() {
         this.populateTableState();
@@ -20,23 +22,23 @@ export default class Dashboard extends React.Component {
 
     populateTableState() {
         FetchService.get(0, "/api/candidate", undefined)
-            .then(response => this.setState({pioneers: response}))
+            .then(response => this.setState({ pioneers: response }))
             .catch(err => console.warn(err));
 
         FetchService.get(0, "/api/chore", undefined)
-            .then(response => this.setState({chores: response}))
+            .then(response => this.setState({ chores: response }))
             .catch(err => console.warn(err));
     }
 
     addChore = (name, description) => {
         const id = (this.state.chores.length + 1).toString();
-        const newChore = {id, name, description};
-        this.setState({modalOpen: false, chores: [...this.state.chores, newChore]});
+        const newChore = { id, name, description };
+        this.setState({ modalOpen: false, chores: [...this.state.chores, newChore] });
     };
 
-    handleClickOpen = () => this.setState({modalOpen: true});
+    handleClickOpen = () => this.setState({ modalOpen: true });
 
-    handleClose = () => this.setState({modalOpen: false});
+    handleClose = () => this.setState({ modalOpen: false });
 
     getPioneerTable = () => (
         <PioneerTable
@@ -82,14 +84,16 @@ export default class Dashboard extends React.Component {
                 >
                     Reset
                 </Button>
-                <Button
-                    color="primary"
-                    size="large"
-                    variant="contained"
-                    id="saddle-up"
-                >
-                    <Link to="/results">Saddle Up</Link>
+                <Link to="/results">
+                    <Button
+                        color="primary"
+                        size="large"
+                        variant="contained"
+                        id="saddle-up"
+                    >
+                        Saddle Up
                 </Button>
+                </Link>
                 < AddChoreModal
                     open={this.state.modalOpen}
                     onClose={this.handleClose}
