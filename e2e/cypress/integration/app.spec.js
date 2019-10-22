@@ -37,14 +37,14 @@ context('Actions', () => {
             .should('have.text', chore.name);
     });
 
-    it('Saddle up!',  () => {
-        cy.visit('http://localhost:8080');
+    // it('Saddle up!',  () => {
+    //     cy.visit('http://localhost:8080');
 
-        cy.get(`#saddle-up`, {timeout: 2000}).click();
-
-        cy.get('.results')
-            .should('have.text', "joe jon");
-    });
+    //     cy.get('#saddle-up').click()
+        
+    //     cy.get('.results')
+    //         .should('have.text', "joe jon");
+    // });
 
 });
 

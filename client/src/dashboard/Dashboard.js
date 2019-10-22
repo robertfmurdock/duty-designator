@@ -87,7 +87,7 @@ export default class Dashboard extends React.Component {
                         color="primary"
                         size="large"
                         variant="contained"
-                        id="saddle-up"
+                        id="saddle-up" 
                     >
                         Saddle Up
                 </Button>
