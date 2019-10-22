@@ -1,8 +1,8 @@
 import React from 'react';
 import FetchService from '../services/fetchService';
 import { Box, Button, Container } from '@material-ui/core';
-import {Link } from 'react-router-dom';
 import { AddChoreModal, ChoreTable, PioneerTable } from './index';
+import Results from '../results/Results'
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -13,7 +13,7 @@ export default class Dashboard extends React.Component {
             modalOpen: false
         }
     }
-    
+
     componentDidMount() {
         this.populateTableState();
     }
@@ -66,6 +66,7 @@ export default class Dashboard extends React.Component {
     );
 
     render = () => (
+        <div>
         <Container>
             <Box display="flex" flexDirection="row" justifyContent="center">
                 {this.getPioneerTable()}
@@ -82,23 +83,23 @@ export default class Dashboard extends React.Component {
                 >
                     Reset
                 </Button>
-                <Link to="/results">
-                    <Button
-                        color="primary"
-                        size="large"
-                        variant="contained"
-                        id="saddle-up" 
-                    >
-                        Saddle Up
+                <Button
+                    color="primary"
+                    size="large"
+                    variant="contained"
+                    id="saddle-up"
+                >
+                    Saddle Up
                 </Button>
-                </Link>
                 < AddChoreModal
                     open={this.state.modalOpen}
                     onClose={this.handleClose}
                     addChore={this.addChore}
                 />
             </Box>
+            <Results pioneers={[0,0,0,0]}/>
         </Container>
+        </div>
     );
 }
 
