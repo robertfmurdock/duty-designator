@@ -97,7 +97,7 @@ export default class Dashboard extends React.Component {
                     addChore={this.addChore}
                 />
             </Box>
-            <Results pioneers={[0,0,0,0]}/>
+            <Results pioneers={[0,0,0,0]} duties={[]}/>
         </Container>
         </div>
     );

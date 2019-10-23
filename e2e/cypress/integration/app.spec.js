@@ -10,15 +10,21 @@ context('Actions', () => {
         });
     }
 
-    it('when a new candidate is posted, it shows up on the page', async () => {
+    describe('when a new candidate is posted', function () {
+
         const candidate = {name: "Jimmy Cypress", id: uuid()};
-        await insertCandidate(candidate);
 
-        cy.visit('http://localhost:8080');
-        cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
-            .should('have.text', candidate.name);
-    });
+        beforeEach(async () => {
+            await insertCandidate(candidate);
+        })
 
+        it('it shows up on the page', () => {
+
+            cy.visit('http://localhost:8080');
+            cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
+                .should('have.text', candidate.name);
+        });
+    })
 
     async function insertChore(chore) {
         await fetch("http://localhost:8080/api/chore", {
@@ -28,20 +34,27 @@ context('Actions', () => {
         });
     }
 
-    it('when a new chore is posted, it shows up on the page', async () => {
-        const chore = {name: "Dastardly Dishes", id: uuid()};
-        await insertChore(chore);
 
-        cy.visit('http://localhost:8080');
-        cy.get(`.chore[data-chore-id=${chore.id}]`, {timeout: 2000})
-            .should('have.text', chore.name);
-    });
+    describe('when a new chore is posted', () => {
+        const chore = {name: "Dastardly Dishes", id: uuid()};
+
+        beforeEach(async () => {
+            await insertChore(chore);
+        })
+
+        it('it shows up on the page', () => {
+            cy.visit('http://localhost:8080');
+            cy.get(`.chore[data-chore-id=${chore.id}]`, {timeout: 2000})
+                .should('have.text', chore.name);
+        });
+    })
+
 
     // it('Saddle up!',  () => {
     //     cy.visit('http://localhost:8080');
 
     //     cy.get('#saddle-up').click()
-        
+
     //     cy.get('.results')
     //         .should('have.text', "joe jon");
     // });

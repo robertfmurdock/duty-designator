@@ -18,7 +18,7 @@ export default function PioneerTable(props) {
                 <TableBody>
                     {props.pioneers.map(row => (
                         <TableRow key={row.id}>
-                            <TableCell className="candidate" data-chore-id={row.id} style={styles.cell}>
+                            <TableCell className="candidate" data-candidate-id={row.id} style={styles.cell}>
                                 <Typography variant="h6" color='textPrimary'>
                                     {row.name}
                                 </Typography>
