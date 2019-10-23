@@ -1,7 +1,7 @@
 import React from 'react';
 import FetchService from '../services/fetchService';
-import { Box, Button, Container } from '@material-ui/core';
-import { AddChoreModal, ChoreTable, PioneerTable } from './index';
+import {Box, Button, Container} from '@material-ui/core';
+import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Results from '../results/Results'
 import associate from "../results/Associator";
 
@@ -13,6 +13,7 @@ export default class Dashboard extends React.Component {
         this.state = {
             pioneers: [],
             chores: [],
+            hasBeenClicked: false,
             modalOpen: false
         }
     }
@@ -23,23 +24,23 @@ export default class Dashboard extends React.Component {
 
     populateTableState() {
         FetchService.get(0, "/api/candidate", undefined)
-            .then(response => this.setState({ pioneers: response }))
+            .then(response => this.setState({pioneers: response}))
             .catch(err => console.warn(err));
 
         FetchService.get(0, "/api/chore", undefined)
-            .then(response => this.setState({ chores: response }))
+            .then(response => this.setState({chores: response}))
             .catch(err => console.warn(err));
     }
 
     addChore = (name, description) => {
         const id = (this.state.chores.length + 1).toString();
-        const newChore = { id, name, description };
-        this.setState({ modalOpen: false, chores: [...this.state.chores, newChore] });
+        const newChore = {id, name, description};
+        this.setState({modalOpen: false, chores: [...this.state.chores, newChore]});
     };
 
-    handleClickOpen = () => this.setState({ modalOpen: true });
+    handleClickOpen = () => this.setState({modalOpen: true});
 
-    handleClose = () => this.setState({ modalOpen: false });
+    handleClose = () => this.setState({modalOpen: false});
 
     getPioneerTable = () => (
         <PioneerTable
@@ -68,41 +69,49 @@ export default class Dashboard extends React.Component {
         />
     );
 
-    render = () => (
-        <div>
-        <Container>
-            <Box display="flex" flexDirection="row" justifyContent="center">
-                {this.getPioneerTable()}
-                {this.getChoreTable()}
-            </Box>
+    render() {
+        if (!this.state.hasBeenClicked) {
+            return <div>
+                <Container>
+                    <Box display="flex" flexDirection="row" justifyContent="center">
+                        {this.getPioneerTable()}
+                        {this.getChoreTable()}
+                    </Box>
 
-            <Box>
-                <Button
-                    color="primary"
-                    size="large"
-                    variant="contained"
-                    id="reset-button"
-                    onClick={() => this.populateTableState()}
-                >
-                    Reset
-                </Button>
-                <Button
-                    color="primary"
-                    size="large"
-                    variant="contained"
-                    id="saddle-up"
-                >
-                    Saddle Up
-                </Button>
-                < AddChoreModal
-                    open={this.state.modalOpen}
-                    onClose={this.handleClose}
-                    addChore={this.addChore}
-                />
-            </Box>
-            <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>
-        </Container>
-        </div>
-    );
+                    <Box>
+                        <Button
+                            color="primary"
+                            size="large"
+                            variant="contained"
+                            id="reset-button"
+                            onClick={() => {this.populateTableState()
+                            }}
+                        >
+                            Reset
+                        </Button>
+                        <Button
+                            color="primary"
+                            size="large"
+                            variant="contained"
+                            id="saddle-up"
+                            onClick={() => {
+                                this.setState({hasBeenClicked: !this.state.hasBeenClicked})
+                            }}
+                        >
+                            Saddle Up
+                        </Button>
+                        < AddChoreModal
+                            open={this.state.modalOpen}
+                            onClose={this.handleClose}
+                            addChore={this.addChore}
+                        />
+                    </Box>
+
+                </Container>
+            </div>;
+        } else {
+            return <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>;
+        }
+    }
 }
 
