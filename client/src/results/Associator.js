@@ -1,6 +1,6 @@
 export default function associate(pioneers, chores) {
-    return pioneers.map((pioneer, index) => {
-        const chore = chores[index];
-        return {pioneer, chore}
+    return chores.map((chore, index) => {
+        const pioneer = pioneers[index % pioneers.length];
+        return {pioneer: pioneer, chore: chore}
     })
 }
