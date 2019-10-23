@@ -91,15 +91,9 @@ func getCandidateHandler(writer http.ResponseWriter, request *http.Request, dbCl
 		log.Fatal(err)
 	}
 
-	var rows []CandidateRecord
-	err = cursor.All(context.TODO(), &rows)
+	records, err := loadCandidateRecords(cursor, writer)
 
-	if err != nil {
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
-		log.Fatal(err)
-	}
-
-	candidateJson, err := json.Marshal(rows)
+	candidateJson, err := json.Marshal(records)
 
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
@@ -108,6 +102,19 @@ func getCandidateHandler(writer http.ResponseWriter, request *http.Request, dbCl
 
 	writer.Header().Set("Content-Type", "application/json")
 	_, _ = writer.Write(candidateJson)
+}
+
+func loadCandidateRecords(cursor *mongo.Cursor, writer http.ResponseWriter) ([]CandidateRecord, error) {
+	var rows []CandidateRecord
+	err := cursor.All(context.TODO(), &rows)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+	if rows == nil {
+		rows = []CandidateRecord{}
+	}
+	return rows, err
 }
 
 func postCandidateHandler(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
@@ -137,15 +144,13 @@ func GetChore(writer http.ResponseWriter, request *http.Request, dbClient *mongo
 	cursor, _ := choreCollection.Find(context.TODO(), bson.D{})
 	var rows []CandidateRecord
 	_ = cursor.All(context.TODO(), &rows)
+	if rows == nil {
+		rows = []CandidateRecord{}
+	}
+
 	choreRows, _ := json.Marshal(rows)
+
 	writer.Write(choreRows)
-}
-
-func InsertChore(record ChoreRecord) {
-	dbClient, _ := GetDBClient()
-
-	collection := dbClient.Database("dutyDB").Collection("chores")
-	collection.InsertOne(context.Background(), record)
 }
 
 func InsertChoreFromHTTP(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {

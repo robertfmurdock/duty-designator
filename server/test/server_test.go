@@ -49,6 +49,23 @@ func TestGetCandidatesHandler_RespondsWithCandidateJson(t *testing.T) {
 	}
 }
 
+func TestGetCandidatesHandler_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
+	if err := getDutyDB().Drop(context.Background()); err != nil {
+		t.Errorf("Setup failed. %v", err)
+		return
+	}
+
+	candidateRecords, err := performGetCandidatesRequest(t)
+	if err != nil {
+		t.Errorf("Get Candidate Request failed. %v", err)
+		return
+	}
+
+	if candidateRecords == nil || len(candidateRecords) != 0 {
+		t.Error("There was unexpected chore content")
+	}
+}
+
 func performGetCandidatesRequest(t *testing.T) ([]src.CandidateRecord, error) {
 	responseRecorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/api/candidate", nil)
@@ -133,7 +150,7 @@ func contains(s []src.CandidateRecord, e src.CandidateRecord) bool {
 	return false
 }
 
-func TestInsertInteractsWithMongoDB(t *testing.T) {
+func TestPostChore_WillWriteToDb(t *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 
 	choreId := uuid.New()
@@ -146,8 +163,6 @@ func TestInsertInteractsWithMongoDB(t *testing.T) {
 	request, _ := http.NewRequest(http.MethodPost, "/api/chore", bytes.NewReader(choreJSON))
 
 	src.ServeMux.ServeHTTP(responseRecorder, request)
-
-	//	src.InsertChore(chore)
 
 	client, err := src.GetDBClient()
 
@@ -172,7 +187,7 @@ func TestInsertInteractsWithMongoDB(t *testing.T) {
 	}
 }
 
-func TestGetChore_GetChoreReturnsAChoreThatWasInserted(t *testing.T) {
+func TestGetChore_GetChoreReturnsAChoreThatWasPosted(t *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 	request, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
 
@@ -182,7 +197,7 @@ func TestGetChore_GetChoreReturnsAChoreThatWasInserted(t *testing.T) {
 		Id:   choreId.String(),
 	}
 
-	src.InsertChore(chore)
+	insertChore(chore)
 
 	src.ServeMux.ServeHTTP(responseRecorder, request)
 
@@ -192,12 +207,46 @@ func TestGetChore_GetChoreReturnsAChoreThatWasInserted(t *testing.T) {
 
 	var choreList []src.ChoreRecord
 	var body = responseRecorder.Body.Bytes()
-	json.Unmarshal(body, &choreList)
+	if err := json.Unmarshal(body, &choreList); err != nil {
+		t.Error(err)
+	}
 
 	if !containsChoreID(choreList, choreId.String()) {
 		t.Log(choreList)
 		t.Errorf("GetChore did not return chore from InsertChore")
 	}
+}
+
+func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
+	responseRecorder := httptest.NewRecorder()
+	request, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
+
+	dbClient, _ := src.GetDBClient()
+
+	dbClient.Database("dutyDB").Drop(context.Background())
+
+	src.ServeMux.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != 200 {
+		t.Error("Post was not successful", responseRecorder.Body.String())
+	}
+
+	var choreList []src.ChoreRecord
+	var body = responseRecorder.Body.Bytes()
+	if err := json.Unmarshal(body, &choreList); err != nil {
+		t.Error(err)
+	}
+
+	if choreList == nil || len(choreList) != 0 {
+		t.Error("There was unexpected chore content", responseRecorder.Body.String())
+	}
+}
+
+func insertChore(record src.ChoreRecord) {
+	dbClient, _ := src.GetDBClient()
+
+	collection := dbClient.Database("dutyDB").Collection("chores")
+	collection.InsertOne(context.Background(), record)
 }
 
 func containsChoreID(s []src.ChoreRecord, id string) bool {
