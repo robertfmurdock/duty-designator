@@ -152,6 +152,8 @@ describe('Dashboard', () => {
 
         beforeEach(() => {
             dashboard = shallow(<Dashboard />);
+            dashboard.setState({hasBeenClicked: true})
+
         });
 
         it('has pioneer props are equal to dashboard\'s state', () => {
@@ -165,6 +167,23 @@ describe('Dashboard', () => {
         })
 
     });
+
+    describe('results rendering with click', () => {
+        let dashboard;
+
+        beforeEach(() => {
+            dashboard = shallow(<Dashboard />);
+        });
+
+        it('before click the results are not rendered', () => {
+            expect(dashboard.find(Results).length).toEqual(0)
+        })
+
+        it('after click has results that are rendered', () => {
+            dashboard.setState({hasBeenClicked: true})
+            expect(dashboard.find(Results).length).toEqual(1)
+        })
+    })
 
 });
 
