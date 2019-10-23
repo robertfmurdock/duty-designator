@@ -1,5 +1,5 @@
 import React from "react";
-import {Container, Box} from "@material-ui/core";
+import {Container} from "@material-ui/core";
 import DutyTable from "../tables/DutyTable";
 
 export default class Results extends React.Component {
@@ -14,11 +14,7 @@ export default class Results extends React.Component {
 
     render = () => (
         <Container className="results">
-            <Box>
-                <DutyTable
-                    duties={this.state.duties}
-                />
-            </Box>
+                <DutyTable duties={this.props.associator(this.props.pioneers, this.props.chores)}/>
         </Container>
     );
 }

@@ -2,27 +2,38 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Results from './Results';
 import DutyTable from "../tables/DutyTable";
+import associate from "./Associator";
 
 describe('Results', () => {
     beforeEach(jest.clearAllMocks);
 
-    describe('with pioneer data', () => {
-        let results, duties;
+    describe('with pioneer data and chore data', () => {
 
-        beforeEach(() => {
-            duties = [
-                {id: " at thing", name: "Friday Jeb", task: "Poop deck scrubber", description: "Scrubbing the poop deck"},
-                {id: "something else", name: "Everyday Natalie", task: "Swashbuckler", description: "buckle the swash"},
-                {id: "nothing", name: "Odd Day Rob", task: "Musketeer", description: "Man the cannons"}
-            ];
+        test('given no chores returns nothing', () => {
+            const associateFunction = associate;
+            const results = shallow(<Results chores={[]} pioneers={[]} associator={associateFunction} />)
 
-            results = shallow(<Results duties={duties}/>);
-        });
+            expect(results.find(DutyTable).props().duties).toEqual([]);
+        })
 
-        test('shows a list of assigned duties', () => {
-            const dutyTable = results.find(DutyTable);
-            expect(dutyTable.props().duties).toBe(duties);
-        });
+        test('given associator that returns 7 get duties of 7', () => {
+            const associateFunction = () => {return 7};
+            const results = shallow(<Results chores={[]} pioneers={[]} associator={associateFunction} />)
+
+            expect(results.find(DutyTable).props().duties).toEqual(7);
+        })
+
+        test('given associate and one pioneer and one chore get one duty', () => {
+            const associateFunction = associate;
+            const pioneers = ["Pioneer Jeb"]
+            const chores = ["codin"]
+
+            const results = shallow(<Results chores={chores} pioneers={chores} associator={associateFunction} />)
+
+            expect(results.find(DutyTable).props().duties.length).toEqual(1);
+        })
+
+
     });
 
 });

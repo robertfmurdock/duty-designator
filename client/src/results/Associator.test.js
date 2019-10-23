@@ -23,4 +23,30 @@ describe('associator', () => {
         ];
         expect(associatedArray).toEqual(expectedPairs)
     })
+
+    it('when given two pioneers and three chores gives one pioneer assigned to two tasks', () => {
+        const pioneers = ["Natalie", "Riley"];
+        const chores = ["sweepin", "raslin", "sleepin"];
+
+        const associatedArray = associate(pioneers, chores)
+
+        const expectedPairs = [
+            {pioneer: "Natalie", chore: "sweepin"},
+            {pioneer: "Riley", chore: "raslin"},
+            {pioneer: "Natalie", chore: "sleepin"}
+        ];
+        expect(associatedArray).toEqual(expectedPairs)
+    })
+
+    it('when given three pioneers and one chore gives one pair', () => {
+        const pioneers = ["Joe Joe Shabadoo", "Natalie", "Riley"];
+        const chores = ["dazzlin"];
+
+        const associatedArray = associate(pioneers, chores)
+
+        const expectedPairs = [
+            {pioneer: "Joe Joe Shabadoo", chore: "dazzlin"}
+        ];
+        expect(associatedArray).toEqual(expectedPairs)
+    })
 })
