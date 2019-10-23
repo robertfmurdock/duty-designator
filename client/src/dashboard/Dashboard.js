@@ -3,6 +3,9 @@ import FetchService from '../services/fetchService';
 import { Box, Button, Container } from '@material-ui/core';
 import { AddChoreModal, ChoreTable, PioneerTable } from './index';
 import Results from '../results/Results'
+import associate from "../results/Associator";
+
+const associateFunction = associate;
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -97,7 +100,7 @@ export default class Dashboard extends React.Component {
                     addChore={this.addChore}
                 />
             </Box>
-            <Results pioneers={[0,0,0,0]} duties={[]}/>
+            <Results pioneers={[0,0,0,0]} chores={[]} associator={associateFunction}/>
         </Container>
         </div>
     );
