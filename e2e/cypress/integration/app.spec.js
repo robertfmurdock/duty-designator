@@ -35,7 +35,6 @@ context('Actions', () => {
         });
     }
 
-
     describe('when a new chore is posted', () => {
         const chore = {name: "Dastardly Dishes", id: uuid()};
 
