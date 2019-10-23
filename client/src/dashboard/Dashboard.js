@@ -100,7 +100,7 @@ export default class Dashboard extends React.Component {
                     addChore={this.addChore}
                 />
             </Box>
-            <Results pioneers={[0,0,0,0]} chores={[]} associator={associateFunction}/>
+            <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>
         </Container>
         </div>
     );

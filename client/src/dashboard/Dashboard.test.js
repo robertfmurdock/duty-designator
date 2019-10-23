@@ -21,7 +21,7 @@ describe('Dashboard', () => {
     test("while loading data shows no rows", () => {
         fetchMock.mockReturnValue(new Promise(() => ({})));
 
-        const dashboard = shallow(<Dashboard />);
+        const dashboard = shallow(<Dashboard/>);
         expect(dashboard.find(PioneerTable).props().pioneers.length).toEqual(0);
         expect(dashboard.find(ChoreTable).props().chores.length).toEqual(0);
     });
@@ -29,13 +29,13 @@ describe('Dashboard', () => {
     test('handles null task and pioneer lists', () => {
         fetchMock.mockReturnValue(new Promise((resolve) => resolve([])));
 
-        const dashboard = shallow(<Dashboard />);
+        const dashboard = shallow(<Dashboard/>);
         expect(dashboard.find(PioneerTable).props().pioneers.length).toEqual(0);
         expect(dashboard.find(ChoreTable).props().chores.length).toEqual(0);
     });
 
     test('ChoreTable can open modal', () => {
-        const dashboard = shallow(<Dashboard />);
+        const dashboard = shallow(<Dashboard/>);
 
         dashboard.find(ChoreTable)
             .props()
@@ -49,16 +49,16 @@ describe('Dashboard', () => {
 
         beforeEach(() => {
             pioneers = [
-                { id: " at thing", name: "Friday Jeb" },
-                { id: "something else", name: "Everyday Natalie" },
-                { id: "nothing", name: "Odd Day Rob" }
+                {id: " at thing", name: "Friday Jeb"},
+                {id: "something else", name: "Everyday Natalie"},
+                {id: "nothing", name: "Odd Day Rob"}
             ];
 
             fetchMock.mockReturnValue(
                 new Promise(resolve => resolve(pioneers))
             );
 
-            dashboard = shallow(<Dashboard />);
+            dashboard = shallow(<Dashboard/>);
         });
 
         test('shows a list of pioneers', () => {
@@ -106,14 +106,14 @@ describe('Dashboard', () => {
 
         beforeEach(() => {
             chores = [
-                { id: "1", name: "Move chairs" },
-                { id: "2", name: "Turn off coffee pot" },
-                { id: "3", name: "Stock fridge with soda" },
-                { id: "4", name: "Put away dishes" },
+                {id: "1", name: "Move chairs"},
+                {id: "2", name: "Turn off coffee pot"},
+                {id: "3", name: "Stock fridge with soda"},
+                {id: "4", name: "Put away dishes"},
             ];
 
             fetchMock.mockReturnValue(new Promise(resolve => resolve(chores)));
-            dashboard = shallow(<Dashboard />);
+            dashboard = shallow(<Dashboard/>);
         });
 
         it('calls /api/chore', () => {
@@ -134,7 +134,7 @@ describe('Dashboard', () => {
         });
 
         test('When AddChoreModal adds a chore, the chore entry is added to the list', () => {
-            const newChore = { id: "5", name: "Super Easy Chore", description: "Its so easy" };
+            const newChore = {id: "5", name: "Super Easy Chore", description: "Its so easy"};
             const expectedChores = [...chores, newChore];
             dashboard.find(AddChoreModal).props().addChore(newChore.name, newChore.description);
 
@@ -153,14 +153,25 @@ describe('Dashboard', () => {
         beforeEach(() => {
             dashboard = shallow(<Dashboard />);
         });
-        it('has pioneer length equal to dashboard\'s', () => {
-            expect(dashboard.find(Results).props().pioneers.length)
-                .toEqual(dashboard.state().pioneers.length)
+
+        it('has pioneer props are equal to dashboard\'s state', () => {
+            expect(dashboard.find(Results).props().pioneers)
+                .toBe(dashboard.state().pioneers)
         })
 
-    })
+        it('has chore props are equal to dashboard\'s state', () => {
+            expect(dashboard.find(Results).props().chores)
+                .toBe(dashboard.state().chores)
+        })
+
+    });
 
 });
+
+
+
+
+
 
 function yield25() {
     return new Promise((resolve) => {
