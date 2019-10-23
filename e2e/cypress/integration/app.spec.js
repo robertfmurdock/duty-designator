@@ -49,15 +49,5 @@ context('Actions', () => {
         });
     })
 
-
-    // it('Saddle up!',  () => {
-    //     cy.visit('http://localhost:8080');
-
-    //     cy.get('#saddle-up').click()
-
-    //     cy.get('.results')
-    //         .should('have.text', "joe jon");
-    // });
-
 });
 
