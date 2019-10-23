@@ -55,3 +55,4 @@ server/main
 e2e/results/my-test-output.xml
 e2e/results/test-output.xml
 .idea/sonarlint/
+e2e/test-results.xml
