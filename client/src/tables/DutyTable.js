@@ -30,10 +30,20 @@ export default function DutyTable(props) {
                         </TableCell>
                     </TableRow>
                     {props.duties.map(row => (
-                        <TableRow key={row.id}>
-                            <TableCell className="duty" data-duty-id={row.id} style={styles.cell}>
+                        <TableRow key={row.chore.id}>
+                            <TableCell className="duty-pioneer-name" data-duty-id={row.chore.id} style={styles.cell}>
                                 <Typography variant="h6" color='textPrimary'>
-                                    {row.name}
+                                    {row.pioneer.name}
+                                </Typography>
+                            </TableCell>
+                            <TableCell className="duty-chore-name" data-duty-id={row.chore.id} style={styles.cell}>
+                                <Typography variant="h6" color='textPrimary'>
+                                    {row.chore.name}
+                                </Typography>
+                            </TableCell>
+                            <TableCell className="duty-chore-description" data-duty-id={row.chore.id} style={styles.cell}>
+                                <Typography variant="h6" color='textPrimary'>
+                                    {row.chore.description}
                                 </Typography>
                             </TableCell>
                         </TableRow>
