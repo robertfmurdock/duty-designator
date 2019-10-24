@@ -152,16 +152,29 @@ func GetChore(writer http.ResponseWriter, _ *http.Request, dbClient *mongo.Clien
 	writer.Header().Set("Content-Type", "application/json")
 	choreCollection := dbClient.Database("dutyDB").Collection("chores")
 
-	cursor, _ := choreCollection.Find(context.TODO(), bson.D{})
+	cursor, err := choreCollection.Find(context.TODO(), bson.D{})
+
+	if err != nil {
+		return err
+	}
+
 	var rows []CandidateRecord
-	_ = cursor.All(context.TODO(), &rows)
+	err = cursor.All(context.TODO(), &rows)
+	if err != nil {
+		return err
+	}
+
 	if rows == nil {
 		rows = []CandidateRecord{}
 	}
 
-	choreRows, _ := json.Marshal(rows)
+	choreRows, err := json.Marshal(rows)
 
-	_, err := writer.Write(choreRows)
+	if err != nil {
+		return err
+	}
+
+	_, err = writer.Write(choreRows)
 	return err
 }
 
