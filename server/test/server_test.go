@@ -163,12 +163,6 @@ func TestPostChore_WillWriteToDb(t *testing.T) {
 
 	src.ServeMux.ServeHTTP(responseRecorder, request)
 
-	client, err := src.GetDBClient()
-
-	if err != nil {
-		t.Errorf("Could not get mongo client: %s", err)
-	}
-
 	collection := client.Database("dutyDB").Collection("chores")
 
 	cursor, err := collection.Find(context.TODO(), bson.D{})
@@ -222,9 +216,7 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 	request, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
 
-	dbClient, _ := src.GetDBClient()
-
-	if err := dbClient.Database("dutyDB").Drop(context.Background()); err != nil {
+	if err := client.Database("dutyDB").Drop(context.Background()); err != nil {
 		t.Error("Drop was not successful", err)
 	}
 

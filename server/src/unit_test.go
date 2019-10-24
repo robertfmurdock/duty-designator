@@ -1,12 +1,11 @@
-package test
+package src
 
 import (
-	"duty-designator/server/src"
 	"testing"
 )
 
 func TestGetDBClient_ReturnsClient(t *testing.T) {
-	client, _ := src.GetDBClient()
+	client, _ := getDBClient()
 
 	if client == nil {
 		t.Fail()

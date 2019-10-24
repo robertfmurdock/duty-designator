@@ -23,7 +23,7 @@ type ChoreRecord struct {
 }
 
 func initializeMux() http.Handler {
-	client, err := GetDBClient()
+	client, err := getDBClient()
 	if err != nil {
 		log.Fatal(err)
 		return nil
@@ -68,7 +68,7 @@ func choreMethodRoute(request *http.Request) mongoHandler {
 	return nil
 }
 
-func GetDBClient() (*mongo.Client, error) {
+func getDBClient() (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
