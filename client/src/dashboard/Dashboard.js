@@ -20,7 +20,12 @@ export default class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        this.populateTableState();
+        const state = this.loadStuff('savedState');
+        if( state === undefined ){
+            this.populateTableState()
+        } else {
+            this.setState(state)
+        }
     }
 
     populateTableState() {
@@ -70,24 +75,24 @@ export default class Dashboard extends React.Component {
         />
     );
 
-    // saveStuff = (stuff, key) => {
-    //     try {
-    //         const serializedState = JSON.stringify(stuff);
-    //         localStorage.setItem(key, serializedState);
-    //     } catch(err) {
-    //         // Log error
-    //     }
-    // }
-    //
-    // loadStuff = (key) => {
-    //     try {
-    //         const serializedState = localStorage.getItem(key);
-    //         return serializedState ? JSON.parse(serializedState) : undefined;
-    //     } catch(err) {
-    //         // Log error
-    //         return undefined;
-    //     }
-    // }
+    saveStuff = (stuff, key) => {
+        try {
+            const serializedState = JSON.stringify(stuff);
+            localStorage.setItem(key, serializedState);
+        } catch(err) {
+            // Log error
+        }
+    }
+
+    loadStuff = (key) => {
+        try {
+            const serializedState = localStorage.getItem(key);
+            return serializedState ? JSON.parse(serializedState) : undefined;
+        } catch(err) {
+            // Log error
+            return undefined;
+        }
+    }
 
     render() {
         const resetButton = <Button
@@ -119,7 +124,9 @@ export default class Dashboard extends React.Component {
             size="large"
             variant="contained"
             id="respin"
-            onClick={() => {this.setState({hasBeenClicked: false})}}>
+            onClick={() => {
+                this.setState({hasBeenClicked: false, assignmentsSaved: false})
+            }}>
             Respin this Wagon Wheel
         </Button>;
 
@@ -128,7 +135,10 @@ export default class Dashboard extends React.Component {
             size="large"
             variant="contained"
             id="save"
-            onClick={() => {this.setState({assignmentsSaved: true})}}>
+            onClick={() => {
+                this.setState({assignmentsSaved: true},
+                () => {this.saveStuff(this.state, 'savedState')})
+            }}>
             Save this Wagon Wheel
         </Button>;
 
