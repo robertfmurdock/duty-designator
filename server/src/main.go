@@ -3,7 +3,6 @@ package src
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -32,31 +31,41 @@ func initializeMux() http.Handler {
 
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.Dir("../client/build")))
-	mux.Handle("/api/candidate", candidateHandler(client))
-	mux.Handle("/api/chore", choreHandler(client))
+
+	hc := handlerContext{dbClient: client}
+	mux.Handle("/api/candidate", hc.methodRoute(candidateHandler))
+	mux.Handle("/api/chore", hc.methodRoute(choreMethodRoute))
 	return mux
 }
 
-func candidateHandler(dbClient *mongo.Client) http.Handler {
+type handlerContext struct {
+	dbClient *mongo.Client
+}
+
+func candidateHandler(request *http.Request) mongoHandler {
+	switch request.Method {
+	case http.MethodGet:
+		return getCandidateHandler
+	case http.MethodPost:
+		return postCandidateHandler
+	}
+	return nil
+}
+
+func (hc *handlerContext) methodRoute(methodRouteFunc func(request *http.Request) mongoHandler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case http.MethodGet:
-			getCandidateHandler(writer, request, dbClient)
-		case http.MethodPost:
-			postCandidateHandler(writer, request, dbClient)
-		}
+		hc.toHandler(methodRouteFunc(request)).ServeHTTP(writer, request)
 	})
 }
 
-func choreHandler(dbClient *mongo.Client) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case http.MethodGet:
-			mongoHandler(GetChore).handle(writer, request, dbClient)
-		case http.MethodPost:
-			mongoHandler(InsertChoreFromHTTP).handle(writer, request, dbClient)
-		}
-	})
+func choreMethodRoute(request *http.Request) mongoHandler {
+	switch request.Method {
+	case http.MethodGet:
+		return GetChore
+	case http.MethodPost:
+		return InsertChoreFromHTTP
+	}
+	return nil
 }
 
 func GetDBClient() (*mongo.Client, error) {
@@ -78,28 +87,31 @@ func GetDBClient() (*mongo.Client, error) {
 	return client, nil
 }
 
-func getCandidateHandler(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
+func getCandidateHandler(writer http.ResponseWriter, _ *http.Request, dbClient *mongo.Client) error {
 	writer.Header().Set("Content-Type", "application/json")
 
 	collection := getCandidatesCollection(dbClient)
 	cursor, err := collection.Find(context.TODO(), bson.D{})
 
 	if err != nil {
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
-		log.Fatal(err)
+		return err
 	}
 
 	records, err := loadCandidateRecords(cursor, writer)
 
+	if err != nil {
+		return err
+	}
+
 	candidateJson, err := json.Marshal(records)
 
 	if err != nil {
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
-		log.Fatal(err)
+		return err
 	}
 
 	writer.Header().Set("Content-Type", "application/json")
-	_, _ = writer.Write(candidateJson)
+	_, err = writer.Write(candidateJson)
+	return err
 }
 
 func loadCandidateRecords(cursor *mongo.Cursor, writer http.ResponseWriter) ([]CandidateRecord, error) {
@@ -115,40 +127,54 @@ func loadCandidateRecords(cursor *mongo.Cursor, writer http.ResponseWriter) ([]C
 	return rows, err
 }
 
-func postCandidateHandler(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
+func postCandidateHandler(_ http.ResponseWriter, request *http.Request, dbClient *mongo.Client) error {
 	decoder := json.NewDecoder(request.Body)
 	var candidateRecord CandidateRecord
 	err := decoder.Decode(&candidateRecord)
 	if err != nil {
-		http.Error(writer, "Bad request", http.StatusInternalServerError)
+		return err
 	}
 
 	collection := getCandidatesCollection(dbClient)
 
 	if _, err := collection.InsertOne(context.Background(), candidateRecord); err != nil {
-		http.Error(writer, fmt.Sprintf("Insert error %v", err), http.StatusInternalServerError)
-		return
+		return err
 	}
+
+	return nil
 }
 
 func getCandidatesCollection(dbClient *mongo.Client) *mongo.Collection {
 	return dbClient.Database("dutyDB").Collection("candidates")
 }
 
-func GetChore(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) error {
+func GetChore(writer http.ResponseWriter, _ *http.Request, dbClient *mongo.Client) error {
 	writer.Header().Set("Content-Type", "application/json")
 	choreCollection := dbClient.Database("dutyDB").Collection("chores")
 
-	cursor, _ := choreCollection.Find(context.TODO(), bson.D{})
+	cursor, err := choreCollection.Find(context.TODO(), bson.D{})
+
+	if err != nil {
+		return err
+	}
+
 	var rows []CandidateRecord
-	_ = cursor.All(context.TODO(), &rows)
+	err = cursor.All(context.TODO(), &rows)
+	if err != nil {
+		return err
+	}
+
 	if rows == nil {
 		rows = []CandidateRecord{}
 	}
 
-	choreRows, _ := json.Marshal(rows)
+	choreRows, err := json.Marshal(rows)
 
-	_, err := writer.Write(choreRows)
+	if err != nil {
+		return err
+	}
+
+	_, err = writer.Write(choreRows)
 	return err
 }
 
@@ -171,4 +197,13 @@ func (fn mongoHandler) handle(w http.ResponseWriter, r *http.Request, dbClient *
 	if err := fn(w, r, dbClient); err != nil {
 		log.Println(err)
 	}
+}
+
+func (hc *handlerContext) toHandler(fn mongoHandler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if err := fn(writer, request, hc.dbClient); err != nil {
+			log.Println(err)
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+		}
+	})
 }
