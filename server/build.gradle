@@ -51,7 +51,7 @@ tasks {
     task goErrcheck(type: Go) {
         dependsOn goVendor, installErrcheck
         environment PATH: "${System.getenv("PATH")}:$buildManager.goBinaryManager.goroot/bin".toString()
-        go 'run github.com/kisielk/errcheck ./...'
+        go 'run github.com/kisielk/errcheck duty-designator/server/routing duty-designator/server/test'
     }
 
     goCheck.dependsOn goErrcheck

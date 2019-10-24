@@ -19,8 +19,8 @@ func candidateHandler(request *http.Request) mongoHandler {
 	return nil
 }
 
-func getCandidateHandler(writer http.ResponseWriter, _ *http.Request, dbClient *mongo.Client) error {
-	records, err := loadCandidateRecords(dbClient, writer)
+func getCandidateHandler(writer http.ResponseWriter, _ *http.Request, handlerContext *handlerContext) error {
+	records, err := loadCandidateRecords(handlerContext, writer)
 	if err != nil {
 		return err
 	}
@@ -33,8 +33,8 @@ type CandidateRecord struct {
 	Id   string `json:"id"`
 }
 
-func loadCandidateRecords(dbClient *mongo.Client, writer http.ResponseWriter) ([]CandidateRecord, error) {
-	collection := getCandidatesCollection(dbClient)
+func loadCandidateRecords(handlerContext *handlerContext, writer http.ResponseWriter) ([]CandidateRecord, error) {
+	collection := getCandidatesCollection(handlerContext)
 	cursor, err := collection.Find(context.Background(), bson.D{})
 
 	if err != nil {
@@ -53,7 +53,7 @@ func loadCandidateRecords(dbClient *mongo.Client, writer http.ResponseWriter) ([
 	return rows, err
 }
 
-func postCandidateHandler(_ http.ResponseWriter, request *http.Request, dbClient *mongo.Client) error {
+func postCandidateHandler(_ http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
 	decoder := json.NewDecoder(request.Body)
 	var candidateRecord CandidateRecord
 	err := decoder.Decode(&candidateRecord)
@@ -61,7 +61,7 @@ func postCandidateHandler(_ http.ResponseWriter, request *http.Request, dbClient
 		return err
 	}
 
-	collection := getCandidatesCollection(dbClient)
+	collection := getCandidatesCollection(handlerContext)
 
 	if _, err := collection.InsertOne(context.Background(), candidateRecord); err != nil {
 		return err
@@ -70,6 +70,6 @@ func postCandidateHandler(_ http.ResponseWriter, request *http.Request, dbClient
 	return nil
 }
 
-func getCandidatesCollection(dbClient *mongo.Client) *mongo.Collection {
-	return dbClient.Database("dutyDB").Collection("candidates")
+func getCandidatesCollection(handlerContext *handlerContext) *mongo.Collection {
+	return handlerContext.dutyDb().Collection("candidates")
 }

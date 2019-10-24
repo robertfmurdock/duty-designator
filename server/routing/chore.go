@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 )
 
@@ -18,8 +17,8 @@ func choreMethodRoute(request *http.Request) mongoHandler {
 	return nil
 }
 
-func getChoresHandler(writer http.ResponseWriter, _ *http.Request, dbClient *mongo.Client) error {
-	chores, err := loadChoreRecords(dbClient)
+func getChoresHandler(writer http.ResponseWriter, _ *http.Request, handlerContext *handlerContext) error {
+	chores, err := loadChoreRecords(handlerContext)
 	if err != nil {
 		return err
 	}
@@ -32,33 +31,32 @@ type ChoreRecord struct {
 	Id   string `json:"id"`
 }
 
-func loadChoreRecords(dbClient *mongo.Client) ([]ChoreRecord, error) {
-	choreCollection := dbClient.Database("dutyDB").Collection("chores")
+func loadChoreRecords(handlerContext *handlerContext) ([]ChoreRecord, error) {
+	choreCollection := handlerContext.dutyDb().Collection("chores")
 	cursor, err := choreCollection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return nil, err
 	}
 	var rows []ChoreRecord
-	err = cursor.All(context.Background(), &rows)
-	if err != nil {
+	if err = cursor.All(context.Background(), &rows); err != nil {
 		return nil, err
 	}
-	if rows == nil {
-		rows = []ChoreRecord{}
+	if rows != nil {
+		return rows, nil
 	}
-	return rows, nil
+	return []ChoreRecord{}, nil
 }
 
-func postChoreHandler(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) error {
+func postChoreHandler(writer http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
 	decoder := json.NewDecoder(request.Body)
 	var choreRecord ChoreRecord
-	err := decoder.Decode(&choreRecord)
-	if err != nil {
+
+	if err := decoder.Decode(&choreRecord); err != nil {
 		writer.WriteHeader(400)
 		return err
 	}
 
-	collection := dbClient.Database("dutyDB").Collection("chores")
-	_, err = collection.InsertOne(context.Background(), choreRecord)
+	collection := handlerContext.dbClient.Database("dutyDB").Collection("chores")
+	_, err := collection.InsertOne(context.Background(), choreRecord)
 	return err
 }

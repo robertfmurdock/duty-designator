@@ -52,7 +52,6 @@ jobs:
       - store_artifacts:
           destination: e2e-screenshots
           path: e2e/cypress/screenshots
-
 workflows:
   version: 2
   build_and_test:

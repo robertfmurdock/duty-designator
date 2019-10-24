@@ -18,9 +18,13 @@ func (hc *handlerContext) methodRoute(methodRouteFunc func(request *http.Request
 
 func (hc *handlerContext) toHandler(fn mongoHandler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if err := fn(writer, request, hc.dbClient); err != nil {
+		if err := fn(writer, request, hc); err != nil {
 			log.Println(err)
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 		}
 	})
+}
+
+func (hc *handlerContext) dutyDb() *mongo.Database {
+	return hc.dbClient.Database("dutyDB")
 }

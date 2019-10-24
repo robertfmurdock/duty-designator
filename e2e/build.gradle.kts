@@ -14,11 +14,11 @@ node {
 tasks {
 
     val yarn by getting(YarnTask::class) {
-
     }
 
     val endToEnd by creating(YarnTask::class) {
         dependsOn(yarn, ":client:build", ":server:build")
+        mustRunAfter(":server:check")
         setEnvironment(mapOf("CI" to "true"))
         args = listOf("e2e")
     }
