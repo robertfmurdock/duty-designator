@@ -70,6 +70,24 @@ export default class Dashboard extends React.Component {
         />
     );
 
+    // saveStuff = (stuff, key) => {
+    //     try {
+    //         const serializedState = JSON.stringify(stuff);
+    //         localStorage.setItem(key, serializedState);
+    //     } catch(err) {
+    //         // Log error
+    //     }
+    // }
+    //
+    // loadStuff = (key) => {
+    //     try {
+    //         const serializedState = localStorage.getItem(key);
+    //         return serializedState ? JSON.parse(serializedState) : undefined;
+    //     } catch(err) {
+    //         // Log error
+    //         return undefined;
+    //     }
+    // }
 
     render() {
         const resetButton = <Button
@@ -122,7 +140,7 @@ export default class Dashboard extends React.Component {
 
         let conditionallyRenderResultsButtons = () => {
             if (!this.state.assignmentsSaved) {
-                return <div>{respinButton}
+                return <div>
                     {saveButton}</div>;
             }
         }
@@ -144,12 +162,11 @@ export default class Dashboard extends React.Component {
         } else {
             return <Container>
                 <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>
+                {respinButton}
                 {conditionallyRenderResultsButtons()}
                 {conditionallyRenderSavedConfirmation()}
             </Container>
         }
     }
-
-
 }
 

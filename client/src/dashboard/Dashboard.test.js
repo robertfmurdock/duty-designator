@@ -216,10 +216,10 @@ describe('Dashboard', () => {
             expect(dashboard.find('#saved-confirmation').text()).toEqual('Save Confirmed!')
         })
 
-        it('When clicked does not have respin or save buttons', () => {
+        it('When clicked does not have save button', () => {
             dashboard.find('#save').simulate('click')
 
-            expect(dashboard.find('#respin').length).toEqual(0)
+            expect(dashboard.find('#respin').length).toEqual(1)
             expect(dashboard.find('#save').length).toEqual(0)
         })
 
