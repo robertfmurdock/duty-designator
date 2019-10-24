@@ -1,4 +1,4 @@
-package src
+package routing
 
 import (
 	"context"
@@ -61,9 +61,9 @@ func (hc *handlerContext) methodRoute(methodRouteFunc func(request *http.Request
 func choreMethodRoute(request *http.Request) mongoHandler {
 	switch request.Method {
 	case http.MethodGet:
-		return GetChore
+		return getChoresHandler
 	case http.MethodPost:
-		return InsertChoreFromHTTP
+		return insertChoreFromHTTP
 	}
 	return nil
 }
@@ -88,35 +88,24 @@ func getDBClient() (*mongo.Client, error) {
 }
 
 func getCandidateHandler(writer http.ResponseWriter, _ *http.Request, dbClient *mongo.Client) error {
-	writer.Header().Set("Content-Type", "application/json")
+	records, err := loadCandidateRecords(dbClient, writer)
+	if err != nil {
+		return err
+	}
 
+	return writeAsJson(writer, records)
+}
+
+func loadCandidateRecords(dbClient *mongo.Client, writer http.ResponseWriter) ([]CandidateRecord, error) {
 	collection := getCandidatesCollection(dbClient)
 	cursor, err := collection.Find(context.TODO(), bson.D{})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	records, err := loadCandidateRecords(cursor, writer)
-
-	if err != nil {
-		return err
-	}
-
-	candidateJson, err := json.Marshal(records)
-
-	if err != nil {
-		return err
-	}
-
-	writer.Header().Set("Content-Type", "application/json")
-	_, err = writer.Write(candidateJson)
-	return err
-}
-
-func loadCandidateRecords(cursor *mongo.Cursor, writer http.ResponseWriter) ([]CandidateRecord, error) {
 	var rows []CandidateRecord
-	err := cursor.All(context.TODO(), &rows)
+	err = cursor.All(context.TODO(), &rows)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		log.Fatal(err)
@@ -148,42 +137,49 @@ func getCandidatesCollection(dbClient *mongo.Client) *mongo.Collection {
 	return dbClient.Database("dutyDB").Collection("candidates")
 }
 
-func GetChore(writer http.ResponseWriter, _ *http.Request, dbClient *mongo.Client) error {
+func getChoresHandler(writer http.ResponseWriter, _ *http.Request, dbClient *mongo.Client) error {
+	chores, err := loadChoreRecords(dbClient)
+	if err != nil {
+		return err
+	}
+
+	return writeAsJson(writer, chores)
+}
+
+func writeAsJson(writer http.ResponseWriter, jsonStruct interface{}) error {
 	writer.Header().Set("Content-Type", "application/json")
-	choreCollection := dbClient.Database("dutyDB").Collection("chores")
-
-	cursor, err := choreCollection.Find(context.TODO(), bson.D{})
-
+	choreRows, err := json.Marshal(jsonStruct)
 	if err != nil {
 		return err
 	}
-
-	var rows []CandidateRecord
-	err = cursor.All(context.TODO(), &rows)
-	if err != nil {
-		return err
-	}
-
-	if rows == nil {
-		rows = []CandidateRecord{}
-	}
-
-	choreRows, err := json.Marshal(rows)
-
-	if err != nil {
-		return err
-	}
-
 	_, err = writer.Write(choreRows)
 	return err
 }
 
-func InsertChoreFromHTTP(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) error {
+func loadChoreRecords(dbClient *mongo.Client) ([]ChoreRecord, error) {
+	choreCollection := dbClient.Database("dutyDB").Collection("chores")
+	cursor, err := choreCollection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	var rows []ChoreRecord
+	err = cursor.All(context.TODO(), &rows)
+	if err != nil {
+		return nil, err
+	}
+	if rows == nil {
+		rows = []ChoreRecord{}
+	}
+	return rows, nil
+}
+
+func insertChoreFromHTTP(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) error {
 	decoder := json.NewDecoder(request.Body)
 	var choreRecord ChoreRecord
 	err := decoder.Decode(&choreRecord)
 	if err != nil {
 		writer.WriteHeader(400)
+		return err
 	}
 
 	collection := dbClient.Database("dutyDB").Collection("chores")
