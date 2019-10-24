@@ -184,23 +184,24 @@ describe('Dashboard', () => {
 
         it('before click the results are not rendered', () => {
             expect(dashboard.find(Results).length).toEqual(0)
-        })
+        });
 
         it('after click has results that are rendered', () => {
             dashboard.setState({hasBeenClicked: true})
             expect(dashboard.find(Results).length).toEqual(1)
-        })
+        });
 
         it('saddle-up button changes hasBeenClicked state', () => {
             dashboard.find('#saddle-up').simulate('click')
             expect(dashboard.state().hasBeenClicked).toEqual(true)
         })
-    })
+    });
 
     describe('save button on results page', () => {
         let dashboard;
 
         beforeEach(() => {
+            localStorage.clear();
             dashboard = shallow(<Dashboard />);
             dashboard.setState({hasBeenClicked: true})
             dashboard.setState({assignmentsSaved: false})
@@ -209,12 +210,12 @@ describe('Dashboard', () => {
 
         it('When not clicked thing with id save does not exist', () => {
             expect(dashboard.find('#saved-confirmation').length).toEqual(0)
-        })
+        });
 
         it('When clicked has text Save Confirmed! on the page', () => {
             dashboard.find('#save').simulate('click')
             expect(dashboard.find('#saved-confirmation').text()).toEqual('Save Confirmed!')
-        })
+        });
 
         it('When clicked does not have save button', () => {
             dashboard.find('#save').simulate('click')

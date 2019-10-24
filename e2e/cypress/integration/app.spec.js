@@ -51,5 +51,41 @@ context('Actions', () => {
         });
     })
 
+    describe('When we save the spin results', () => {
+        const chore = {name: "Cow tipper", description: "Give some tips to cows", id: uuid()};
+
+        before( function () {
+            insertChore(chore);
+        })
+
+        beforeEach( function () {
+            cy.visit('http://localhost:8080')
+            cy.get("#saddle-up").click()
+            cy.get("#save").click()
+        })
+
+        it('still has results table on refresh', () => {
+            cy.reload()
+            cy.get('.results').should("have.length",1 )
+        })
+
+        it('keeps a chore that has been added in the results list', () => {
+            cy.reload()
+            cy.get(`.duty-chore-name[data-duty-id=${chore.id}]`, {timeout:2000})
+                .should('have.text', chore.name)
+        })
+
+        it('does not have a save button on reload', () => {
+            cy.reload()
+            cy.get('#save').should('have.length', 0)
+        })
+
+        it('after respin and saddle up you can save again', () => {
+            cy.get("#respin").click()
+            cy.get("#saddle-up").click()
+            cy.get('#save').should('have.length', 1)
+        })
+    })
+
 });
 
