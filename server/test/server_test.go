@@ -26,7 +26,6 @@ func initConnection() *mongo.Client {
 		log.Fatal("Could not connect to Mongo")
 		return nil
 	}
-
 	defer cancel()
 	return client
 }
