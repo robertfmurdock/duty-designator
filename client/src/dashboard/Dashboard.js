@@ -14,7 +14,8 @@ export default class Dashboard extends React.Component {
             pioneers: [],
             chores: [],
             hasBeenClicked: false,
-            modalOpen: false
+            modalOpen: false,
+            assignmentsSaved: false,
         }
     }
 
@@ -69,7 +70,81 @@ export default class Dashboard extends React.Component {
         />
     );
 
+    // saveStuff = (stuff, key) => {
+    //     try {
+    //         const serializedState = JSON.stringify(stuff);
+    //         localStorage.setItem(key, serializedState);
+    //     } catch(err) {
+    //         // Log error
+    //     }
+    // }
+    //
+    // loadStuff = (key) => {
+    //     try {
+    //         const serializedState = localStorage.getItem(key);
+    //         return serializedState ? JSON.parse(serializedState) : undefined;
+    //     } catch(err) {
+    //         // Log error
+    //         return undefined;
+    //     }
+    // }
+
     render() {
+        const resetButton = <Button
+            color="primary"
+            size="large"
+            variant="contained"
+            id="reset-button"
+            onClick={() => {this.populateTableState()}}>
+            Reset
+        </Button>;
+
+        const saddleUpButton = <Button
+            color="primary"
+            size="large"
+            variant="contained"
+            id="saddle-up"
+            onClick={() => {this.setState({hasBeenClicked: true})}}>
+            Saddle Up
+        </Button>;
+
+        const addChoreModal = < AddChoreModal
+            open={this.state.modalOpen}
+            onClose={this.handleClose}
+            addChore={this.addChore}
+        />;
+
+        const respinButton = <Button
+            color="secondary"
+            size="large"
+            variant="contained"
+            id="respin"
+            onClick={() => {this.setState({hasBeenClicked: false})}}>
+            Respin this Wagon Wheel
+        </Button>;
+
+        const saveButton = <Button
+            color="primary"
+            size="large"
+            variant="contained"
+            id="save"
+            onClick={() => {this.setState({assignmentsSaved: true})}}>
+            Save this Wagon Wheel
+        </Button>;
+
+        let conditionallyRenderSavedConfirmation = () => {
+            if (this.state.assignmentsSaved) {
+                return <p id='saved-confirmation'>Save Confirmed!</p>
+            }
+        }
+
+        let conditionallyRenderResultsButtons = () => {
+            if (!this.state.assignmentsSaved) {
+                return <div>
+                    {saveButton}</div>;
+            }
+        }
+
         if (!this.state.hasBeenClicked) {
             return <div>
                 <Container>
@@ -77,40 +152,20 @@ export default class Dashboard extends React.Component {
                         {this.getPioneerTable()}
                         {this.getChoreTable()}
                     </Box>
-
                     <Box>
-                        <Button
-                            color="primary"
-                            size="large"
-                            variant="contained"
-                            id="reset-button"
-                            onClick={() => {this.populateTableState()
-                            }}
-                        >
-                            Reset
-                        </Button>
-                        <Button
-                            color="primary"
-                            size="large"
-                            variant="contained"
-                            id="saddle-up"
-                            onClick={() => {
-                                this.setState({hasBeenClicked: !this.state.hasBeenClicked})
-                            }}
-                        >
-                            Saddle Up
-                        </Button>
-                        < AddChoreModal
-                            open={this.state.modalOpen}
-                            onClose={this.handleClose}
-                            addChore={this.addChore}
-                        />
+                        {resetButton}
+                        {saddleUpButton}
+                        {addChoreModal}
                     </Box>
-
                 </Container>
             </div>;
         } else {
-            return <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>;
+            return <Container>
+                <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>
+                {respinButton}
+                {conditionallyRenderResultsButtons()}
+                {conditionallyRenderSavedConfirmation()}
+            </Container>
         }
     }
 }
