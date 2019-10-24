@@ -32,8 +32,10 @@ func initializeMux() http.Handler {
 
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.Dir("../client/build")))
+
+	hc := handlerContext{dbClient: client}
 	mux.Handle("/api/candidate", candidateHandler(client))
-	mux.Handle("/api/chore", choreHandler(client))
+	mux.Handle("/api/chore", methodRoute(hc.choreMethodRoute))
 	return mux
 }
 
@@ -48,15 +50,24 @@ func candidateHandler(dbClient *mongo.Client) http.Handler {
 	})
 }
 
-func choreHandler(dbClient *mongo.Client) http.Handler {
+type handlerContext struct {
+	dbClient *mongo.Client
+}
+
+func methodRoute(methodRouteFunc func(request *http.Request) http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case http.MethodGet:
-			mongoHandler(GetChore).handle(writer, request, dbClient)
-		case http.MethodPost:
-			mongoHandler(InsertChoreFromHTTP).handle(writer, request, dbClient)
-		}
+		methodRouteFunc(request).ServeHTTP(writer, request)
 	})
+}
+
+func (hc handlerContext) choreMethodRoute(request *http.Request) http.Handler {
+	switch request.Method {
+	case http.MethodGet:
+		return hc.toHandler(GetChore)
+	case http.MethodPost:
+		return hc.toHandler(InsertChoreFromHTTP)
+	}
+	return nil
 }
 
 func GetDBClient() (*mongo.Client, error) {
@@ -171,4 +182,12 @@ func (fn mongoHandler) handle(w http.ResponseWriter, r *http.Request, dbClient *
 	if err := fn(w, r, dbClient); err != nil {
 		log.Println(err)
 	}
+}
+
+func (hc *handlerContext) toHandler(fn mongoHandler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if err := fn(writer, request, hc.dbClient); err != nil {
+			log.Println(err)
+		}
+	})
 }
