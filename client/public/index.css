@@ -1,0 +1,37 @@
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  position: relative;
+}
+
+#tumbleweed {
+  width: 120px;
+  height: 120px;
+  position: absolute;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-top: -20px;
+  animation: tumble 8200ms linear infinite, bounce 800ms cubic-bezier(0.63, 0.09, 0.75, 0.46) infinite alternate;
+}
+
+@keyframes bounce {
+  0%, 10% {
+    margin-top: -20px;
+  }
+  100% {
+    margin-top: 20px;
+  }
+}
+@keyframes tumble {
+  from {
+    transform: translate(-70vw, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(70vw, -50%) rotate(1480deg);
+  }
+}
