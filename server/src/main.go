@@ -52,9 +52,9 @@ func choreHandler(dbClient *mongo.Client) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case http.MethodGet:
-			GetChore(writer, request, dbClient)
+			mongoHandler(GetChore).handle(writer, request, dbClient)
 		case http.MethodPost:
-			InsertChoreFromHTTP(writer, request, dbClient)
+			mongoHandler(InsertChoreFromHTTP).handle(writer, request, dbClient)
 		}
 	})
 }
@@ -135,7 +135,7 @@ func getCandidatesCollection(dbClient *mongo.Client) *mongo.Collection {
 	return dbClient.Database("dutyDB").Collection("candidates")
 }
 
-func GetChore(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
+func GetChore(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) error {
 	writer.Header().Set("Content-Type", "application/json")
 	choreCollection := dbClient.Database("dutyDB").Collection("chores")
 
@@ -148,10 +148,11 @@ func GetChore(writer http.ResponseWriter, request *http.Request, dbClient *mongo
 
 	choreRows, _ := json.Marshal(rows)
 
-	writer.Write(choreRows)
+	_, err := writer.Write(choreRows)
+	return err
 }
 
-func InsertChoreFromHTTP(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) {
+func InsertChoreFromHTTP(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) error {
 	decoder := json.NewDecoder(request.Body)
 	var choreRecord ChoreRecord
 	err := decoder.Decode(&choreRecord)
@@ -160,5 +161,14 @@ func InsertChoreFromHTTP(writer http.ResponseWriter, request *http.Request, dbCl
 	}
 
 	collection := dbClient.Database("dutyDB").Collection("chores")
-	collection.InsertOne(context.Background(), choreRecord)
+	_, err = collection.InsertOne(context.Background(), choreRecord)
+	return err
+}
+
+type mongoHandler func(writer http.ResponseWriter, request *http.Request, dbClient *mongo.Client) error
+
+func (fn mongoHandler) handle(w http.ResponseWriter, r *http.Request, dbClient *mongo.Client) {
+	if err := fn(w, r, dbClient); err != nil {
+		log.Println(err)
+	}
 }

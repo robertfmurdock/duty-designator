@@ -54,5 +54,5 @@ tasks {
         go 'run github.com/kisielk/errcheck duty-designator/server/src duty-designator/server/test'
     }
 
-//    goCheck.dependsOn goErrcheck
+    goCheck.dependsOn goErrcheck
 }

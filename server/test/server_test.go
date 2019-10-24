@@ -196,7 +196,9 @@ func TestGetChore_GetChoreReturnsAChoreThatWasPosted(t *testing.T) {
 		Id:   choreId.String(),
 	}
 
-	insertChore(chore)
+	if err := insertChore(chore); err != nil {
+		t.Error("insert was not successful", err)
+	}
 
 	src.ServeMux.ServeHTTP(responseRecorder, request)
 
@@ -222,7 +224,9 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 
 	dbClient, _ := src.GetDBClient()
 
-	dbClient.Database("dutyDB").Drop(context.Background())
+	if err := dbClient.Database("dutyDB").Drop(context.Background()); err != nil {
+		t.Error("Drop was not successful", err)
+	}
 
 	src.ServeMux.ServeHTTP(responseRecorder, request)
 
@@ -241,11 +245,10 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 	}
 }
 
-func insertChore(record src.ChoreRecord) {
-	dbClient, _ := src.GetDBClient()
-
-	collection := dbClient.Database("dutyDB").Collection("chores")
-	collection.InsertOne(context.Background(), record)
+func insertChore(record src.ChoreRecord) error {
+	collection := client.Database("dutyDB").Collection("chores")
+	_, err := collection.InsertOne(context.Background(), record)
+	return err
 }
 
 func containsChoreID(s []src.ChoreRecord, id string) bool {
