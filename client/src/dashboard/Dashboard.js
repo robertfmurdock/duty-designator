@@ -14,7 +14,8 @@ export default class Dashboard extends React.Component {
             pioneers: [],
             chores: [],
             hasBeenClicked: false,
-            modalOpen: false
+            modalOpen: false,
+            assignmentsSaved: false,
         }
     }
 
@@ -69,7 +70,41 @@ export default class Dashboard extends React.Component {
         />
     );
 
+
     render() {
+        const respinButton = <Button
+            color="secondary"
+            size="large"
+            variant="contained"
+            id="respin"
+            onClick={() => {
+                this.setState({hasBeenClicked: false})
+            }}>Respin this Wagon Wheel</Button>;
+
+        const saveButton = <Button
+            color="primary"
+            size="large"
+            variant="contained"
+            id="save"
+            onClick={() => {
+                this.setState({assignmentsSaved: true})
+            }
+            }
+        > Save this Wagon Wheel</Button>;
+        let conditionallyRenderSavedConfirmation = () => {
+            if (this.state.assignmentsSaved) {
+                return <p id='saved-confirmation'>Save Confirmed!</p>
+            }
+        }
+
+        let conditionallyRenderResultsButtons = () => {
+
+            if (!this.state.assignmentsSaved) {
+                return <div>{respinButton}
+                    {saveButton}</div>;
+            }
+        }
+
         if (!this.state.hasBeenClicked) {
             return <div>
                 <Container>
@@ -84,7 +119,8 @@ export default class Dashboard extends React.Component {
                             size="large"
                             variant="contained"
                             id="reset-button"
-                            onClick={() => {this.populateTableState()
+                            onClick={() => {
+                                this.populateTableState()
                             }}
                         >
                             Reset
@@ -95,7 +131,7 @@ export default class Dashboard extends React.Component {
                             variant="contained"
                             id="saddle-up"
                             onClick={() => {
-                                this.setState({hasBeenClicked: !this.state.hasBeenClicked})
+                                this.setState({hasBeenClicked: true})
                             }}
                         >
                             Saddle Up
@@ -110,8 +146,14 @@ export default class Dashboard extends React.Component {
                 </Container>
             </div>;
         } else {
-            return <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>;
+            return <Container>
+                <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>
+                {conditionallyRenderResultsButtons()}
+                {conditionallyRenderSavedConfirmation()}
+            </Container>
         }
     }
+
+
 }
 

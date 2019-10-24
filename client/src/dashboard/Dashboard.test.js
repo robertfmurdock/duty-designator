@@ -166,6 +166,13 @@ describe('Dashboard', () => {
                 .toBe(dashboard.state().chores)
         })
 
+        it('has a respin button that takes you back to the first view of dashboard', () => {
+            dashboard.setState({hasBeenClicked: true})
+            dashboard.find('#respin').simulate('click')
+            expect(dashboard.state().hasBeenClicked).toEqual(false)
+        })
+
+
     });
 
     describe('results rendering with click', () => {
@@ -183,6 +190,39 @@ describe('Dashboard', () => {
             dashboard.setState({hasBeenClicked: true})
             expect(dashboard.find(Results).length).toEqual(1)
         })
+
+        it('saddle-up button changes hasBeenClicked state', () => {
+            dashboard.find('#saddle-up').simulate('click')
+            expect(dashboard.state().hasBeenClicked).toEqual(true)
+        })
+    })
+
+    describe('save button on results page', () => {
+        let dashboard;
+
+        beforeEach(() => {
+            dashboard = shallow(<Dashboard />);
+            dashboard.setState({hasBeenClicked: true})
+            dashboard.setState({assignmentsSaved: false})
+
+        });
+
+        it('When not clicked thing with id save does not exist', () => {
+            expect(dashboard.find('#saved-confirmation').length).toEqual(0)
+        })
+
+        it('When clicked has text Save Confirmed! on the page', () => {
+            dashboard.find('#save').simulate('click')
+            expect(dashboard.find('#saved-confirmation').text()).toEqual('Save Confirmed!')
+        })
+
+        it('When clicked does not have respin or save buttons', () => {
+            dashboard.find('#save').simulate('click')
+
+            expect(dashboard.find('#respin').length).toEqual(0)
+            expect(dashboard.find('#save').length).toEqual(0)
+        })
+
     })
 
 });
