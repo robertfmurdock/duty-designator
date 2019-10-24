@@ -13,8 +13,6 @@ import (
 
 var ServeMux = initializeMux()
 
-var insertedChores []ChoreRecord
-
 type CandidateRecord struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`

@@ -107,6 +107,13 @@ dependencies:
       vcs: "git"
     vendorPath: "vendor/github.com/google/go-cmp"
     transitive: false
+  - urls:
+    - "https://github.com/google/uuid.git"
+    - "git@github.com:google/uuid.git"
+    vcs: "git"
+    name: "github.com/google/uuid"
+    commit: "c2e93f3ae59f2904160ceaab466009f965df46d6"
+    transitive: false
   - name: "github.com/joho/godotenv"
     host:
       name: "go.mongodb.org/mongo-driver"
@@ -114,13 +121,6 @@ dependencies:
       url: "https://github.com/mongodb/mongo-go-driver.git"
       vcs: "git"
     vendorPath: "vendor/github.com/joho/godotenv"
-    transitive: false
-  - urls:
-    - "https://github.com/jstemmer/go-junit-report.git"
-    - "git@github.com:jstemmer/go-junit-report.git"
-    vcs: "git"
-    name: "github.com/jstemmer/go-junit-report"
-    commit: "984a47ca6b0a7d704c4b589852051b4d7865aa17"
     transitive: false
   - name: "github.com/karrick/godirwalk"
     host:
@@ -303,11 +303,4 @@ dependencies:
       vcs: "git"
     vendorPath: "vendor/golang.org/x/tools"
     transitive: false
-  test:
-  - urls:
-    - "https://github.com/google/uuid.git"
-    - "git@github.com:google/uuid.git"
-    vcs: "git"
-    name: "github.com/google/uuid"
-    commit: "c2e93f3ae59f2904160ceaab466009f965df46d6"
-    transitive: false
+  test: []

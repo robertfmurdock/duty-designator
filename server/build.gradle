@@ -1,3 +1,5 @@
+import com.github.blindpirate.gogradle.Go
+
 plugins {
     id("com.github.blindpirate.gogradle") version "0.11.4"
 }
@@ -11,7 +13,6 @@ dependencies {
     golang {
         build 'name': 'go.mongodb.org/mongo-driver/mongo'
         build 'name': 'github.com/google/uuid'
-        build 'name': 'github.com/jstemmer/go-junit-report'
     }
 }
 
@@ -40,4 +41,18 @@ tasks {
         dependsOn build, ":client:build"
         commandLine("./.gogradle/server")
     }
+
+    task installErrcheck(type: Go) {
+        buildManager.prepareProjectGopathIfNecessary()
+        environment PATH: "${System.getenv("PATH")}:$buildManager.goBinaryManager.goroot/bin".toString()
+        go 'get github.com/kisielk/errcheck'
+    }
+
+    task goErrcheck(type: Go) {
+        dependsOn goVendor, installErrcheck
+        environment PATH: "${System.getenv("PATH")}:$buildManager.goBinaryManager.goroot/bin".toString()
+        go 'run github.com/kisielk/errcheck duty-designator/server/src duty-designator/server/test'
+    }
+
+//    goCheck.dependsOn goErrcheck
 }
