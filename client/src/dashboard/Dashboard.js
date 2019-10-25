@@ -3,9 +3,9 @@ import FetchService from '../utilities/services/fetchService';
 import {Box, Button, Container} from '@material-ui/core';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Results from '../results/Results'
-import associate from "../results/Associator";
+import {associateWithOffset} from "../results/Associator";
 
-const associateFunction = associate;
+const associateFunction = (pioneers, chores) => {return associateWithOffset(pioneers, chores, Date.now())};
 
 export default function Dashboard() {
     const [hasRendered, setHasRendered] = useState(false);
