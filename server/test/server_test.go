@@ -186,9 +186,9 @@ func TestGetChore_GetChoreReturnsAChoreThatWasPosted(t *testing.T) {
 
 	choreId := uuid.New()
 	chore := routing.ChoreRecord{
-		Name: "Compiled Cans",
+		Name:        "Compiled Cans",
 		Description: "Those cruddy cans cant keep complaining",
-		Id:   choreId.String(),
+		Id:          choreId.String(),
 	}
 
 	if err := insertChore(chore); err != nil {
@@ -258,7 +258,7 @@ func containsChoreID(s []routing.ChoreRecord, id string) bool {
 	return false
 }
 
-func containsChoreDescription(s []src.ChoreRecord, desc string) bool {
+func containsChoreDescription(s []routing.ChoreRecord, desc string) bool {
 	for _, a := range s {
 		if a.Description == desc {
 			return true
