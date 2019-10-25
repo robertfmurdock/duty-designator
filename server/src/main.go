@@ -19,6 +19,7 @@ type CandidateRecord struct {
 
 type ChoreRecord struct {
 	Name string `json:"name"`
+	Description string `json:"description"`
 	Id   string `json:"id"`
 }
 
@@ -158,14 +159,14 @@ func GetChore(writer http.ResponseWriter, _ *http.Request, dbClient *mongo.Clien
 		return err
 	}
 
-	var rows []CandidateRecord
+	var rows []ChoreRecord
 	err = cursor.All(context.TODO(), &rows)
 	if err != nil {
 		return err
 	}
 
 	if rows == nil {
-		rows = []CandidateRecord{}
+		rows = []ChoreRecord{}
 	}
 
 	choreRows, err := json.Marshal(rows)
