@@ -3,7 +3,7 @@ package test
 import (
 	"bytes"
 	"context"
-	"duty-designator/server/src"
+	"duty-designator/server/routing"
 	"encoding/json"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -65,16 +65,16 @@ func TestGetCandidatesHandler_WhenDatabaseDoesNotExistWillReturnEmptyList(t *tes
 	}
 }
 
-func performGetCandidatesRequest(t *testing.T) ([]src.CandidateRecord, error) {
+func performGetCandidatesRequest(t *testing.T) ([]routing.CandidateRecord, error) {
 	responseRecorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/api/candidate", nil)
 	if err != nil {
 		t.Error("Could not build get request.")
 		return nil, err
 	}
-	src.ServeMux.ServeHTTP(responseRecorder, request)
+	routing.ServeMux.ServeHTTP(responseRecorder, request)
 
-	var actualResponseBody []src.CandidateRecord
+	var actualResponseBody []routing.CandidateRecord
 	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
 		t.Error("Could not parse server results.")
 	}
@@ -82,7 +82,7 @@ func performGetCandidatesRequest(t *testing.T) ([]src.CandidateRecord, error) {
 	return actualResponseBody, nil
 }
 
-func insertNewCandidate(t *testing.T) (src.CandidateRecord, error) {
+func insertNewCandidate(t *testing.T) (routing.CandidateRecord, error) {
 	database := getDutyDB()
 	assignmentCollection := database.Collection("candidates")
 	bobsId := uuid.New()
@@ -90,10 +90,10 @@ func insertNewCandidate(t *testing.T) (src.CandidateRecord, error) {
 		context.Background(), bson.M{"Name": "bob", "id": bobsId.String()})
 	if err != nil {
 		t.Error("Could not insert")
-		return src.CandidateRecord{}, err
+		return routing.CandidateRecord{}, err
 	}
 
-	return src.CandidateRecord{Name: "bob", Id: bobsId.String()}, nil
+	return routing.CandidateRecord{Name: "bob", Id: bobsId.String()}, nil
 }
 
 func getDutyDB() *mongo.Database {
@@ -102,7 +102,7 @@ func getDutyDB() *mongo.Database {
 }
 
 func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
-	candidateToPOST := src.CandidateRecord{Name: "Alice", Id: uuid.New().String()}
+	candidateToPOST := routing.CandidateRecord{Name: "Alice", Id: uuid.New().String()}
 
 	if err := performPostCandidate(candidateToPOST, t); err != nil {
 		t.Errorf("Post Candidate Request failed. %v", err)
@@ -120,7 +120,7 @@ func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 	}
 }
 
-func performPostCandidate(candidateToPOST src.CandidateRecord, t *testing.T) error {
+func performPostCandidate(candidateToPOST routing.CandidateRecord, t *testing.T) error {
 	rawCandidate, e := json.Marshal(candidateToPOST)
 	if e != nil {
 		t.Error("Could not marshal candidate struct")
@@ -132,7 +132,7 @@ func performPostCandidate(candidateToPOST src.CandidateRecord, t *testing.T) err
 		return err
 	}
 	postResponseRecorder := httptest.NewRecorder()
-	src.ServeMux.ServeHTTP(postResponseRecorder, req)
+	routing.ServeMux.ServeHTTP(postResponseRecorder, req)
 	if postResponseRecorder.Code != 200 {
 		t.Error("Post was not successful", postResponseRecorder.Body.String())
 		return nil
@@ -140,7 +140,7 @@ func performPostCandidate(candidateToPOST src.CandidateRecord, t *testing.T) err
 	return err
 }
 
-func contains(s []src.CandidateRecord, e src.CandidateRecord) bool {
+func contains(s []routing.CandidateRecord, e routing.CandidateRecord) bool {
 	for _, a := range s {
 		if a == e {
 			return true
@@ -153,7 +153,7 @@ func TestPostChore_WillWriteToDb(t *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 
 	choreId := uuid.New()
-	chore := src.ChoreRecord{
+	chore := routing.ChoreRecord{
 		Name: "Compiled Cans",
 		Id:   choreId.String(),
 	}
@@ -161,7 +161,7 @@ func TestPostChore_WillWriteToDb(t *testing.T) {
 	choreJSON, _ := json.Marshal(chore)
 	request, _ := http.NewRequest(http.MethodPost, "/api/chore", bytes.NewReader(choreJSON))
 
-	src.ServeMux.ServeHTTP(responseRecorder, request)
+	routing.ServeMux.ServeHTTP(responseRecorder, request)
 
 	collection := client.Database("dutyDB").Collection("chores")
 
@@ -171,7 +171,7 @@ func TestPostChore_WillWriteToDb(t *testing.T) {
 		t.Errorf("MongoDB find error: %s", err)
 	}
 
-	var rows []src.ChoreRecord
+	var rows []routing.ChoreRecord
 	err = cursor.All(context.TODO(), &rows)
 
 	if !containsChoreID(rows, choreId.String()) {
@@ -185,7 +185,7 @@ func TestGetChore_GetChoreReturnsAChoreThatWasPosted(t *testing.T) {
 	request, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
 
 	choreId := uuid.New()
-	chore := src.ChoreRecord{
+	chore := routing.ChoreRecord{
 		Name: "Compiled Cans",
 		Description: "Those cruddy cans cant keep complaining",
 		Id:   choreId.String(),
@@ -195,13 +195,13 @@ func TestGetChore_GetChoreReturnsAChoreThatWasPosted(t *testing.T) {
 		t.Error("insert was not successful", err)
 	}
 
-	src.ServeMux.ServeHTTP(responseRecorder, request)
+	routing.ServeMux.ServeHTTP(responseRecorder, request)
 
 	if responseRecorder.Code != 200 {
 		t.Error("Post was not successful", responseRecorder.Body.String())
 	}
 
-	var choreList []src.ChoreRecord
+	var choreList []routing.ChoreRecord
 	var body = responseRecorder.Body.Bytes()
 	if err := json.Unmarshal(body, &choreList); err != nil {
 		t.Error(err)
@@ -226,13 +226,13 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 		t.Error("Drop was not successful", err)
 	}
 
-	src.ServeMux.ServeHTTP(responseRecorder, request)
+	routing.ServeMux.ServeHTTP(responseRecorder, request)
 
 	if responseRecorder.Code != 200 {
 		t.Error("Post was not successful", responseRecorder.Body.String())
 	}
 
-	var choreList []src.ChoreRecord
+	var choreList []routing.ChoreRecord
 	var body = responseRecorder.Body.Bytes()
 	if err := json.Unmarshal(body, &choreList); err != nil {
 		t.Error(err)
@@ -243,13 +243,13 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 	}
 }
 
-func insertChore(record src.ChoreRecord) error {
+func insertChore(record routing.ChoreRecord) error {
 	collection := client.Database("dutyDB").Collection("chores")
 	_, err := collection.InsertOne(context.Background(), record)
 	return err
 }
 
-func containsChoreID(s []src.ChoreRecord, id string) bool {
+func containsChoreID(s []routing.ChoreRecord, id string) bool {
 	for _, a := range s {
 		if a.Id == id {
 			return true

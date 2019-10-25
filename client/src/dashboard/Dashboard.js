@@ -21,7 +21,7 @@ export default class Dashboard extends React.Component {
 
     componentDidMount() {
         const state = this.loadStuff('savedState');
-        if( state === undefined ){
+        if (state === undefined) {
             this.populateTableState()
         } else {
             this.setState(state)
@@ -79,47 +79,83 @@ export default class Dashboard extends React.Component {
         try {
             const serializedState = JSON.stringify(stuff);
             localStorage.setItem(key, serializedState);
-        } catch(err) {
-            // Log error
+        } catch (err) {
         }
-    }
+    };
 
     loadStuff = (key) => {
         try {
             const serializedState = localStorage.getItem(key);
             return serializedState ? JSON.parse(serializedState) : undefined;
-        } catch(err) {
-            // Log error
+        } catch (err) {
             return undefined;
+        }
+    };
+
+    render() {
+        if (!this.state.hasBeenClicked) {
+            return this.setupPage();
+        } else {
+            return this.resultsPage()
         }
     }
 
-    render() {
-        const resetButton = <Button
+    setupPage() {
+        return <div>
+            <Container>
+                <Box display="flex" flexDirection="row" justifyContent="center">
+                    {this.getPioneerTable()}
+                    {this.getChoreTable()}
+                </Box>
+                <Box>
+                    {this.resetButton()}
+                    {this.saddleUpButton()}
+                    {this.addChoreModal()}
+                </Box>
+            </Container>
+        </div>;
+    }
+
+    resultsPage() {
+        return <Container>
+            <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>
+            {this.respinButton()}
+            {this.conditionallyRenderResultsButtons()}
+            {this.conditionallyRenderSavedConfirmation()}
+        </Container>;
+    }
+
+    conditionallyRenderResultsButtons() {
+        if (!this.state.assignmentsSaved) {
+            return <div>
+                {this.saveButton()}</div>;
+        }
+    }
+
+    conditionallyRenderSavedConfirmation() {
+        if (this.state.assignmentsSaved) {
+            return <p id='saved-confirmation'>Save Confirmed!</p>
+        }
+    }
+
+    saveButton() {
+        return <Button
             color="primary"
             size="large"
             variant="contained"
-            id="reset-button"
-            onClick={() => {this.populateTableState()}}>
-            Reset
+            id="save"
+            onClick={() => {
+                this.setState({assignmentsSaved: true},
+                    () => {
+                        this.saveStuff(this.state, 'savedState')
+                    })
+            }}>
+            Save this Wagon Wheel
         </Button>;
+    }
 
-        const saddleUpButton = <Button
-            color="primary"
-            size="large"
-            variant="contained"
-            id="saddle-up"
-            onClick={() => {this.setState({hasBeenClicked: true})}}>
-            Saddle Up
-        </Button>;
-
-        const addChoreModal = < AddChoreModal
-            open={this.state.modalOpen}
-            onClose={this.handleClose}
-            addChore={this.addChore}
-        />;
-
-        const respinButton = <Button
+    respinButton() {
+        return <Button
             color="secondary"
             size="large"
             variant="contained"
@@ -129,54 +165,40 @@ export default class Dashboard extends React.Component {
             }}>
             Respin this Wagon Wheel
         </Button>;
+    }
 
-        const saveButton = <Button
+    addChoreModal() {
+        return < AddChoreModal
+            open={this.state.modalOpen}
+            onClose={this.handleClose}
+            addChore={this.addChore}
+        />;
+    }
+
+    saddleUpButton() {
+        return <Button
             color="primary"
             size="large"
             variant="contained"
-            id="save"
+            id="saddle-up"
             onClick={() => {
-                this.setState({assignmentsSaved: true},
-                () => {this.saveStuff(this.state, 'savedState')})
+                this.setState({hasBeenClicked: true})
             }}>
-            Save this Wagon Wheel
+            Saddle Up
         </Button>;
+    }
 
-        let conditionallyRenderSavedConfirmation = () => {
-            if (this.state.assignmentsSaved) {
-                return <p id='saved-confirmation'>Save Confirmed!</p>
-            }
-        }
-
-        let conditionallyRenderResultsButtons = () => {
-            if (!this.state.assignmentsSaved) {
-                return <div>
-                    {saveButton}</div>;
-            }
-        }
-
-        if (!this.state.hasBeenClicked) {
-            return <div>
-                <Container>
-                    <Box display="flex" flexDirection="row" justifyContent="center">
-                        {this.getPioneerTable()}
-                        {this.getChoreTable()}
-                    </Box>
-                    <Box>
-                        {resetButton}
-                        {saddleUpButton}
-                        {addChoreModal}
-                    </Box>
-                </Container>
-            </div>;
-        } else {
-            return <Container>
-                <Results pioneers={this.state.pioneers} chores={this.state.chores} associator={associateFunction}/>
-                {respinButton}
-                {conditionallyRenderResultsButtons()}
-                {conditionallyRenderSavedConfirmation()}
-            </Container>
-        }
+    resetButton() {
+        return <Button
+            color="primary"
+            size="large"
+            variant="contained"
+            id="reset-button"
+            onClick={() => {
+                this.populateTableState()
+            }}>
+            Reset
+        </Button>;
     }
 }
 

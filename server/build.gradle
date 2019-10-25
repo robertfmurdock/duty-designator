@@ -29,6 +29,14 @@ tasks {
         dependsOn goTest
     }
 
+    goBuild {
+        inputs.dir("routing")
+        inputs.dir("test")
+        inputs.file("gogradle.lock")
+        inputs.file("main.go")
+        outputs.file(".gogradle/server")
+    }
+
     task("build") {
         dependsOn goBuild
     }
@@ -51,7 +59,7 @@ tasks {
     task goErrcheck(type: Go) {
         dependsOn goVendor, installErrcheck
         environment PATH: "${System.getenv("PATH")}:$buildManager.goBinaryManager.goroot/bin".toString()
-        go 'run github.com/kisielk/errcheck duty-designator/server/src duty-designator/server/test'
+        go 'run github.com/kisielk/errcheck duty-designator/server/routing duty-designator/server/test'
     }
 
     goCheck.dependsOn goErrcheck
