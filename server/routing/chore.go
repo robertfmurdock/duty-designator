@@ -27,8 +27,9 @@ func getChoresHandler(writer http.ResponseWriter, _ *http.Request, handlerContex
 }
 
 type ChoreRecord struct {
-	Name string `json:"name"`
-	Id   string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Id          string `json:"id"`
 }
 
 func loadChoreRecords(handlerContext *handlerContext) ([]ChoreRecord, error) {
