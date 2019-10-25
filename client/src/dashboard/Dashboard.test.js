@@ -5,12 +5,19 @@ import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Dashboard from './Dashboard';
 import Results from '../results/Results';
 import DutyTable from '../duties/DutyTable';
+import Typography from "@material-ui/core/Typography";
 
-async function waitUntil(hasAllPioneers) {
+async function waitUntil(untilFunction) {
     const start = new Date();
-    while (!hasAllPioneers() && (new Date() - start) < 300) {
+    while (!untilFunction() && (new Date() - start) < 300) {
         await yield25()
     }
+
+    expect(untilFunction()).toBe(true);
+}
+
+function promiseThatDoesNotResolve() {
+    return new Promise(() => ({}));
 }
 
 describe('Dashboard', () => {
@@ -19,30 +26,73 @@ describe('Dashboard', () => {
 
     beforeEach(jest.clearAllMocks);
 
-
     beforeEach(() => {
         fetchMock = FetchService.get = jest.fn();
         fetchMock.mockReturnValue(new Promise(() => ({})));
     });
 
-    test("while loading data shows no rows", () => {
-        fetchMock.mockReturnValue(new Promise(() => ({})));
+    it('while loading data shows loading element and no page', () => {
+        fetchMock.mockReturnValue(promiseThatDoesNotResolve());
 
         const dashboard = shallow(<Dashboard/>);
+
+        expect(dashboard.find(PioneerTable).length).toEqual(0);
+        expect(dashboard.find(ChoreTable).length).toEqual(0);
+        const typographyNode = dashboard.find(Typography);
+        expect(typographyNode.length).toEqual(1);
+        expect(typographyNode.text()).toEqual("Loadin', pardners");
+    });
+
+    it('while loading pioneers shows loading element and no page', () => {
+        fetchMock.mockImplementation(function (number, endpoint) {
+            if (endpoint === '/api/candidate') {
+                return promiseThatDoesNotResolve()
+            } else {
+                return Promise.resolve([]);
+            }
+        });
+
+        const dashboard = shallow(<Dashboard/>);
+
+        expect(dashboard.find(PioneerTable).length).toEqual(0);
+        expect(dashboard.find(ChoreTable).length).toEqual(0);
+        const typographyNode = dashboard.find(Typography);
+        expect(typographyNode.length).toEqual(1);
+        expect(typographyNode.text()).toEqual("Loadin', pardners");
+    });
+
+    it('while loading chores shows loading element and no page', () => {
+        fetchMock.mockImplementation(function (number, endpoint) {
+            if (endpoint === '/api/chore') {
+                return promiseThatDoesNotResolve()
+            } else {
+                return Promise.resolve([]);
+            }
+        });
+
+        const dashboard = shallow(<Dashboard/>);
+
+        expect(dashboard.find(PioneerTable).length).toEqual(0);
+        expect(dashboard.find(ChoreTable).length).toEqual(0);
+        const typographyNode = dashboard.find(Typography);
+        expect(typographyNode.length).toEqual(1);
+        expect(typographyNode.text()).toEqual("Loadin', pardners");
+    });
+
+    it('handles null task and pioneer lists', async function () {
+        fetchMock.mockReturnValue(Promise.resolve([]));
+
+        const dashboard = shallow(<Dashboard/>);
+        await waitUntil(() => dashboard.find(PioneerTable).length !== 0);
+
         expect(dashboard.find(PioneerTable).props().pioneers.length).toEqual(0);
         expect(dashboard.find(ChoreTable).props().chores.length).toEqual(0);
     });
 
-    test('handles null task and pioneer lists', () => {
-        fetchMock.mockReturnValue(new Promise((resolve) => resolve([])));
-
+    it('ChoreTable can open modal', async () => {
+        fetchMock.mockReturnValue(Promise.resolve([]));
         const dashboard = shallow(<Dashboard/>);
-        expect(dashboard.find(PioneerTable).props().pioneers.length).toEqual(0);
-        expect(dashboard.find(ChoreTable).props().chores.length).toEqual(0);
-    });
-
-    test('ChoreTable can open modal', () => {
-        const dashboard = shallow(<Dashboard/>);
+        await waitUntil(() => dashboard.find(ChoreTable).length !== 0);
 
         dashboard.find(ChoreTable)
             .props()
@@ -56,9 +106,9 @@ describe('Dashboard', () => {
 
         beforeEach(() => {
             pioneers = [
-                {id: " at thing", name: "Friday Jeb"},
-                {id: "something else", name: "Everyday Natalie"},
-                {id: "nothing", name: "Odd Day Rob"}
+                {id: ' at thing', name: 'Friday Jeb'},
+                {id: 'something else', name: 'Everyday Natalie'},
+                {id: 'nothing', name: 'Odd Day Rob'}
             ];
 
             fetchMock.mockReturnValue(
@@ -68,19 +118,19 @@ describe('Dashboard', () => {
             dashboard = shallow(<Dashboard/>);
         });
 
-        test('shows a list of pioneers', () => {
+        it('shows a list of pioneers', () => {
             const pioneerTable = dashboard.find(PioneerTable);
             expect(pioneerTable.props().pioneers).toBe(pioneers);
         });
 
-        test('When PioneerTable remove last Pioneer, last Pioneer row is removed', () => {
+        it('When PioneerTable remove last Pioneer, last Pioneer row is removed', () => {
             let pioneerToRemove = pioneers[2];
             simulateRemovePioneer(pioneerToRemove);
 
             expect(dashboard.find(PioneerTable).props().pioneers).toEqual(pioneers.slice(0, 2))
         });
 
-        test('When PioneerTable remove middle Pioneer, middle Pioneer row is removed', () => {
+        it('When PioneerTable remove middle Pioneer, middle Pioneer row is removed', () => {
             let pioneerToRemove = pioneers[1];
             simulateRemovePioneer(pioneerToRemove);
 
@@ -88,16 +138,13 @@ describe('Dashboard', () => {
             expect(dashboard.find(PioneerTable).props().pioneers).toEqual(expectedRemaining)
         });
 
-        test('Reset button presents default page', async () => {
+        it('Reset button presents default page', async () => {
             let pioneerToRemove = pioneers[0];
             simulateRemovePioneer(pioneerToRemove);
 
             dashboard.find('#reset-button').simulate('click');
 
-            await waitUntil(() => {
-                dashboard.update();
-                return dashboard.find(PioneerTable).props().pioneers === pioneers;
-            });
+            await waitUntil(()=> dashboard.find(PioneerTable).length !== 0);
 
             expect(dashboard.find(PioneerTable).props().pioneers).toEqual(pioneers)
         });
@@ -113,10 +160,10 @@ describe('Dashboard', () => {
 
         beforeEach(() => {
             chores = [
-                {id: "1", name: "Move chairs"},
-                {id: "2", name: "Turn off coffee pot"},
-                {id: "3", name: "Stock fridge with soda"},
-                {id: "4", name: "Put away dishes"},
+                {id: '1', name: 'Move chairs'},
+                {id: '2', name: 'Turn off coffee pot'},
+                {id: '3', name: 'Stock fridge with soda'},
+                {id: '4', name: 'Put away dishes'},
             ];
 
             fetchMock.mockReturnValue(new Promise(resolve => resolve(chores)));
@@ -124,7 +171,7 @@ describe('Dashboard', () => {
         });
 
         it('calls /api/chore', () => {
-            expect(fetchMock).toBeCalledWith(0, "/api/chore", undefined)
+            expect(fetchMock).toBeCalledWith(0, '/api/chore', undefined)
         });
 
         it('will send chores to chore table', () => {
@@ -132,7 +179,7 @@ describe('Dashboard', () => {
             expect(chores).toEqual(chores);
         });
 
-        test('When ChoreTable remove a chore, the chore entry is removed', () => {
+        it('When ChoreTable remove a chore, the chore entry is removed', () => {
             const choreToRemove = chores[1];
             const expectedRemaining = [chores[0], chores[2], chores[3]];
             simulateRemoveChore(choreToRemove);
@@ -140,8 +187,8 @@ describe('Dashboard', () => {
             expect(dashboard.find(ChoreTable).props().chores).toEqual(expectedRemaining)
         });
 
-        test('When AddChoreModal adds a chore, the chore entry is added to the list', () => {
-            const newChore = {id: "5", name: "Super Easy Chore", description: "Its so easy"};
+        it('When AddChoreModal adds a chore, the chore entry is added to the list', () => {
+            const newChore = {id: '5', name: 'Super Easy Chore', description: 'Its so easy'};
             const expectedChores = [...chores, newChore];
             dashboard.find(AddChoreModal).props().addChore(newChore.name, newChore.description);
 
@@ -157,9 +204,11 @@ describe('Dashboard', () => {
     describe('results', () => {
         let dashboard;
 
-        beforeEach(() => {
+        beforeEach(async () => {
             localStorage.clear();
+            fetchMock.mockReturnValue(Promise.resolve([]));
             dashboard = shallow(<Dashboard/>);
+            await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
             dashboard.find('#saddle-up').simulate('click');
         });
 
@@ -183,8 +232,10 @@ describe('Dashboard', () => {
     describe('results rendering with click', () => {
         let dashboard;
 
-        beforeEach(() => {
+        beforeEach(async () => {
+            fetchMock.mockReturnValue(Promise.resolve([]));
             dashboard = shallow(<Dashboard/>);
+            await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
         });
 
         it('before click the results are not rendered', () => {
@@ -206,42 +257,44 @@ describe('Dashboard', () => {
 
         beforeEach(() => {
             pioneers = [
-                {id: "at thing", name: "Friday Jeb"},
-                {id: "something else", name: "Everyday Natalie"},
+                {id: 'at thing', name: 'Friday Jeb'},
+                {id: 'something else', name: 'Everyday Natalie'},
             ];
 
             chores = [
-                {id: "1", name: "keyboard kleaner", description: "k"},
+                {id: '1', name: 'keyboard kleaner', description: 'k'},
             ];
 
             fetchMock.mockReturnValueOnce(
                 new Promise(resolve => resolve(pioneers))
             ).mockReturnValueOnce(new Promise(resolve => resolve(chores)));
 
-            dashboard = shallow(<Dashboard />);
+            dashboard = shallow(<Dashboard/>);
         });
 
         it('when saddle up clicked and Date is odd, second pioneer is assigned', () => {
             dateMock.mockReturnValue(1)
-            dashboard.find("#saddle-up").simulate('click')
+            dashboard.find('#saddle-up').simulate('click')
             expect(dashboard.find(Results).dive().find(DutyTable).props()
-                .duties[0].pioneer.name).toEqual("Everyday Natalie")
+                .duties[0].pioneer.name).toEqual('Everyday Natalie')
         })
 
         it('when saddle up clicked and Date is even, first pioneer is assigned', () => {
             dateMock.mockReturnValue(0)
-            dashboard.find("#saddle-up").simulate('click')
+            dashboard.find('#saddle-up').simulate('click')
             expect(dashboard.find(Results).dive().find(DutyTable).props()
-                .duties[0].pioneer.name).toEqual("Friday Jeb")
+                .duties[0].pioneer.name).toEqual('Friday Jeb')
         })
     })
 
     describe('save button on results page', () => {
         let dashboard;
 
-        beforeEach(() => {
+        beforeEach(async () => {
             localStorage.clear();
+            fetchMock.mockReturnValue(Promise.resolve([]));
             dashboard = shallow(<Dashboard/>);
+            await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
             dashboard.find('#saddle-up').simulate('click');
         });
 

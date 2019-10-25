@@ -1,26 +1,29 @@
 import React, {useState} from 'react';
 import FetchService from '../utilities/services/fetchService';
-import {Box, Button, Container} from '@material-ui/core';
+import {Box, Button, Container, Typography} from '@material-ui/core';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Results from '../results/Results'
 import {associateWithOffset} from "../results/Associator";
 
-const associateFunction = (pioneers, chores) => {return associateWithOffset(pioneers, chores, Date.now())};
+const associateFunction = (pioneers, chores) => {
+    return associateWithOffset(pioneers, chores, Date.now())
+};
 
 export default function Dashboard() {
-    const [hasRendered, setHasRendered] = useState(false);
+    const [hasRendered, setDataLoaded] = useState(false);
     const [pioneers, setPioneers] = useState([]);
     const [chores, setChores] = useState([]);
     const [hasBeenClicked, setHasBeenClicked] = useState(false);
     const [assignmentsSaved, setAssignmentsSaved] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
     if (!hasRendered) {
-        loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved);
-        setHasRendered(true);
+        loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved, setDataLoaded);
+        return <Typography>Loadin', pardners</Typography>
     }
-
-    const [modalOpen, setModalOpen] = useState(false);
-    if (!hasBeenClicked) {
+    if (hasBeenClicked) {
+        return resultsPage(pioneers, chores, setHasBeenClicked, assignmentsSaved, setAssignmentsSaved, hasBeenClicked)
+    } else {
         return setupPage(
             pioneers,
             setPioneers,
@@ -28,10 +31,9 @@ export default function Dashboard() {
             setChores,
             modalOpen,
             setModalOpen,
-            setHasBeenClicked
+            setHasBeenClicked,
+            setDataLoaded
         );
-    } else {
-        return resultsPage(pioneers, chores, setHasBeenClicked, assignmentsSaved, setAssignmentsSaved, hasBeenClicked)
     }
 }
 
@@ -44,15 +46,16 @@ const saveStuff = (stuff, key) => {
     }
 };
 
-function loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved) {
+function loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved, setDataLoaded) {
     const state = loadStuff('savedState');
     if (state === undefined) {
-        populateTableState(setPioneers, setChores)
+        populateTableState(setPioneers, setChores, setDataLoaded)
     } else {
         setPioneers(state.pioneers);
         setChores(state.chores);
         setHasBeenClicked(state.hasBeenClicked);
         setAssignmentsSaved(state.assignmentsSaved);
+        setDataLoaded(true);
     }
 }
 
@@ -65,17 +68,20 @@ const loadStuff = (key) => {
     }
 };
 
-function populateTableState(setPioneers, setChores) {
-    FetchService.get(0, "/api/candidate", undefined)
-        .then(response => setPioneers(response))
-        .catch(err => console.warn(err));
-
-    FetchService.get(0, "/api/chore", undefined)
-        .then(response => setChores(response))
-        .catch(err => console.warn(err));
+function populateTableState(setPioneers, setChores, setDataLoaded) {
+    Promise.all([
+        FetchService.get(0, "/api/candidate", undefined),
+        FetchService.get(0, "/api/chore", undefined)
+    ])
+        .then(results => {
+            const [pioneers, chores] = results;
+            setPioneers(pioneers);
+            setChores(chores);
+            setDataLoaded(true);
+        })
 }
 
-function setupPage(pioneers, setPioneers, chores, setChores, modalOpen, setModalOpen, setHasBeenClicked) {
+function setupPage(pioneers, setPioneers, chores, setChores, modalOpen, setModalOpen, setHasBeenClicked, setDataLoaded) {
     return <div>
         <Container>
             <Box display="flex" flexDirection="row" justifyContent="center">
@@ -83,7 +89,7 @@ function setupPage(pioneers, setPioneers, chores, setChores, modalOpen, setModal
                 {getChoreTable(chores, setChores, setModalOpen)}
             </Box>
             <Box>
-                {resetButton(setPioneers, setChores)}
+                {resetButton(setDataLoaded)}
                 {saddleUpButton(setHasBeenClicked)}
                 {addChoreModal(modalOpen, setModalOpen, chores, setChores)}
             </Box>
@@ -114,13 +120,13 @@ const getChoreTable = (chores, setChores, setModalOpen) => (
     />
 );
 
-function resetButton(setPioneers, setChores) {
+function resetButton(setDataLoaded) {
     return <Button
         color="primary"
         size="large"
         variant="contained"
         id="reset-button"
-        onClick={() => populateTableState(setPioneers, setChores)}>
+        onClick={() => setDataLoaded(false)}>
         Reset
     </Button>;
 }
