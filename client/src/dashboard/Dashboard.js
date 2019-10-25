@@ -1,5 +1,5 @@
 import React from 'react';
-import FetchService from '../services/fetchService';
+import FetchService from '../utilities/services/fetchService';
 import {Box, Button, Container} from '@material-ui/core';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Results from '../results/Results'

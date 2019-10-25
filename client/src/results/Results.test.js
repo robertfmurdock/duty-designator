@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import Results from './Results';
-import DutyTable from "../tables/DutyTable";
+import DutyTable from "../duties/DutyTable";
 import associate from "./Associator";
 
 describe('Results', () => {

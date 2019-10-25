@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import FetchService from '../services/fetchService';
+import FetchService from '../utilities/services/fetchService';
 import { AddChoreModal, ChoreTable, PioneerTable } from './index';
 import Dashboard from './Dashboard';
 import Results from '../results/Results';

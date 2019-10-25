@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import Dashboard from './dashboard/Dashboard.js';
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
-import TodaysWagonWheel from "./TodaysWagonWheel";
+import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
 
 const theme = createMuiTheme({
     palette: {
@@ -17,7 +17,7 @@ const theme = createMuiTheme({
     }
 });
 
-function App() {
+export default function App() {
     return (
         <div style={{padding: 32}}>
             <MuiThemeProvider theme={theme}>
@@ -27,5 +27,3 @@ function App() {
         </div>
     );
 }
-
-export default App;

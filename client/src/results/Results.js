@@ -1,6 +1,6 @@
 import React from "react";
 import {Container} from "@material-ui/core";
-import DutyTable from "../tables/DutyTable";
+import DutyTable from "../duties/DutyTable";
 
 export default function Results(props) {
     const {associator, pioneers, chores} = props;

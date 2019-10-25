@@ -1,5 +1,5 @@
 import AddChoreModal from "./AddChoreModal";
-import ChoreTable from "../tables/ChoreTable";
-import PioneerTable from "../tables/PioneerTable";
+import ChoreTable from "../chores/ChoreTable";
+import PioneerTable from "../pioneers/PioneerTable";
 
 export {AddChoreModal, ChoreTable, PioneerTable};
