@@ -23,7 +23,7 @@
     "eject": "react-scripts eject"
   },
   "jest-junit": {
-    "outputDirectory": "../test-results",
+    "outputDirectory": "../test-results/client",
     "outputName": "junit.xml"
   },
   "eslintConfig": {

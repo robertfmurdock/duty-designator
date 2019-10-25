@@ -29,6 +29,14 @@ tasks {
         dependsOn goTest
     }
 
+    goBuild {
+        inputs.dir("routing")
+        inputs.dir("test")
+        inputs.file("gogradle.lock")
+        inputs.file("main.go")
+        outputs.file(".gogradle/server")
+    }
+
     task("build") {
         dependsOn goBuild
     }

@@ -56,7 +56,7 @@ func postChoreHandler(writer http.ResponseWriter, request *http.Request, handler
 		return err
 	}
 
-	collection := handlerContext.dbClient.Database("dutyDB").Collection("chores")
+	collection := handlerContext.dutyDb().Collection("chores")
 	_, err := collection.InsertOne(context.Background(), choreRecord)
 	return err
 }

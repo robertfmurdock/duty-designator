@@ -19,12 +19,22 @@ tasks {
 
     val test by creating(YarnTask::class) {
         dependsOn(yarn)
+        inputs.dir("src")
+        inputs.dir("public")
+        inputs.file("package.json")
+        outputs.dir("../test-results/client")
+
         setEnvironment(mapOf("CI" to "true"))
         args = listOf("test")
     }
 
     val build by creating(YarnTask::class) {
         dependsOn(yarn)
+        inputs.dir("src")
+        inputs.dir("public")
+        inputs.file("package.json")
+        outputs.dir("build")
+
         setEnvironment(mapOf("CI" to "true"))
         args = listOf("build")
     }

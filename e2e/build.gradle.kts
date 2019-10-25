@@ -19,6 +19,17 @@ tasks {
     val endToEnd by creating(YarnTask::class) {
         dependsOn(yarn, ":client:build", ":server:build")
         mustRunAfter(":server:check")
+
+        val clientBuildFiles = findByPath(":client:build")!!.outputs.files
+        inputs.files(clientBuildFiles)
+        val serverBuildFiles = findByPath(":server:goBuild")!!.outputs.files
+        inputs.files(serverBuildFiles)
+        inputs.dir("cypress/fixtures")
+        inputs.dir("cypress/integration")
+        inputs.dir("cypress/plugins")
+        inputs.file("package.json")
+        outputs.dir("../test-results/e2e")
+
         setEnvironment(mapOf("CI" to "true"))
         args = listOf("e2e")
     }
