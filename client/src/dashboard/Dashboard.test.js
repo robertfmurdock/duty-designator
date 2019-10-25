@@ -4,6 +4,7 @@ import FetchService from '../utilities/services/fetchService';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Dashboard from './Dashboard';
 import Results from '../results/Results';
+import DutyTable from '../duties/DutyTable';
 
 async function waitUntil(hasAllPioneers) {
     const start = new Date();
@@ -195,6 +196,45 @@ describe('Dashboard', () => {
             expect(dashboard.find(Results).length).toEqual(1)
         });
     });
+
+    describe('Date dependent results rendering with two pioneers one chore', () => {
+        let dashboard;
+        let pioneers;
+        let chores;
+
+        let dateMock = Date.now = jest.fn();
+
+        beforeEach(() => {
+            pioneers = [
+                {id: "at thing", name: "Friday Jeb"},
+                {id: "something else", name: "Everyday Natalie"},
+            ];
+
+            chores = [
+                {id: "1", name: "keyboard kleaner", description: "k"},
+            ];
+
+            fetchMock.mockReturnValueOnce(
+                new Promise(resolve => resolve(pioneers))
+            ).mockReturnValueOnce(new Promise(resolve => resolve(chores)));
+
+            dashboard = shallow(<Dashboard />);
+        });
+
+        it('when saddle up clicked and Date is odd, second pioneer is assigned', () => {
+            dateMock.mockReturnValue(1)
+            dashboard.find("#saddle-up").simulate('click')
+            expect(dashboard.find(Results).dive().find(DutyTable).props()
+                .duties[0].pioneer.name).toEqual("Everyday Natalie")
+        })
+
+        it('when saddle up clicked and Date is even, first pioneer is assigned', () => {
+            dateMock.mockReturnValue(0)
+            dashboard.find("#saddle-up").simulate('click')
+            expect(dashboard.find(Results).dive().find(DutyTable).props()
+                .duties[0].pioneer.name).toEqual("Friday Jeb")
+        })
+    })
 
     describe('save button on results page', () => {
         let dashboard;
