@@ -1,12 +1,9 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import {shallow} from 'enzyme';
 import FetchService from '../utilities/services/fetchService';
-import { AddChoreModal, ChoreTable, PioneerTable } from './index';
+import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Dashboard from './Dashboard';
 import Results from '../results/Results';
-
-// console.warn = jest.fn();
-let fetchMock = FetchService.get = jest.fn();
 
 async function waitUntil(hasAllPioneers) {
     const start = new Date();
@@ -16,7 +13,16 @@ async function waitUntil(hasAllPioneers) {
 }
 
 describe('Dashboard', () => {
+
+    let fetchMock;
+
     beforeEach(jest.clearAllMocks);
+
+
+    beforeEach(() => {
+        fetchMock = FetchService.get = jest.fn();
+        fetchMock.mockReturnValue(new Promise(() => ({})));
+    });
 
     test("while loading data shows no rows", () => {
         fetchMock.mockReturnValue(new Promise(() => ({})));
@@ -151,27 +157,25 @@ describe('Dashboard', () => {
         let dashboard;
 
         beforeEach(() => {
-            dashboard = shallow(<Dashboard />);
-            dashboard.setState({hasBeenClicked: true})
-
+            localStorage.clear();
+            dashboard = shallow(<Dashboard/>);
+            dashboard.find('#saddle-up').simulate('click');
         });
 
         it('has pioneer props are equal to dashboard\'s state', () => {
             expect(dashboard.find(Results).props().pioneers)
-                .toBe(dashboard.state().pioneers)
-        })
+                .toEqual([])
+        });
 
         it('has chore props are equal to dashboard\'s state', () => {
             expect(dashboard.find(Results).props().chores)
-                .toBe(dashboard.state().chores)
-        })
+                .toEqual([])
+        });
 
         it('has a respin button that takes you back to the first view of dashboard', () => {
-            dashboard.setState({hasBeenClicked: true})
-            dashboard.find('#respin').simulate('click')
-            expect(dashboard.state().hasBeenClicked).toEqual(false)
+            dashboard.find('#respin').simulate('click');
+            expect(dashboard.find(ChoreTable).length).toEqual(1)
         })
-
 
     });
 
@@ -179,7 +183,7 @@ describe('Dashboard', () => {
         let dashboard;
 
         beforeEach(() => {
-            dashboard = shallow(<Dashboard />);
+            dashboard = shallow(<Dashboard/>);
         });
 
         it('before click the results are not rendered', () => {
@@ -187,14 +191,9 @@ describe('Dashboard', () => {
         });
 
         it('after click has results that are rendered', () => {
-            dashboard.setState({hasBeenClicked: true})
+            dashboard.find('#saddle-up').simulate('click');
             expect(dashboard.find(Results).length).toEqual(1)
         });
-
-        it('saddle-up button changes hasBeenClicked state', () => {
-            dashboard.find('#saddle-up').simulate('click')
-            expect(dashboard.state().hasBeenClicked).toEqual(true)
-        })
     });
 
     describe('save button on results page', () => {
@@ -202,10 +201,8 @@ describe('Dashboard', () => {
 
         beforeEach(() => {
             localStorage.clear();
-            dashboard = shallow(<Dashboard />);
-            dashboard.setState({hasBeenClicked: true})
-            dashboard.setState({assignmentsSaved: false})
-
+            dashboard = shallow(<Dashboard/>);
+            dashboard.find('#saddle-up').simulate('click');
         });
 
         it('When not clicked thing with id save does not exist', () => {
@@ -213,25 +210,19 @@ describe('Dashboard', () => {
         });
 
         it('When clicked has text Save Confirmed! on the page', () => {
-            dashboard.find('#save').simulate('click')
+            dashboard.find('#save').simulate('click');
             expect(dashboard.find('#saved-confirmation').text()).toEqual('Save Confirmed!')
         });
 
         it('When clicked does not have save button', () => {
-            dashboard.find('#save').simulate('click')
+            dashboard.find('#save').simulate('click');
 
-            expect(dashboard.find('#respin').length).toEqual(1)
+            expect(dashboard.find('#respin').length).toEqual(1);
             expect(dashboard.find('#save').length).toEqual(0)
         })
-
     })
 
 });
-
-
-
-
-
 
 function yield25() {
     return new Promise((resolve) => {
