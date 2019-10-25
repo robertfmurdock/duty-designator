@@ -40,13 +40,15 @@ Stop MongoDB: `brew services stop mongodb-community`
 
 In `mongo` client first clear out the existing if you desire
 
-```use dutyDB
+```
+use dutyDB
 db.dropDatabase()
 ```
 
 and from terminal shell
 
-```unzip initialData.zip
+```
+unzip initialData.zip
 mongoimport --type=csv --file=chores.csv --headerline -ddutyDB -cchores
 mongoimport --type=csv --file=pioneers.csv --headerline -ddutyDB -ccandidates
 ```
