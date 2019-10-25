@@ -36,6 +36,21 @@ In the `server` directory:<br>
 Start MongoDB: `brew services start mongodb-community`<br>
 Stop MongoDB: `brew services stop mongodb-community`
 
+### Initial MongoDB state
+
+In `mongo` client first clear out the existing if you desire
+
+```use dutyDB
+db.dropDatabase()
+```
+
+and from terminal shell
+
+```unzip initialData.zip
+mongoimport --type=csv --file=chores.csv --headerline -ddutyDB -cchores
+mongoimport --type=csv --file=pioneers.csv --headerline -ddutyDB -ccandidates
+```
+
 ## React Scripts
 
 In the `client` directory, you can run:
