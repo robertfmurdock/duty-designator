@@ -12,14 +12,14 @@ export default function Dashboard() {
     const [pioneers, setPioneers] = useState([]);
     const [chores, setChores] = useState([]);
     const [hasBeenClicked, setHasBeenClicked] = useState(false);
-    const [modalOpen, setModalOpen] = useState(false);
     const [assignmentsSaved, setAssignmentsSaved] = useState(false);
 
     if (!hasRendered) {
-        loadState(setPioneers, setChores, setHasBeenClicked, setModalOpen, setAssignmentsSaved);
+        loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved);
         setHasRendered(true);
     }
 
+    const [modalOpen, setModalOpen] = useState(false);
     if (!hasBeenClicked) {
         return setupPage(
             pioneers,
@@ -31,14 +31,7 @@ export default function Dashboard() {
             setHasBeenClicked
         );
     } else {
-        const stuffSaver = () => saveStuff({
-            pioneers,
-            chores,
-            hasBeenClicked,
-            modalOpen,
-            assignmentsSaved: true
-        }, 'savedState');
-        return resultsPage(pioneers, chores, setHasBeenClicked, assignmentsSaved, setAssignmentsSaved, stuffSaver)
+        return resultsPage(pioneers, chores, setHasBeenClicked, assignmentsSaved, setAssignmentsSaved, hasBeenClicked)
     }
 }
 
@@ -51,7 +44,7 @@ const saveStuff = (stuff, key) => {
     }
 };
 
-function loadState(setPioneers, setChores, setHasBeenClicked, setModalOpen, setAssignmentsSaved) {
+function loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved) {
     const state = loadStuff('savedState');
     if (state === undefined) {
         populateTableState(setPioneers, setChores)
@@ -59,7 +52,6 @@ function loadState(setPioneers, setChores, setHasBeenClicked, setModalOpen, setA
         setPioneers(state.pioneers);
         setChores(state.chores);
         setHasBeenClicked(state.hasBeenClicked);
-        setModalOpen(state.modalOpen);
         setAssignmentsSaved(state.assignmentsSaved);
     }
 }
@@ -159,11 +151,18 @@ const addChore = (name, description, chores, setModalOpen, setChores) => {
     setChores([...chores, newChore]);
 };
 
-function resultsPage(pioneers, chores, setHasBeenClicked, assignmentsSaved, setAssignmentsSaved, saveStuff) {
+function resultsPage(pioneers, chores, setHasBeenClicked, assignmentsSaved, setAssignmentsSaved, hasBeenClicked) {
+    const stuffSaver = () => saveStuff({
+        pioneers,
+        chores,
+        hasBeenClicked,
+        assignmentsSaved: true
+    }, 'savedState');
+
     return <Container>
         <Results pioneers={pioneers} chores={chores} associator={associateFunction}/>
         {respinButton(setHasBeenClicked, setAssignmentsSaved)}
-        {conditionallyRenderResultsButtons(assignmentsSaved, setAssignmentsSaved, saveStuff)}
+        {conditionallyRenderResultsButtons(assignmentsSaved, setAssignmentsSaved, stuffSaver)}
         {conditionallyRenderSavedConfirmation(assignmentsSaved)}
     </Container>;
 }
