@@ -5,7 +5,7 @@ import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Dashboard from './Dashboard';
 import Results from '../results/Results';
 import DutyTable from '../duties/DutyTable';
-import Typography from "@material-ui/core/Typography";
+import {Loading} from "./Loading";
 
 async function waitUntil(untilFunction) {
     const start = new Date();
@@ -38,9 +38,7 @@ describe('Dashboard', () => {
 
         expect(dashboard.find(PioneerTable).length).toEqual(0);
         expect(dashboard.find(ChoreTable).length).toEqual(0);
-        const typographyNode = dashboard.find(Typography);
-        expect(typographyNode.length).toEqual(1);
-        expect(typographyNode.text()).toEqual("Loadin', pardners");
+        expect(dashboard.find(Loading).length).toEqual(1);
     });
 
     it('while loading pioneers shows loading element and no page', () => {
@@ -56,9 +54,7 @@ describe('Dashboard', () => {
 
         expect(dashboard.find(PioneerTable).length).toEqual(0);
         expect(dashboard.find(ChoreTable).length).toEqual(0);
-        const typographyNode = dashboard.find(Typography);
-        expect(typographyNode.length).toEqual(1);
-        expect(typographyNode.text()).toEqual("Loadin', pardners");
+        expect(dashboard.find(Loading).length).toEqual(1);
     });
 
     it('while loading chores shows loading element and no page', () => {
@@ -74,9 +70,7 @@ describe('Dashboard', () => {
 
         expect(dashboard.find(PioneerTable).length).toEqual(0);
         expect(dashboard.find(ChoreTable).length).toEqual(0);
-        const typographyNode = dashboard.find(Typography);
-        expect(typographyNode.length).toEqual(1);
-        expect(typographyNode.text()).toEqual("Loadin', pardners");
+        expect(dashboard.find(Loading).length).toEqual(1);
     });
 
     it('handles null task and pioneer lists', async function () {

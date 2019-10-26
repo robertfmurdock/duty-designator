@@ -1,25 +1,26 @@
 import React, {useState} from 'react';
 import FetchService from '../utilities/services/fetchService';
-import {Box, Button, Container, Typography} from '@material-ui/core';
+import {Box, Button, Container} from '@material-ui/core';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Results from '../results/Results'
 import {associateWithOffset} from "../results/Associator";
+import {Loading} from "./Loading";
 
 const associateFunction = (pioneers, chores) => {
     return associateWithOffset(pioneers, chores, Date.now())
 };
 
 export default function Dashboard() {
-    const [hasRendered, setDataLoaded] = useState(false);
+    const [dataLoaded, setDataLoaded] = useState(undefined);
     const [pioneers, setPioneers] = useState([]);
     const [chores, setChores] = useState([]);
     const [hasBeenClicked, setHasBeenClicked] = useState(false);
     const [assignmentsSaved, setAssignmentsSaved] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
 
-    if (!hasRendered) {
-        loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved, setDataLoaded);
-        return <Typography>Loadin', pardners</Typography>
+    if (!dataLoaded) {
+        loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved, setDataLoaded)
+        return <Loading/>
     }
     if (hasBeenClicked) {
         return resultsPage(pioneers, chores, setHasBeenClicked, assignmentsSaved, setAssignmentsSaved, hasBeenClicked)
@@ -47,15 +48,16 @@ const saveStuff = (stuff, key) => {
 };
 
 function loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved, setDataLoaded) {
-    const state = loadStuff('savedState');
-    if (state === undefined) {
-        populateTableState(setPioneers, setChores, setDataLoaded)
-    } else {
-        setPioneers(state.pioneers);
-        setChores(state.chores);
-        setHasBeenClicked(state.hasBeenClicked);
-        setAssignmentsSaved(state.assignmentsSaved);
+    const localBrowserState = loadStuff('savedState');
+    if (localBrowserState !== undefined) {
+        setPioneers(localBrowserState.pioneers);
+        setChores(localBrowserState.chores);
+        setHasBeenClicked(localBrowserState.hasBeenClicked);
+        setAssignmentsSaved(localBrowserState.assignmentsSaved);
         setDataLoaded(true);
+    } else {
+        getData(setPioneers, setChores)
+            .then(() => setDataLoaded(true));
     }
 }
 
@@ -68,8 +70,8 @@ const loadStuff = (key) => {
     }
 };
 
-function populateTableState(setPioneers, setChores, setDataLoaded) {
-    Promise.all([
+function getData(setPioneers, setChores) {
+    return Promise.all([
         FetchService.get(0, "/api/candidate", undefined),
         FetchService.get(0, "/api/chore", undefined)
     ])
@@ -77,7 +79,6 @@ function populateTableState(setPioneers, setChores, setDataLoaded) {
             const [pioneers, chores] = results;
             setPioneers(pioneers);
             setChores(chores);
-            setDataLoaded(true);
         })
 }
 
@@ -85,19 +86,19 @@ function setupPage(pioneers, setPioneers, chores, setChores, modalOpen, setModal
     return <div>
         <Container>
             <Box display="flex" flexDirection="row" justifyContent="center">
-                {getPioneerTable(pioneers, setPioneers)}
-                {getChoreTable(chores, setChores, setModalOpen)}
+                {pioneerTable(pioneers, setPioneers)}
+                {choreTable(chores, setChores, setModalOpen)}
+                {addChoreModal(modalOpen, setModalOpen, chores, setChores)}
             </Box>
             <Box>
                 {resetButton(setDataLoaded)}
                 {saddleUpButton(setHasBeenClicked)}
-                {addChoreModal(modalOpen, setModalOpen, chores, setChores)}
             </Box>
         </Container>
     </div>;
 }
 
-function getPioneerTable(pioneers, setPioneers) {
+function pioneerTable(pioneers, setPioneers) {
     return <PioneerTable
         pioneers={pioneers}
         onRemove={
@@ -108,15 +109,14 @@ function getPioneerTable(pioneers, setPioneers) {
     />;
 }
 
-const getChoreTable = (chores, setChores, setModalOpen) => (
+const choreTable = (chores, setChores, setModalOpen) => (
     <ChoreTable
         chores={chores}
         addChoreHandler={() => setModalOpen(true)}
-        onRemove={removedChore => {
+        onRemove={removedChore =>
             setChores(chores.filter(
                 chore => chore !== removedChore
-            ))
-        }}
+            ))}
     />
 );
 
