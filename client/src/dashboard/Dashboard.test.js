@@ -6,6 +6,7 @@ import Dashboard from './Dashboard';
 import Results from '../results/Results';
 import DutyTable from '../duties/DutyTable';
 import {Loading} from "./Loading";
+import DutyRoster from "./DutyRoster";
 
 async function waitUntil(untilFunction) {
     const start = new Date();
@@ -197,27 +198,28 @@ describe('Dashboard', () => {
 
     describe('results', () => {
         let dashboard;
-
+        let dutyRoster;
         beforeEach(async () => {
             localStorage.clear();
             fetchMock.mockReturnValue(Promise.resolve([]));
             dashboard = shallow(<Dashboard/>);
             await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
             dashboard.find('#saddle-up').simulate('click');
+            dutyRoster = dashboard.find(DutyRoster).dive();
         });
 
         it('has pioneer props are equal to dashboard\'s state', () => {
-            expect(dashboard.find(Results).props().pioneers)
+            expect(dutyRoster.find(Results).props().pioneers)
                 .toEqual([])
         });
 
         it('has chore props are equal to dashboard\'s state', () => {
-            expect(dashboard.find(Results).props().chores)
+            expect(dutyRoster.find(Results).props().chores)
                 .toEqual([])
         });
 
         it('has a respin button that takes you back to the first view of dashboard', () => {
-            dashboard.find('#respin').simulate('click');
+            dutyRoster.find('#respin').simulate('click');
             expect(dashboard.find(ChoreTable).length).toEqual(1)
         })
 
@@ -238,7 +240,8 @@ describe('Dashboard', () => {
 
         it('after click has results that are rendered', () => {
             dashboard.find('#saddle-up').simulate('click');
-            expect(dashboard.find(Results).length).toEqual(1)
+            const dutyRoster = dashboard.find(DutyRoster).dive();
+            expect(dutyRoster.find(Results).length).toEqual(1)
         });
     });
 
@@ -269,20 +272,23 @@ describe('Dashboard', () => {
         it('when saddle up clicked and Date is odd, second pioneer is assigned', () => {
             dateMock.mockReturnValue(1)
             dashboard.find('#saddle-up').simulate('click')
-            expect(dashboard.find(Results).dive().find(DutyTable).props()
+            const dutyRoster = dashboard.find(DutyRoster).dive();
+            expect(dutyRoster.find(Results).dive().find(DutyTable).props()
                 .duties[0].pioneer.name).toEqual('Everyday Natalie')
         })
 
         it('when saddle up clicked and Date is even, first pioneer is assigned', () => {
             dateMock.mockReturnValue(0)
             dashboard.find('#saddle-up').simulate('click')
-            expect(dashboard.find(Results).dive().find(DutyTable).props()
+            const dutyRoster = dashboard.find(DutyRoster).dive();
+            expect(dutyRoster.find(Results).dive().find(DutyTable).props()
                 .duties[0].pioneer.name).toEqual('Friday Jeb')
         })
     })
 
     describe('save button on results page', () => {
         let dashboard;
+        let dutyRoster;
 
         beforeEach(async () => {
             localStorage.clear();
@@ -290,22 +296,24 @@ describe('Dashboard', () => {
             dashboard = shallow(<Dashboard/>);
             await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
             dashboard.find('#saddle-up').simulate('click');
+            dutyRoster = dashboard.find(DutyRoster).dive();
         });
 
         it('When not clicked thing with id save does not exist', () => {
-            expect(dashboard.find('#saved-confirmation').length).toEqual(0)
+            expect(dutyRoster.find('#saved-confirmation').length).toEqual(0)
         });
 
         it('When clicked has text Save Confirmed! on the page', () => {
-            dashboard.find('#save').simulate('click');
-            expect(dashboard.find('#saved-confirmation').text()).toEqual('Save Confirmed!')
+            dutyRoster.find('#save').simulate('click');
+            dutyRoster = dashboard.find(DutyRoster).dive();
+            expect(dutyRoster.find('#saved-confirmation').text()).toEqual('Save Confirmed!')
         });
 
         it('When clicked does not have save button', () => {
-            dashboard.find('#save').simulate('click');
-
-            expect(dashboard.find('#respin').length).toEqual(1);
-            expect(dashboard.find('#save').length).toEqual(0)
+            dutyRoster.find('#save').simulate('click');
+            dutyRoster = dashboard.find(DutyRoster).dive();
+            expect(dutyRoster.find('#respin').length).toEqual(1);
+            expect(dutyRoster.find('#save').length).toEqual(0)
         })
     })
 

@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import FetchService from '../utilities/services/fetchService';
 import {Box, Button, Container} from '@material-ui/core';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
-import Results from '../results/Results'
+
 import {associateWithOffset} from "../results/Associator";
 import {Loading} from "./Loading";
+import DutyRoster from "./DutyRoster";
 
 const associateFunction = (pioneers, chores) => {
     return associateWithOffset(pioneers, chores, Date.now())
@@ -157,25 +158,16 @@ const addChore = (name, description, chores, setModalOpen, setChores) => {
     setChores([...chores, newChore]);
 };
 
-function dutyRoster(pioneers, chores, showSaveControls, onRespin, onSave, associateFunction) {
-    return <Container>
-        <Results pioneers={pioneers} chores={chores} associator={associateFunction}/>
-        {respinButton(onRespin)}
-        {conditionallyRenderResultsButtons(showSaveControls, onSave)}
-        {conditionallyRenderSavedConfirmation(showSaveControls)}
-    </Container>;
-}
-
 function resultsPage(pioneers, chores, setShowDutyRoster, assignmentsSaved, setAssignmentsSaved, showDutyRoster) {
-    return dutyRoster(
-        pioneers,
-        chores,
-        assignmentsSaved,
-        () => {
+    return <DutyRoster
+        pioneers={pioneers}
+        chores={chores}
+        showSaveControls={assignmentsSaved}
+        onRespin={() => {
             setShowDutyRoster(false);
             setAssignmentsSaved(false)
-        },
-        () => {
+        }}
+        onSave={() => {
             setAssignmentsSaved(true);
             saveStuff({
                 pioneers,
@@ -183,42 +175,9 @@ function resultsPage(pioneers, chores, setShowDutyRoster, assignmentsSaved, setA
                 showDutyRoster: showDutyRoster,
                 assignmentsSaved: true
             }, 'savedState')
-        },
-        associateFunction
-    );
+        }}
+        associator={associateFunction}
+    />;
 }
 
-function respinButton(onRespin) {
-    return <Button
-        color="secondary"
-        size="large"
-        variant="contained"
-        id="respin"
-        onClick={onRespin}>
-        Respin this Wagon Wheel
-    </Button>;
-}
 
-function conditionallyRenderResultsButtons(showSaveControls, onSave) {
-    if (!showSaveControls) {
-        return <div>
-            {saveButton(onSave)}</div>;
-    }
-}
-
-function saveButton(onSave) {
-    return <Button
-        color="primary"
-        size="large"
-        variant="contained"
-        id="save"
-        onClick={onSave}>
-        Save this Wagon Wheel
-    </Button>;
-}
-
-function conditionallyRenderSavedConfirmation(assignmentsSaved) {
-    if (assignmentsSaved) {
-        return <p id='saved-confirmation'>Save Confirmed!</p>
-    }
-}
