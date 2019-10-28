@@ -14,16 +14,16 @@ export default function Dashboard() {
     const [dataLoaded, setDataLoaded] = useState(undefined);
     const [pioneers, setPioneers] = useState([]);
     const [chores, setChores] = useState([]);
-    const [hasBeenClicked, setHasBeenClicked] = useState(false);
+    const [showDutyRoster, setShowDutyRoster] = useState(false);
     const [assignmentsSaved, setAssignmentsSaved] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
 
     if (!dataLoaded) {
-        loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved, setDataLoaded);
+        loadState(setPioneers, setChores, setShowDutyRoster, setAssignmentsSaved, setDataLoaded);
         return <Loading/>
     }
-    if (hasBeenClicked) {
-        return resultsPage(pioneers, chores, setHasBeenClicked, assignmentsSaved, setAssignmentsSaved, hasBeenClicked)
+    if (showDutyRoster) {
+        return resultsPage(pioneers, chores, setShowDutyRoster, assignmentsSaved, setAssignmentsSaved, showDutyRoster)
     } else {
         return setupPage(
             pioneers,
@@ -32,7 +32,7 @@ export default function Dashboard() {
             setChores,
             modalOpen,
             setModalOpen,
-            setHasBeenClicked,
+            setShowDutyRoster,
             setDataLoaded
         );
     }
@@ -47,12 +47,12 @@ const saveStuff = (stuff, key) => {
     }
 };
 
-function loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved, setDataLoaded) {
+function loadState(setPioneers, setChores, setShowDutyRoster, setAssignmentsSaved, setDataLoaded) {
     const localBrowserState = loadStuff('savedState');
     if (localBrowserState !== undefined) {
         setPioneers(localBrowserState.pioneers);
         setChores(localBrowserState.chores);
-        setHasBeenClicked(localBrowserState.hasBeenClicked);
+        setShowDutyRoster(localBrowserState.showDutyRoster);
         setAssignmentsSaved(localBrowserState.assignmentsSaved);
         setDataLoaded(true);
     } else {
@@ -82,7 +82,7 @@ function getData(setPioneers, setChores) {
         })
 }
 
-function setupPage(pioneers, setPioneers, chores, setChores, modalOpen, setModalOpen, setHasBeenClicked, setDataLoaded) {
+function setupPage(pioneers, setPioneers, chores, setChores, modalOpen, setModalOpen, setShowDutyRoster, setDataLoaded) {
     return <div>
         <Container>
             <Box display="flex" flexDirection="row" justifyContent="center">
@@ -92,7 +92,7 @@ function setupPage(pioneers, setPioneers, chores, setChores, modalOpen, setModal
             </Box>
             <Box>
                 {resetButton(setDataLoaded)}
-                {saddleUpButton(setHasBeenClicked)}
+                {saddleUpButton(setShowDutyRoster)}
             </Box>
         </Container>
     </div>;
@@ -131,13 +131,13 @@ function resetButton(setDataLoaded) {
     </Button>;
 }
 
-function saddleUpButton(setHasBeenClicked) {
+function saddleUpButton(setShowDutyRoster) {
     return <Button
         color="primary"
         size="large"
         variant="contained"
         id="saddle-up"
-        onClick={() => setHasBeenClicked(true)}>
+        onClick={() => setShowDutyRoster(true)}>
         Saddle Up
     </Button>;
 }
@@ -157,30 +157,30 @@ const addChore = (name, description, chores, setModalOpen, setChores) => {
     setChores([...chores, newChore]);
 };
 
-function resultsPage(pioneers, chores, setHasBeenClicked, assignmentsSaved, setAssignmentsSaved, hasBeenClicked) {
+function resultsPage(pioneers, chores, setShowDutyRoster, assignmentsSaved, setAssignmentsSaved, showDutyRoster) {
     const stuffSaver = () => saveStuff({
         pioneers,
         chores,
-        hasBeenClicked,
+        showDutyRoster: showDutyRoster,
         assignmentsSaved: true
     }, 'savedState');
 
     return <Container>
         <Results pioneers={pioneers} chores={chores} associator={associateFunction}/>
-        {respinButton(setHasBeenClicked, setAssignmentsSaved)}
+        {respinButton(setShowDutyRoster, setAssignmentsSaved)}
         {conditionallyRenderResultsButtons(assignmentsSaved, setAssignmentsSaved, stuffSaver)}
         {conditionallyRenderSavedConfirmation(assignmentsSaved)}
     </Container>;
 }
 
-function respinButton(setHasBeenClicked, setAssignmentsSaved) {
+function respinButton(setShowDutyRoster, setAssignmentsSaved) {
     return <Button
         color="secondary"
         size="large"
         variant="contained"
         id="respin"
         onClick={() => {
-            setHasBeenClicked(false);
+            setShowDutyRoster(false);
             setAssignmentsSaved(false)
         }}>
         Respin this Wagon Wheel
