@@ -157,30 +157,35 @@ const addChore = (name, description, chores, setModalOpen, setChores) => {
     setChores([...chores, newChore]);
 };
 
-function dutyRoster(pioneers, chores, setShowDutyRoster, setAssignmentsSaved, assignmentsSaved, stuffSaver) {
+function dutyRoster(pioneers, chores, showSaveControls, onRespin, onSave, associateFunction) {
     return <Container>
         <Results pioneers={pioneers} chores={chores} associator={associateFunction}/>
-        {respinButton( () => {
-            setShowDutyRoster(false);
-            setAssignmentsSaved(false)
-        })}
-        {conditionallyRenderResultsButtons(assignmentsSaved, () => {
-            setAssignmentsSaved(true);
-            stuffSaver()
-        })}
-        {conditionallyRenderSavedConfirmation(assignmentsSaved)}
+        {respinButton(onRespin)}
+        {conditionallyRenderResultsButtons(showSaveControls, onSave)}
+        {conditionallyRenderSavedConfirmation(showSaveControls)}
     </Container>;
 }
 
 function resultsPage(pioneers, chores, setShowDutyRoster, assignmentsSaved, setAssignmentsSaved, showDutyRoster) {
-    const stuffSaver = () => saveStuff({
+    return dutyRoster(
         pioneers,
         chores,
-        showDutyRoster: showDutyRoster,
-        assignmentsSaved: true
-    }, 'savedState');
-
-    return dutyRoster(pioneers, chores, setShowDutyRoster, setAssignmentsSaved, assignmentsSaved, stuffSaver);
+        assignmentsSaved,
+        () => {
+            setShowDutyRoster(false);
+            setAssignmentsSaved(false)
+        },
+        () => {
+            setAssignmentsSaved(true);
+            saveStuff({
+                pioneers,
+                chores,
+                showDutyRoster: showDutyRoster,
+                assignmentsSaved: true
+            }, 'savedState')
+        },
+        associateFunction
+    );
 }
 
 function respinButton(onRespin) {
@@ -194,8 +199,8 @@ function respinButton(onRespin) {
     </Button>;
 }
 
-function conditionallyRenderResultsButtons(assignmentsSaved, onSave) {
-    if (!assignmentsSaved) {
+function conditionallyRenderResultsButtons(showSaveControls, onSave) {
+    if (!showSaveControls) {
         return <div>
             {saveButton(onSave)}</div>;
     }
