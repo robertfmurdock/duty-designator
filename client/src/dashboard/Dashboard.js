@@ -16,15 +16,15 @@ export default function Dashboard() {
     const [pioneers, setPioneers] = useState([]);
     const [chores, setChores] = useState([]);
     const [showDutyRoster, setShowDutyRoster] = useState(false);
-    const [assignmentsSaved, setAssignmentsSaved] = useState(false);
+    const [dutyRoster, setDutyRoster] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
 
     if (!dataLoaded) {
-        loadState(setPioneers, setChores, setShowDutyRoster, setAssignmentsSaved, setDataLoaded);
+        loadState(setPioneers, setChores, setShowDutyRoster, setDutyRoster, setDataLoaded);
         return <Loading/>
     }
     if (showDutyRoster) {
-        return resultsPage(pioneers, chores, setShowDutyRoster, assignmentsSaved, setAssignmentsSaved, showDutyRoster)
+        return resultsPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster, setShowDutyRoster)
     } else {
         return setupPage(
             pioneers,
@@ -158,17 +158,17 @@ const addChore = (name, description, chores, setModalOpen, setChores) => {
     setChores([...chores, newChore]);
 };
 
-function resultsPage(pioneers, chores, setShowDutyRoster, assignmentsSaved, setAssignmentsSaved, showDutyRoster) {
+function resultsPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster, setShowDutyRoster) {
     return <DutyRoster
         pioneers={pioneers}
         chores={chores}
-        showSaveControls={assignmentsSaved}
+        dutyRoster={dutyRoster}
         onRespin={() => {
             setShowDutyRoster(false);
-            setAssignmentsSaved(false)
+            setDutyRoster(false)
         }}
-        onSave={() => {
-            setAssignmentsSaved(true);
+        onSave={(dutyRoster) => {
+            setDutyRoster(dutyRoster);
             saveStuff({
                 pioneers,
                 chores,

@@ -317,6 +317,25 @@ describe('Dashboard', () => {
         })
     })
 
+    describe('when a duty roster is saved', () =>{
+        let dashboard;
+
+        beforeEach(async () => {
+            localStorage.clear();
+            fetchMock.mockReturnValue(Promise.resolve([]));
+            dashboard = shallow(<Dashboard/>);
+            await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
+            dashboard.find('#saddle-up').simulate('click');
+        });
+
+        it('is shared with DutyRoster', () =>{
+            const expectedDutyRoster = [{name: 'jack', chore: 'jest'}];
+            dashboard.find(DutyRoster).props().onSave(expectedDutyRoster);
+            expect(dashboard.find(DutyRoster).props().dutyRoster).toEqual(expectedDutyRoster);
+
+        })
+    })
+
 });
 
 function yield25() {

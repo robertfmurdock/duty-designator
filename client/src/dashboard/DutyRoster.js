@@ -3,12 +3,12 @@ import Results from "../results/Results";
 import React from "react";
 
 export default function DutyRoster(props) {
-    const {pioneers, chores, showSaveControls, onRespin, onSave, associator} = props;
+    const {pioneers, chores, dutyRoster, onRespin, onSave, associator} = props;
     return <Container>
         <Results pioneers={pioneers} chores={chores} associator={associator}/>
         {respinButton(onRespin)}
-        {conditionallyRenderResultsButtons(showSaveControls, onSave)}
-        {conditionallyRenderSavedConfirmation(showSaveControls)}
+        {conditionallyRenderResultsButtons(dutyRoster, onSave)}
+        {conditionallyRenderSavedConfirmation(dutyRoster)}
     </Container>;
 }
 
@@ -36,7 +36,7 @@ function saveButton(onSave) {
         size="large"
         variant="contained"
         id="save"
-        onClick={onSave}>
+        onClick={() => {onSave([])}}>
         Save this Wagon Wheel
     </Button>;
 }
