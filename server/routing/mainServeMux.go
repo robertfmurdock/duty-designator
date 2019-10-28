@@ -22,9 +22,17 @@ func initializeMux() http.Handler {
 	mux.Handle("/", http.FileServer(http.Dir("../client/build")))
 
 	hc := handlerContext{dbClient: client}
-	mux.Handle("/api/candidate", hc.methodRoute(candidateHandler))
-	mux.Handle("/api/chore", hc.methodRoute(choreMethodRoute))
+
+	mux.Handle("/api/", http.StripPrefix("/api", apiMux(hc)))
+
 	return mux
+}
+
+func apiMux(hc handlerContext) *http.ServeMux {
+	apiMux := http.NewServeMux()
+	apiMux.Handle("/candidate", hc.methodRoute(candidateHandler))
+	apiMux.Handle("/chore", hc.methodRoute(choreMethodRoute))
+	return apiMux
 }
 
 func getDBClient() (*mongo.Client, error) {
