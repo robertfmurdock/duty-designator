@@ -5,7 +5,6 @@ import {withStyles} from "@material-ui/core/styles";
 import {Work} from '@material-ui/icons';
 import CloseIcon from '@material-ui/icons/Close';
 
-
 export default function AddChoreModal(props) {
     const {open, onClose, addChore} = props;
     const [name, setName] = useState('');
@@ -21,7 +20,7 @@ export default function AddChoreModal(props) {
         <DialogContent>
             {nameTextField(setName)}
             {descriptionTextField(setDescription)}
-            {saveButton(name, addChore, description)}
+            {saveButton(name, description, addChore)}
         </DialogContent>
     </Dialog>;
 }
@@ -85,7 +84,7 @@ function descriptionTextField(setDescription) {
     />;
 }
 
-function saveButton(name, addChore, description) {
+function saveButton(name, description, addChore) {
     return <Button
         variant="contained"
         color="primary"

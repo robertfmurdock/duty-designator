@@ -19,7 +19,7 @@ export default function Dashboard() {
     const [modalOpen, setModalOpen] = useState(false);
 
     if (!dataLoaded) {
-        loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved, setDataLoaded)
+        loadState(setPioneers, setChores, setHasBeenClicked, setAssignmentsSaved, setDataLoaded);
         return <Loading/>
     }
     if (hasBeenClicked) {
