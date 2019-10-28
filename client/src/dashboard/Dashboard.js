@@ -3,7 +3,7 @@ import FetchService from '../utilities/services/fetchService';
 import {Box, Button, Container} from '@material-ui/core';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 
-import {associateWithOffset} from "../results/Associator";
+import {associateWithOffset} from "./Associator";
 import {Loading} from "./Loading";
 import DutyRoster from "./DutyRoster";
 
@@ -54,7 +54,7 @@ function loadState(setPioneers, setChores, setShowDutyRoster, setAssignmentsSave
         setPioneers(localBrowserState.pioneers);
         setChores(localBrowserState.chores);
         setShowDutyRoster(localBrowserState.showDutyRoster);
-        setAssignmentsSaved(localBrowserState.assignmentsSaved);
+        setAssignmentsSaved(localBrowserState.dutyRoster);
         setDataLoaded(true);
     } else {
         getData(setPioneers, setChores)
@@ -173,7 +173,7 @@ function resultsPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster
                 pioneers,
                 chores,
                 showDutyRoster: showDutyRoster,
-                assignmentsSaved: true
+                dutyRoster: dutyRoster
             }, 'savedState')
         }}
         associator={associateFunction}

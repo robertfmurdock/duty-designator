@@ -3,7 +3,6 @@ import {shallow} from 'enzyme';
 import FetchService from '../utilities/services/fetchService';
 import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Dashboard from './Dashboard';
-import Results from '../results/Results';
 import DutyTable from '../duties/DutyTable';
 import {Loading} from "./Loading";
 import DutyRoster from "./DutyRoster";
@@ -139,7 +138,7 @@ describe('Dashboard', () => {
 
             dashboard.find('#reset-button').simulate('click');
 
-            await waitUntil(()=> dashboard.find(PioneerTable).length !== 0);
+            await waitUntil(() => dashboard.find(PioneerTable).length !== 0);
 
             expect(dashboard.find(PioneerTable).props().pioneers).toEqual(pioneers)
         });
@@ -196,36 +195,38 @@ describe('Dashboard', () => {
         }
     });
 
-    describe('results', () => {
+    describe('DutyRoster', () => {
         let dashboard;
         let dutyRoster;
+
         beforeEach(async () => {
             localStorage.clear();
             fetchMock.mockReturnValue(Promise.resolve([]));
             dashboard = shallow(<Dashboard/>);
             await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
             dashboard.find('#saddle-up').simulate('click');
-            dutyRoster = dashboard.find(DutyRoster).dive();
+            dutyRoster = dashboard.find(DutyRoster);
         });
 
         it('has pioneer props are equal to dashboard\'s state', () => {
-            expect(dutyRoster.find(Results).props().pioneers)
+            expect(dutyRoster.props().pioneers)
                 .toEqual([])
         });
 
         it('has chore props are equal to dashboard\'s state', () => {
-            expect(dutyRoster.find(Results).props().chores)
+            expect(dutyRoster.props().chores)
                 .toEqual([])
         });
 
         it('has a respin button that takes you back to the first view of dashboard', () => {
-            dutyRoster.find('#respin').simulate('click');
+            dutyRoster.dive().find('#respin').simulate('click');
+
             expect(dashboard.find(ChoreTable).length).toEqual(1)
         })
 
     });
 
-    describe('results rendering with click', () => {
+    describe('DutyRoster rendering with click', () => {
         let dashboard;
 
         beforeEach(async () => {
@@ -234,18 +235,18 @@ describe('Dashboard', () => {
             await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
         });
 
-        it('before click the results are not rendered', () => {
-            expect(dashboard.find(Results).length).toEqual(0)
+        it('before click the DutyRoster are not rendered', () => {
+            expect(dashboard.find(DutyRoster).length).toEqual(0)
         });
 
-        it('after click has results that are rendered', () => {
+        it('after click has DutyRoster that are rendered', () => {
             dashboard.find('#saddle-up').simulate('click');
             const dutyRoster = dashboard.find(DutyRoster).dive();
-            expect(dutyRoster.find(Results).length).toEqual(1)
+            expect(dutyRoster.length).toEqual(1)
         });
     });
 
-    describe('Date dependent results rendering with two pioneers one chore', () => {
+    describe('Date dependent DutyRoster rendering with two pioneers one chore', () => {
         let dashboard;
         let pioneers;
         let chores;
@@ -273,7 +274,7 @@ describe('Dashboard', () => {
             dateMock.mockReturnValue(1)
             dashboard.find('#saddle-up').simulate('click')
             const dutyRoster = dashboard.find(DutyRoster).dive();
-            expect(dutyRoster.find(Results).dive().find(DutyTable).props()
+            expect(dutyRoster.find(DutyTable).props()
                 .duties[0].pioneer.name).toEqual('Everyday Natalie')
         })
 
@@ -281,12 +282,12 @@ describe('Dashboard', () => {
             dateMock.mockReturnValue(0)
             dashboard.find('#saddle-up').simulate('click')
             const dutyRoster = dashboard.find(DutyRoster).dive();
-            expect(dutyRoster.find(Results).dive().find(DutyTable).props()
+            expect(dutyRoster.find(DutyTable).props()
                 .duties[0].pioneer.name).toEqual('Friday Jeb')
         })
     })
 
-    describe('save button on results page', () => {
+    describe('save button on DutyRoster page', () => {
         let dashboard;
         let dutyRoster;
 
@@ -317,7 +318,7 @@ describe('Dashboard', () => {
         })
     })
 
-    describe('when a duty roster is saved', () =>{
+    describe('when a duty roster is saved', () => {
         let dashboard;
 
         beforeEach(async () => {
@@ -328,7 +329,7 @@ describe('Dashboard', () => {
             dashboard.find('#saddle-up').simulate('click');
         });
 
-        it('is shared with DutyRoster', () =>{
+        it('is shared with DutyRoster', () => {
             const expectedDutyRoster = [{name: 'jack', chore: 'jest'}];
             dashboard.find(DutyRoster).props().onSave(expectedDutyRoster);
             expect(dashboard.find(DutyRoster).props().dutyRoster).toEqual(expectedDutyRoster);

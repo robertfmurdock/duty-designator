@@ -1,14 +1,21 @@
 import {Button, Container} from "@material-ui/core";
-import Results from "../results/Results";
 import React from "react";
+import DutyTable from "../duties/DutyTable";
 
 export default function DutyRoster(props) {
-    const {pioneers, chores, dutyRoster, onRespin, onSave, associator} = props;
+    const {pioneers, chores, onRespin, onSave, associator} = props;
+    let {dutyRoster} = props;
+    let canSave = !dutyRoster;
+    if(!dutyRoster){
+        dutyRoster = associator(pioneers, chores);
+    }
     return <Container>
-        <Results pioneers={pioneers} chores={chores} associator={associator}/>
+        <Container className="results">
+            <DutyTable duties={dutyRoster}/>
+        </Container>
         {respinButton(onRespin)}
-        {conditionallyRenderResultsButtons(dutyRoster, onSave)}
-        {conditionallyRenderSavedConfirmation(dutyRoster)}
+        {conditionallyRenderResultsButtons(canSave, dutyRoster, onSave)}
+        {conditionallyRenderSavedConfirmation(canSave)}
     </Container>;
 }
 
@@ -23,26 +30,26 @@ function respinButton(onRespin) {
     </Button>;
 }
 
-function conditionallyRenderResultsButtons(showSaveControls, onSave) {
-    if (!showSaveControls) {
+function conditionallyRenderResultsButtons(canSave, dutyRoster, onSave) {
+    if (canSave) {
         return <div>
-            {saveButton(onSave)}</div>;
+            {saveButton(onSave, dutyRoster)}</div>;
     }
 }
 
-function saveButton(onSave) {
+function saveButton(onSave, dutyRoster) {
     return <Button
         color="primary"
         size="large"
         variant="contained"
         id="save"
-        onClick={() => {onSave([])}}>
+        onClick={() => {onSave(dutyRoster)}}>
         Save this Wagon Wheel
     </Button>;
 }
 
-function conditionallyRenderSavedConfirmation(assignmentsSaved) {
-    if (assignmentsSaved) {
+function conditionallyRenderSavedConfirmation(canSave) {
+    if (!canSave) {
         return <p id='saved-confirmation'>Save Confirmed!</p>
     }
 }
