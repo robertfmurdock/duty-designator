@@ -94,5 +94,27 @@ context('Actions', () => {
         })
     })
 
+    describe('remove pioneer from candidate list, save and respin', () => {
+        const candidate = {name: "Cammeron Mitchel", id: uuid()};
+
+        beforeEach(async function () {
+            await insertCandidate(candidate);
+        });
+
+        beforeEach(function () {
+            cy.visit('http://localhost:8080')
+            cy.get(`.delete[data-candidate-id=${candidate.id}]`).click()
+            cy.get("#saddle-up").click()
+            cy.get("#save").click()
+            cy.get("#respin").click()
+        });
+
+        it('reset will return pioneer to list', () => {
+            cy.get("#reset-button").click()
+            cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
+                .should('have.text', candidate.name);
+        })
+    })
+
 });
 

@@ -17,7 +17,7 @@ function pioneerRow(pioneer, onRemove) {
             </Typography>
         </TableCell>
         <TableCell align="right">
-            <Icon path={mdiClose} size={1} onClick={() => onRemove(pioneer)}/>
+            <Icon data-candidate-id={pioneer.id} className={'delete'} path={mdiClose} size={1} onClick={() => onRemove(pioneer)}/>
         </TableCell>
     </TableRow>;
 }
