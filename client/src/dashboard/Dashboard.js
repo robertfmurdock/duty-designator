@@ -157,6 +157,21 @@ const addChore = (name, description, chores, setModalOpen, setChores) => {
     setChores([...chores, newChore]);
 };
 
+function dutyRoster(pioneers, chores, setShowDutyRoster, setAssignmentsSaved, assignmentsSaved, stuffSaver) {
+    return <Container>
+        <Results pioneers={pioneers} chores={chores} associator={associateFunction}/>
+        {respinButton( () => {
+            setShowDutyRoster(false);
+            setAssignmentsSaved(false)
+        })}
+        {conditionallyRenderResultsButtons(assignmentsSaved, () => {
+            setAssignmentsSaved(true);
+            stuffSaver()
+        })}
+        {conditionallyRenderSavedConfirmation(assignmentsSaved)}
+    </Container>;
+}
+
 function resultsPage(pioneers, chores, setShowDutyRoster, assignmentsSaved, setAssignmentsSaved, showDutyRoster) {
     const stuffSaver = () => saveStuff({
         pioneers,
@@ -165,45 +180,34 @@ function resultsPage(pioneers, chores, setShowDutyRoster, assignmentsSaved, setA
         assignmentsSaved: true
     }, 'savedState');
 
-    return <Container>
-        <Results pioneers={pioneers} chores={chores} associator={associateFunction}/>
-        {respinButton(setShowDutyRoster, setAssignmentsSaved)}
-        {conditionallyRenderResultsButtons(assignmentsSaved, setAssignmentsSaved, stuffSaver)}
-        {conditionallyRenderSavedConfirmation(assignmentsSaved)}
-    </Container>;
+    return dutyRoster(pioneers, chores, setShowDutyRoster, setAssignmentsSaved, assignmentsSaved, stuffSaver);
 }
 
-function respinButton(setShowDutyRoster, setAssignmentsSaved) {
+function respinButton(onRespin) {
     return <Button
         color="secondary"
         size="large"
         variant="contained"
         id="respin"
-        onClick={() => {
-            setShowDutyRoster(false);
-            setAssignmentsSaved(false)
-        }}>
+        onClick={onRespin}>
         Respin this Wagon Wheel
     </Button>;
 }
 
-function conditionallyRenderResultsButtons(assignmentsSaved, setAssignmentsSaved, saveStuff) {
+function conditionallyRenderResultsButtons(assignmentsSaved, onSave) {
     if (!assignmentsSaved) {
         return <div>
-            {saveButton(setAssignmentsSaved, saveStuff)}</div>;
+            {saveButton(onSave)}</div>;
     }
 }
 
-function saveButton(setAssignmentsSaved, saveStuff) {
+function saveButton(onSave) {
     return <Button
         color="primary"
         size="large"
         variant="contained"
         id="save"
-        onClick={() => {
-            setAssignmentsSaved(true);
-            saveStuff()
-        }}>
+        onClick={onSave}>
         Save this Wagon Wheel
     </Button>;
 }
