@@ -254,6 +254,7 @@ describe('Dashboard', () => {
         let dateMock = Date.now = jest.fn();
 
         beforeEach(() => {
+            localStorage.clear();
             pioneers = [
                 {id: 'at thing', name: 'Friday Jeb'},
                 {id: 'something else', name: 'Everyday Natalie'},

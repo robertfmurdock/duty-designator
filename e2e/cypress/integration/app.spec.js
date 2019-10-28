@@ -54,11 +54,11 @@ context('Actions', () => {
     describe('When we save the spin results', () => {
         const chore = {name: "Cow tipper", description: "Give some tips to cows", id: uuid()};
 
-        before( function () {
+        before(function () {
             insertChore(chore);
         })
 
-        beforeEach( function () {
+        beforeEach(function () {
             cy.visit('http://localhost:8080')
             cy.get("#saddle-up").click()
             cy.get("#save").click()
@@ -66,12 +66,12 @@ context('Actions', () => {
 
         it('still has results table on refresh', () => {
             cy.reload()
-            cy.get('.results').should("have.length",1 )
+            cy.get('.results').should("have.length", 1)
         })
 
         it('keeps a chore that has been added in the results list', () => {
             cy.reload()
-            cy.get(`.duty-chore-name[data-duty-id=${chore.id}]`, {timeout:2000})
+            cy.get(`.duty-chore-name[data-duty-id=${chore.id}]`, {timeout: 2000})
                 .should('have.text', chore.name)
         })
 
@@ -84,6 +84,13 @@ context('Actions', () => {
             cy.get("#respin").click()
             cy.get("#saddle-up").click()
             cy.get('#save').should('have.length', 1)
+        })
+
+        it('after respin, visitors will be directed to chore corral after reload', () => {
+            cy.get("#respin").click()
+            cy.reload()
+
+            cy.get("#saddle-up").should('have.length', 1)
         })
     })
 

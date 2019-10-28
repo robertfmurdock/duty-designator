@@ -48,13 +48,13 @@ const saveStuff = (stuff, key) => {
     }
 };
 
-function loadState(setPioneers, setChores, setShowDutyRoster, setAssignmentsSaved, setDataLoaded) {
+function loadState(setPioneers, setChores, setShowDutyRoster, setDutyRoster, setDataLoaded) {
     const localBrowserState = loadStuff('savedState');
     if (localBrowserState !== undefined) {
         setPioneers(localBrowserState.pioneers);
         setChores(localBrowserState.chores);
-        setShowDutyRoster(localBrowserState.showDutyRoster);
-        setAssignmentsSaved(localBrowserState.dutyRoster);
+        setShowDutyRoster(!!localBrowserState.dutyRoster);
+        setDutyRoster(localBrowserState.dutyRoster);
         setDataLoaded(true);
     } else {
         getData(setPioneers, setChores)
@@ -165,14 +165,17 @@ function resultsPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster
         dutyRoster={dutyRoster}
         onRespin={() => {
             setShowDutyRoster(false);
-            setDutyRoster(false)
+            setDutyRoster(false);
+            saveStuff({
+                pioneers,
+                chores,
+                dutyRoster: false}, 'savedState')
         }}
         onSave={(dutyRoster) => {
             setDutyRoster(dutyRoster);
             saveStuff({
                 pioneers,
                 chores,
-                showDutyRoster: showDutyRoster,
                 dutyRoster: dutyRoster
             }, 'savedState')
         }}
