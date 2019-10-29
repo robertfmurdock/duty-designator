@@ -1,4 +1,4 @@
-package routing
+package internal
 
 import (
 	"context"
@@ -39,12 +39,12 @@ func loadChoreRecords(handlerContext *handlerContext) ([]ChoreRecord, error) {
 	if err != nil {
 		return nil, err
 	}
-	var rows []ChoreRecord
-	if err = cursor.All(context.Background(), &rows); err != nil {
+	var choreRecords []ChoreRecord
+	if err = cursor.All(context.Background(), &choreRecords); err != nil {
 		return nil, err
 	}
-	if rows != nil {
-		return rows, nil
+	if choreRecords != nil {
+		return choreRecords, nil
 	}
 	return []ChoreRecord{}, nil
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"duty-designator/server/routing"
+	"duty-designator/server/internal"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,7 +9,7 @@ import (
 
 func main() {
 	fmt.Println("Server start!")
-	err := http.ListenAndServe("localhost:8080", routing.ServeMux)
+	err := http.ListenAndServe("localhost:8080", internal.ServeMux)
 	if err != nil {
 		log.Fatal(err)
 	}
