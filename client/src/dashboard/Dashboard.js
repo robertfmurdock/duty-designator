@@ -6,6 +6,8 @@ import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import {associateWithOffset} from "./Associator";
 import {Loading} from "./Loading";
 import DutyRoster from "../duties/DutyRoster";
+import {loadStuff, saveStuff} from "../utilities/services/localStorageService";
+import {format} from "date-fns";
 
 const associateFunction = (pioneers, chores) => {
     return associateWithOffset(pioneers, chores, Date.now())
@@ -23,8 +25,9 @@ export default function Dashboard() {
         loadState(setPioneers, setChores, setShowDutyRoster, setDutyRoster, setDataLoaded);
         return <Loading/>
     }
+
     if (showDutyRoster) {
-        return dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster, setShowDutyRoster)
+        return dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, setShowDutyRoster)
     } else {
         return choreCorralPage(
             pioneers,
@@ -39,20 +42,10 @@ export default function Dashboard() {
     }
 }
 
-const saveStuff = (stuff, key) => {
-    try {
-        const serializedState = JSON.stringify(stuff);
-        localStorage.setItem(key, serializedState);
-    } catch (err) {
-        console.log(err)
-    }
-};
-
 function loadState(setPioneers, setChores, setShowDutyRoster, setDutyRoster, setDataLoaded) {
-
     getData(setPioneers, setChores)
         .then(() => {
-            const localBrowserState = loadStuff('savedState');
+            const localBrowserState = loadStuff(today());
             if (localBrowserState !== undefined) {
                 setShowDutyRoster(!!localBrowserState.dutyRoster);
                 setDutyRoster(localBrowserState.dutyRoster);
@@ -60,15 +53,6 @@ function loadState(setPioneers, setChores, setShowDutyRoster, setDutyRoster, set
             return setDataLoaded(true);
         });
 }
-
-const loadStuff = (key) => {
-    try {
-        const serializedState = localStorage.getItem(key);
-        return serializedState ? JSON.parse(serializedState) : undefined;
-    } catch (err) {
-        return undefined;
-    }
-};
 
 function getData(setPioneers, setChores) {
     return Promise.all([
@@ -120,26 +104,23 @@ const choreTable = (chores, setChores, setModalOpen) => (
     />
 );
 
-function resetButton(setDataLoaded) {
-    return <Button
+const button = (id, text, onClick) => (
+    <Button
         color="primary"
         size="large"
         variant="contained"
-        id="reset-button"
-        onClick={() => setDataLoaded(false)}>
-        Reset
-    </Button>;
+        id={id}
+        onClick={onClick}>
+        {text}
+    </Button>
+);
+
+function resetButton(setDataLoaded) {
+    return button("reset-button", "Reset", () => setDataLoaded(false));
 }
 
 function saddleUpButton(setShowDutyRoster) {
-    return <Button
-        color="primary"
-        size="large"
-        variant="contained"
-        id="saddle-up"
-        onClick={() => setShowDutyRoster(true)}>
-        Saddle Up
-    </Button>;
+    return button("saddle-up", "Saddle Up", () => setShowDutyRoster(true));
 }
 
 function addChoreModal(modalOpen, setModalOpen, chores, setChores) {
@@ -152,12 +133,13 @@ function addChoreModal(modalOpen, setModalOpen, chores, setChores) {
 
 const addChore = (newChore, chores, setModalOpen, setChores) => {
     const id = (chores.length + 1).toString();
-
     setModalOpen(false);
     setChores([...chores, {id, ...newChore}]);
 };
 
-function dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster, setShowDutyRoster) {
+const today = () => format(new Date(), 'MM/dd/yyyy');
+
+function dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, setShowDutyRoster) {
     return <DutyRoster
         pioneers={pioneers}
         chores={chores}
@@ -167,16 +149,16 @@ function dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRos
             setDutyRoster(false);
             saveStuff({
                 dutyRoster: false
-            }, 'savedState')
+            }, today())
         }}
         onSave={(dutyRoster) => {
             setDutyRoster(dutyRoster);
             saveStuff({
-                dutyRoster: dutyRoster
-            }, 'savedState')
+                dutyRoster
+            }, today())
         }}
-        associator={associateFunction}
-    />;
-}
+            associator={associateFunction}
+            />;
+        }
 
 

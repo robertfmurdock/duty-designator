@@ -101,6 +101,20 @@ context('Actions', () => {
 
             cy.get("#saddle-up").should('have.length', 1)
         })
+
+        describe('and it becomes tomorrow', function() {
+            beforeEach(function() {
+                const today = Date.now();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                cy.clock().tick(tomorrow - today);
+                cy.reload();
+            });
+            
+            it('there is prepare to spin page', function () {
+                cy.get("#saddle-up").should('have.length', 1)
+            })
+        });
     });
 
     describe('remove pioneer from candidate list, save and respin', () => {

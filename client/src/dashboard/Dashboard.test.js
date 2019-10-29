@@ -24,9 +24,8 @@ describe('Dashboard', () => {
 
     let fetchMock;
 
-    beforeEach(jest.clearAllMocks);
-
     beforeEach(() => {
+        jest.clearAllMocks();
         fetchMock = FetchService.get = jest.fn();
         fetchMock.mockReturnValue(new Promise(() => ({})));
     });
