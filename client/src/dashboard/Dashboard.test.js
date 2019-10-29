@@ -44,7 +44,7 @@ describe('Dashboard', () => {
     it('while loading pioneers shows loading element and no page', () => {
         fetchMock.mockImplementation(function (number, endpoint) {
             // noinspection JSIncompatibleTypesComparison
-            if (endpoint === '/api/candidate') {
+            if (endpoint === '/api/pioneer') {
                 return promiseThatDoesNotResolve()
             } else {
                 return Promise.resolve([]);

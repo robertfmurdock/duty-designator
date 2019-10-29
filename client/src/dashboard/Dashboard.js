@@ -72,7 +72,7 @@ const loadStuff = (key) => {
 
 function getData(setPioneers, setChores) {
     return Promise.all([
-        FetchService.get(0, "/api/candidate", undefined),
+        FetchService.get(0, "/api/pioneer", undefined),
         FetchService.get(0, "/api/chore", undefined)
     ])
         .then(results => {

@@ -3,7 +3,7 @@ const uuid = require('uuid/v4');
 context('Actions', () => {
 
     async function insertCandidate(candidate) {
-        await fetch("http://localhost:8080/api/candidate", {
+        await fetch("http://localhost:8080/api/pioneer", {
             method: "POST",
             body: JSON.stringify(candidate),
             signal: undefined

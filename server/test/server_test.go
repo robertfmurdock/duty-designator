@@ -30,51 +30,51 @@ func initConnection() *mongo.Client {
 	return client
 }
 
-func TestGetCandidatesHandler_RespondsWithCandidateJson(t *testing.T) {
-	expectedCandidate, err := insertNewCandidate(t)
+func TestGetPioneers_RespondsWithPioneerJson(t *testing.T) {
+	expectedPioneer, err := insertNewPioneer(t)
 	if err != nil {
 		t.Errorf("Setup failed. %v", err)
 		return
 	}
 
-	candidateRecords, err := performGetCandidatesRequest(t)
+	pioneerRecords, err := performGetPioneerRequest(t)
 	if err != nil {
-		t.Errorf("Get Candidate Request failed. %v", err)
+		t.Errorf("Get Pioneer Request failed. %v", err)
 		return
 	}
 
-	if !contains(candidateRecords, expectedCandidate) {
-		t.Errorf("%v, %v", candidateRecords, expectedCandidate)
+	if !contains(pioneerRecords, expectedPioneer) {
+		t.Errorf("%v, %v", pioneerRecords, expectedPioneer)
 	}
 }
 
-func TestGetCandidatesHandler_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
+func TestGetPioneers_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 	if err := getDutyDB().Drop(context.Background()); err != nil {
 		t.Errorf("Setup failed. %v", err)
 		return
 	}
 
-	candidateRecords, err := performGetCandidatesRequest(t)
+	pioneerRecords, err := performGetPioneerRequest(t)
 	if err != nil {
-		t.Errorf("Get Candidate Request failed. %v", err)
+		t.Errorf("Get Pioneer Request failed. %v", err)
 		return
 	}
 
-	if candidateRecords == nil || len(candidateRecords) != 0 {
-		t.Error("There was unexpected chore content")
+	if pioneerRecords == nil || len(pioneerRecords) != 0 {
+		t.Error("There was unexpected pioneer content")
 	}
 }
 
-func performGetCandidatesRequest(t *testing.T) ([]routing.CandidateRecord, error) {
+func performGetPioneerRequest(t *testing.T) ([]routing.PioneerRecord, error) {
 	responseRecorder := httptest.NewRecorder()
-	request, err := http.NewRequest(http.MethodGet, "/api/candidate", nil)
+	request, err := http.NewRequest(http.MethodGet, "/api/pioneer", nil)
 	if err != nil {
 		t.Error("Could not build get request.")
 		return nil, err
 	}
 	routing.ServeMux.ServeHTTP(responseRecorder, request)
 
-	var actualResponseBody []routing.CandidateRecord
+	var actualResponseBody []routing.PioneerRecord
 	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
 		t.Error("Could not parse server results.")
 	}
@@ -82,18 +82,18 @@ func performGetCandidatesRequest(t *testing.T) ([]routing.CandidateRecord, error
 	return actualResponseBody, nil
 }
 
-func insertNewCandidate(t *testing.T) (routing.CandidateRecord, error) {
+func insertNewPioneer(t *testing.T) (routing.PioneerRecord, error) {
 	database := getDutyDB()
-	assignmentCollection := database.Collection("candidates")
+	assignmentCollection := database.Collection("pioneers")
 	bobsId := uuid.New()
 	_, err := assignmentCollection.InsertOne(
 		context.Background(), bson.M{"Name": "bob", "id": bobsId.String()})
 	if err != nil {
 		t.Error("Could not insert")
-		return routing.CandidateRecord{}, err
+		return routing.PioneerRecord{}, err
 	}
 
-	return routing.CandidateRecord{Name: "bob", Id: bobsId.String()}, nil
+	return routing.PioneerRecord{Name: "bob", Id: bobsId.String()}, nil
 }
 
 func getDutyDB() *mongo.Database {
@@ -101,34 +101,34 @@ func getDutyDB() *mongo.Database {
 	return database
 }
 
-func TestPostCandidateHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
-	candidateToPOST := routing.CandidateRecord{Name: "Alice", Id: uuid.New().String()}
+func TestPostPioneerHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
+	pioneerToPOST := routing.PioneerRecord{Name: "Alice", Id: uuid.New().String()}
 
-	if err := performPostCandidate(candidateToPOST, t); err != nil {
-		t.Errorf("Post Candidate Request failed. %v", err)
+	if err := performPostPioneer(pioneerToPOST, t); err != nil {
+		t.Errorf("Post Pioneer Request failed. %v", err)
 		return
 	}
 
-	candidateRecords, err := performGetCandidatesRequest(t)
+	pioneerRecords, err := performGetPioneerRequest(t)
 	if err != nil {
-		t.Errorf("Get Candidate Request failed. %v", err)
+		t.Errorf("Get Pioneer Request failed. %v", err)
 		return
 	}
 
-	if !contains(candidateRecords, candidateToPOST) {
-		t.Errorf("Slice %v\n did not contain: %v", candidateRecords, candidateToPOST)
+	if !contains(pioneerRecords, pioneerToPOST) {
+		t.Errorf("Slice %v\n did not contain: %v", pioneerRecords, pioneerToPOST)
 	}
 }
 
-func performPostCandidate(candidateToPOST routing.CandidateRecord, t *testing.T) error {
-	rawCandidate, e := json.Marshal(candidateToPOST)
+func performPostPioneer(pioneerToPost routing.PioneerRecord, t *testing.T) error {
+	rawPioneer, e := json.Marshal(pioneerToPost)
 	if e != nil {
-		t.Error("Could not marshal candidate struct")
+		t.Error("Could not marshal pioneer struct")
 		return e
 	}
-	req, err := http.NewRequest(http.MethodPost, "/api/candidate", bytes.NewReader(rawCandidate))
+	req, err := http.NewRequest(http.MethodPost, "/api/pioneer", bytes.NewReader(rawPioneer))
 	if err != nil {
-		t.Error("Could not construct candidate POST request")
+		t.Error("Could not construct pioneer POST request")
 		return err
 	}
 	postResponseRecorder := httptest.NewRecorder()
@@ -140,7 +140,7 @@ func performPostCandidate(candidateToPOST routing.CandidateRecord, t *testing.T)
 	return err
 }
 
-func contains(s []routing.CandidateRecord, e routing.CandidateRecord) bool {
+func contains(s []routing.PioneerRecord, e routing.PioneerRecord) bool {
 	for _, a := range s {
 		if a == e {
 			return true
@@ -149,6 +149,14 @@ func contains(s []routing.CandidateRecord, e routing.CandidateRecord) bool {
 	return false
 }
 
+func containsChore(s []routing.ChoreRecord, e routing.ChoreRecord) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
 func TestPostChore_WillWriteToDb(t *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 
@@ -171,16 +179,15 @@ func TestPostChore_WillWriteToDb(t *testing.T) {
 		t.Errorf("MongoDB find error: %s", err)
 	}
 
-	var rows []routing.ChoreRecord
-	err = cursor.All(context.TODO(), &rows)
+	var choreRecords []routing.ChoreRecord
+	err = cursor.All(context.TODO(), &choreRecords)
 
-	if !containsChoreID(rows, choreId.String()) {
-		t.Log(rows)
-		t.Errorf("MongoDB did not return chore from InsertChore")
+	if !containsChore(choreRecords, chore) {
+		t.Errorf("List %v, did not contain %v", choreRecords, chore)
 	}
 }
 
-func TestGetChore_GetChoreReturnsAChoreThatWasPosted(t *testing.T) {
+func TestGetChore_GetChoreReturnsChoreFromTheDb(t *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 	request, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
 
@@ -208,19 +215,8 @@ func TestGetChore_GetChoreReturnsAChoreThatWasPosted(t *testing.T) {
 		t.Error(err)
 	}
 
-	if !containsChoreID(choreList, choreId.String()) {
-		t.Log(choreList)
-		t.Errorf("GetChore did not return chore from InsertChore")
-	}
-
-	if !containsChoreDescription(choreList, chore.Description) {
-		t.Log(choreList)
-		t.Errorf("GetChore did not find chore description from InsertChore")
-	}
-
-	if !containsChoreTitle(choreList, chore.Title) {
-		t.Log(choreList)
-		t.Errorf("GetChore did not find chore title from InsertChore")
+	if !containsChore(choreList, chore) {
+		t.Errorf("List %v, did not contain %v", choreList, chore)
 	}
 }
 
@@ -253,31 +249,4 @@ func insertChore(record routing.ChoreRecord) error {
 	collection := client.Database("dutyDB").Collection("chores")
 	_, err := collection.InsertOne(context.Background(), record)
 	return err
-}
-
-func containsChoreID(s []routing.ChoreRecord, id string) bool {
-	for _, a := range s {
-		if a.Id == id {
-			return true
-		}
-	}
-	return false
-}
-
-func containsChoreDescription(s []routing.ChoreRecord, desc string) bool {
-	for _, a := range s {
-		if a.Description == desc {
-			return true
-		}
-	}
-	return false
-}
-
-func containsChoreTitle(s []routing.ChoreRecord, title string) bool {
-	for _, a := range s {
-		if a.Title == title {
-			return true
-		}
-	}
-	return false
 }

@@ -9,18 +9,18 @@ import (
 	"net/http"
 )
 
-func candidateHandler(request *http.Request) mongoHandler {
+func pioneerHandler(request *http.Request) mongoHandler {
 	switch request.Method {
 	case http.MethodGet:
-		return getCandidateHandler
+		return getPioneerHandler
 	case http.MethodPost:
-		return postCandidateHandler
+		return postPioneerHandler
 	}
 	return nil
 }
 
-func getCandidateHandler(writer http.ResponseWriter, _ *http.Request, handlerContext *handlerContext) error {
-	records, err := loadCandidateRecords(handlerContext, writer)
+func getPioneerHandler(writer http.ResponseWriter, _ *http.Request, handlerContext *handlerContext) error {
+	records, err := loadPioneerRecords(handlerContext, writer)
 	if err != nil {
 		return err
 	}
@@ -28,48 +28,48 @@ func getCandidateHandler(writer http.ResponseWriter, _ *http.Request, handlerCon
 	return writeAsJson(writer, records)
 }
 
-type CandidateRecord struct {
+type PioneerRecord struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
 }
 
-func loadCandidateRecords(handlerContext *handlerContext, writer http.ResponseWriter) ([]CandidateRecord, error) {
-	collection := getCandidatesCollection(handlerContext)
+func loadPioneerRecords(handlerContext *handlerContext, writer http.ResponseWriter) ([]PioneerRecord, error) {
+	collection := getPioneerCollection(handlerContext)
 	cursor, err := collection.Find(context.Background(), bson.D{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	var rows []CandidateRecord
+	var rows []PioneerRecord
 	err = cursor.All(context.Background(), &rows)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		log.Fatal(err)
 	}
 	if rows == nil {
-		rows = []CandidateRecord{}
+		rows = []PioneerRecord{}
 	}
 	return rows, err
 }
 
-func postCandidateHandler(_ http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
+func postPioneerHandler(_ http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
 	decoder := json.NewDecoder(request.Body)
-	var candidateRecord CandidateRecord
-	err := decoder.Decode(&candidateRecord)
+	var pioneerRecord PioneerRecord
+	err := decoder.Decode(&pioneerRecord)
 	if err != nil {
 		return err
 	}
 
-	collection := getCandidatesCollection(handlerContext)
+	collection := getPioneerCollection(handlerContext)
 
-	if _, err := collection.InsertOne(context.Background(), candidateRecord); err != nil {
+	if _, err := collection.InsertOne(context.Background(), pioneerRecord); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func getCandidatesCollection(handlerContext *handlerContext) *mongo.Collection {
-	return handlerContext.dutyDb().Collection("candidates")
+func getPioneerCollection(handlerContext *handlerContext) *mongo.Collection {
+	return handlerContext.dutyDb().Collection("pioneers")
 }

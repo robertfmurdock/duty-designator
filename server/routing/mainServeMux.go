@@ -30,7 +30,7 @@ func initializeMux() http.Handler {
 
 func apiMux(hc handlerContext) *http.ServeMux {
 	apiMux := http.NewServeMux()
-	apiMux.Handle("/candidate", hc.methodRoute(candidateHandler))
+	apiMux.Handle("/pioneer", hc.methodRoute(pioneerHandler))
 	apiMux.Handle("/chore", hc.methodRoute(choreMethodRoute))
 	return apiMux
 }
