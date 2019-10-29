@@ -3,7 +3,7 @@ package test
 import (
 	"bytes"
 	"context"
-	"duty-designator/server/routing"
+	"duty-designator/server/internal"
 	"encoding/json"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -65,16 +65,16 @@ func TestGetPioneers_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 	}
 }
 
-func performGetPioneerRequest(t *testing.T) ([]routing.PioneerRecord, error) {
+func performGetPioneerRequest(t *testing.T) ([]internal.PioneerRecord, error) {
 	responseRecorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/api/pioneer", nil)
 	if err != nil {
 		t.Error("Could not build get request.")
 		return nil, err
 	}
-	routing.ServeMux.ServeHTTP(responseRecorder, request)
+	internal.ServeMux.ServeHTTP(responseRecorder, request)
 
-	var actualResponseBody []routing.PioneerRecord
+	var actualResponseBody []internal.PioneerRecord
 	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
 		t.Error("Could not parse server results.")
 	}
@@ -82,7 +82,7 @@ func performGetPioneerRequest(t *testing.T) ([]routing.PioneerRecord, error) {
 	return actualResponseBody, nil
 }
 
-func insertNewPioneer(t *testing.T) (routing.PioneerRecord, error) {
+func insertNewPioneer(t *testing.T) (internal.PioneerRecord, error) {
 	database := getDutyDB()
 	assignmentCollection := database.Collection("pioneers")
 	bobsId := uuid.New()
@@ -90,10 +90,10 @@ func insertNewPioneer(t *testing.T) (routing.PioneerRecord, error) {
 		context.Background(), bson.M{"Name": "bob", "id": bobsId.String()})
 	if err != nil {
 		t.Error("Could not insert")
-		return routing.PioneerRecord{}, err
+		return internal.PioneerRecord{}, err
 	}
 
-	return routing.PioneerRecord{Name: "bob", Id: bobsId.String()}, nil
+	return internal.PioneerRecord{Name: "bob", Id: bobsId.String()}, nil
 }
 
 func getDutyDB() *mongo.Database {
@@ -102,7 +102,7 @@ func getDutyDB() *mongo.Database {
 }
 
 func TestPostPioneerHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
-	pioneerToPOST := routing.PioneerRecord{Name: "Alice", Id: uuid.New().String()}
+	pioneerToPOST := internal.PioneerRecord{Name: "Alice", Id: uuid.New().String()}
 
 	if err := performPostPioneer(pioneerToPOST, t); err != nil {
 		t.Errorf("Post Pioneer Request failed. %v", err)
@@ -120,7 +120,7 @@ func TestPostPioneerHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 	}
 }
 
-func performPostPioneer(pioneerToPost routing.PioneerRecord, t *testing.T) error {
+func performPostPioneer(pioneerToPost internal.PioneerRecord, t *testing.T) error {
 	rawPioneer, e := json.Marshal(pioneerToPost)
 	if e != nil {
 		t.Error("Could not marshal pioneer struct")
@@ -132,7 +132,7 @@ func performPostPioneer(pioneerToPost routing.PioneerRecord, t *testing.T) error
 		return err
 	}
 	postResponseRecorder := httptest.NewRecorder()
-	routing.ServeMux.ServeHTTP(postResponseRecorder, req)
+	internal.ServeMux.ServeHTTP(postResponseRecorder, req)
 	if postResponseRecorder.Code != 200 {
 		t.Error("Post was not successful", postResponseRecorder.Body.String())
 		return nil
@@ -140,7 +140,7 @@ func performPostPioneer(pioneerToPost routing.PioneerRecord, t *testing.T) error
 	return err
 }
 
-func contains(s []routing.PioneerRecord, e routing.PioneerRecord) bool {
+func contains(s []internal.PioneerRecord, e internal.PioneerRecord) bool {
 	for _, a := range s {
 		if a == e {
 			return true
@@ -149,7 +149,7 @@ func contains(s []routing.PioneerRecord, e routing.PioneerRecord) bool {
 	return false
 }
 
-func containsChore(s []routing.ChoreRecord, e routing.ChoreRecord) bool {
+func containsChore(s []internal.ChoreRecord, e internal.ChoreRecord) bool {
 	for _, a := range s {
 		if a == e {
 			return true
@@ -161,7 +161,7 @@ func TestPostChore_WillWriteToDb(t *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 
 	choreId := uuid.New()
-	chore := routing.ChoreRecord{
+	chore := internal.ChoreRecord{
 		Name: "Compiled Cans",
 		Id:   choreId.String(),
 	}
@@ -169,7 +169,7 @@ func TestPostChore_WillWriteToDb(t *testing.T) {
 	choreJSON, _ := json.Marshal(chore)
 	request, _ := http.NewRequest(http.MethodPost, "/api/chore", bytes.NewReader(choreJSON))
 
-	routing.ServeMux.ServeHTTP(responseRecorder, request)
+	internal.ServeMux.ServeHTTP(responseRecorder, request)
 
 	collection := client.Database("dutyDB").Collection("chores")
 
@@ -179,7 +179,7 @@ func TestPostChore_WillWriteToDb(t *testing.T) {
 		t.Errorf("MongoDB find error: %s", err)
 	}
 
-	var choreRecords []routing.ChoreRecord
+	var choreRecords []internal.ChoreRecord
 	err = cursor.All(context.TODO(), &choreRecords)
 
 	if !containsChore(choreRecords, chore) {
@@ -192,7 +192,7 @@ func TestGetChore_GetChoreReturnsChoreFromTheDb(t *testing.T) {
 	request, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
 
 	choreId := uuid.New()
-	chore := routing.ChoreRecord{
+	chore := internal.ChoreRecord{
 		Id:          choreId.String(),
 		Name:        "Compiled Cans",
 		Description: "Those cruddy cans cant keep complaining",
@@ -203,13 +203,13 @@ func TestGetChore_GetChoreReturnsChoreFromTheDb(t *testing.T) {
 		t.Error("insert was not successful", err)
 	}
 
-	routing.ServeMux.ServeHTTP(responseRecorder, request)
+	internal.ServeMux.ServeHTTP(responseRecorder, request)
 
 	if responseRecorder.Code != 200 {
 		t.Error("Post was not successful", responseRecorder.Body.String())
 	}
 
-	var choreList []routing.ChoreRecord
+	var choreList []internal.ChoreRecord
 	var body = responseRecorder.Body.Bytes()
 	if err := json.Unmarshal(body, &choreList); err != nil {
 		t.Error(err)
@@ -228,13 +228,13 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 		t.Error("Drop was not successful", err)
 	}
 
-	routing.ServeMux.ServeHTTP(responseRecorder, request)
+	internal.ServeMux.ServeHTTP(responseRecorder, request)
 
 	if responseRecorder.Code != 200 {
 		t.Error("Post was not successful", responseRecorder.Body.String())
 	}
 
-	var choreList []routing.ChoreRecord
+	var choreList []internal.ChoreRecord
 	var body = responseRecorder.Body.Bytes()
 	if err := json.Unmarshal(body, &choreList); err != nil {
 		t.Error(err)
@@ -245,7 +245,7 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 	}
 }
 
-func insertChore(record routing.ChoreRecord) error {
+func insertChore(record internal.ChoreRecord) error {
 	collection := client.Database("dutyDB").Collection("chores")
 	_, err := collection.InsertOne(context.Background(), record)
 	return err

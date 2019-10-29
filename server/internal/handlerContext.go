@@ -1,4 +1,4 @@
-package routing
+package internal
 
 import (
 	"go.mongodb.org/mongo-driver/mongo"
