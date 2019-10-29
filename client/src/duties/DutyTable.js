@@ -21,6 +21,11 @@ function headerRow() {
     return <TableRow>
         <TableCell style={styles.cell}>
             <Typography variant="h6" color='textPrimary'>
+                <strong>TITLE</strong>
+            </Typography>
+        </TableCell>
+        <TableCell style={styles.cell}>
+            <Typography variant="h6" color='textPrimary'>
                 <strong>PIONEER</strong>
             </Typography>
         </TableCell>

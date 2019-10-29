@@ -1,6 +1,8 @@
 import React from "react";
-import {shallow, mount} from "enzyme";
+import {shallow} from "enzyme";
 import DutyTable from "./DutyTable";
+import {TableRow} from "@material-ui/core";
+import TableCell from "@material-ui/core/TableCell";
 
 describe('Duty Table', () => {
 
@@ -28,6 +30,22 @@ describe('Duty Table', () => {
                 }
             ];
             table = shallow(<DutyTable duties={duties}/>);
+        });
+
+        it('all the properties are in the same column as their header', () => {
+            const headerRow = table.find(TableRow).at(0);
+            expect(headerRow.find(TableCell).map(cell => cell.text()))
+                .toEqual(['TITLE', 'PIONEER', 'CHORE', 'DESCRIPTION']);
+
+            const firstDutyRow = table.find(TableRow).at(1);
+
+            expect(firstDutyRow.find(TableCell).map(cell => cell.text()))
+                .toEqual([
+                    duties[0].chore.title,
+                    duties[0].pioneer.name,
+                    duties[0].chore.name,
+                    duties[0].chore.description
+                ])
         });
 
         it('shows a list of duties', () => {
