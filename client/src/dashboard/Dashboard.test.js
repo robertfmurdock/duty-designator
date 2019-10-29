@@ -338,7 +338,7 @@ describe('Dashboard', () => {
             expect(dashboard.find(DutyRoster).props().dutyRoster).toEqual(expectedDutyRoster);
 
         })
-    })
+    });
 
 });
 

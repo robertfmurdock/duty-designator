@@ -59,6 +59,10 @@ context('Actions', () => {
         });
 
         beforeEach(function () {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            cy.clock(yesterday.getTime());
+
             cy.visit('http://localhost:8080');
             cy.get("#saddle-up").click();
             cy.get("#save").click()
@@ -104,16 +108,18 @@ context('Actions', () => {
 
         describe('and it becomes tomorrow', function() {
             beforeEach(function() {
-                const today = Date.now();
-                const tomorrow = new Date(today);
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                cy.clock().tick(tomorrow - today);
+                cy.clock().then(clock => clock.restore());
                 cy.reload();
             });
             
             it('there is prepare to spin page', function () {
-                cy.get("#saddle-up").should('have.length', 1)
-            })
+                cy.get("#saddle-up").should('have.length', 1);
+            });
+
+            it('can view yesterday', function () {
+                cy.get(".back-btn").click();
+                cy.get("#saddle-up").should('have.length', 0);
+            });
         });
     });
 
@@ -136,8 +142,7 @@ context('Actions', () => {
             cy.get("#reset-button").click();
             cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
                 .should('have.text', candidate.name);
-        })
-    })
-
+        });
+    });
 });
 

@@ -13,7 +13,7 @@ const associateFunction = (pioneers, chores) => {
     return associateWithOffset(pioneers, chores, Date.now())
 };
 
-export default function Dashboard() {
+export default function Dashboard(props) {
     const [dataLoaded, setDataLoaded] = useState(undefined);
     const [pioneers, setPioneers] = useState([]);
     const [chores, setChores] = useState([]);
@@ -22,12 +22,12 @@ export default function Dashboard() {
     const [modalOpen, setModalOpen] = useState(false);
 
     if (!dataLoaded) {
-        loadState(setPioneers, setChores, setShowDutyRoster, setDutyRoster, setDataLoaded);
+        loadState(setPioneers, setChores, setShowDutyRoster, setDutyRoster, setDataLoaded, props.date);
         return <Loading/>
     }
 
     if (showDutyRoster) {
-        return dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, setShowDutyRoster)
+        return dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, setShowDutyRoster, props.date)
     } else {
         return choreCorralPage(
             pioneers,
@@ -42,10 +42,10 @@ export default function Dashboard() {
     }
 }
 
-function loadState(setPioneers, setChores, setShowDutyRoster, setDutyRoster, setDataLoaded) {
+function loadState(setPioneers, setChores, setShowDutyRoster, setDutyRoster, setDataLoaded, date) {
     getData(setPioneers, setChores)
         .then(() => {
-            const localBrowserState = loadStuff(today());
+            const localBrowserState = loadStuff(today(date));
             if (localBrowserState !== undefined) {
                 setShowDutyRoster(!!localBrowserState.dutyRoster);
                 setDutyRoster(localBrowserState.dutyRoster);
@@ -137,9 +137,9 @@ const addChore = (newChore, chores, setModalOpen, setChores) => {
     setChores([...chores, {id, ...newChore}]);
 };
 
-const today = () => format(new Date(), 'MM/dd/yyyy');
+const today = date => format(date, 'MM/dd/yyyy');
 
-function dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, setShowDutyRoster) {
+function dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, setShowDutyRoster, date) {
     return <DutyRoster
         pioneers={pioneers}
         chores={chores}
@@ -149,16 +149,16 @@ function dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, setShowDuty
             setDutyRoster(false);
             saveStuff({
                 dutyRoster: false
-            }, today())
+            }, today(date))
         }}
         onSave={(dutyRoster) => {
             setDutyRoster(dutyRoster);
             saveStuff({
                 dutyRoster
-            }, today())
+            }, today(date))
         }}
-            associator={associateFunction}
-            />;
-        }
+        associator={associateFunction}
+    />;
+}
 
 
