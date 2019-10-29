@@ -146,15 +146,15 @@ function addChoreModal(modalOpen, setModalOpen, chores, setChores) {
     return <AddChoreModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onChoreAdd={({name, description}) => addChore(name, description, chores, setModalOpen, setChores)}
+        onChoreAdd={(newChore) => addChore(newChore, chores, setModalOpen, setChores)}
     />;
 }
 
-const addChore = (name, description, chores, setModalOpen, setChores) => {
+const addChore = (newChore, chores, setModalOpen, setChores) => {
     const id = (chores.length + 1).toString();
-    const newChore = {id, name, description};
+
     setModalOpen(false);
-    setChores([...chores, newChore]);
+    setChores([...chores, {id, ...newChore}]);
 };
 
 function dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster, setShowDutyRoster) {
