@@ -5,6 +5,7 @@ import (
 	"context"
 	"duty-designator/server/internal"
 	"encoding/json"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -149,74 +150,41 @@ func contains(s []internal.PioneerRecord, e internal.PioneerRecord) bool {
 	return false
 }
 
-func containsChore(s []internal.ChoreRecord, e internal.ChoreRecord) bool {
+func containsChore(s []map[string]string, e map[string]string) bool {
 	for _, a := range s {
-		if a == e {
+		if cmp.Equal(a, e) {
 			return true
 		}
 	}
 	return false
 }
-func TestPostChore_WillWriteToDb(t *testing.T) {
-	responseRecorder := httptest.NewRecorder()
 
+func TestPostChore_WillWorkWithGetChore(t *testing.T) {
 	choreId := uuid.New()
-	chore := internal.ChoreRecord{
-		Name: "Compiled Cans",
-		Id:   choreId.String(),
+	chore := map[string]string{
+		"name":        "Compiled Cans",
+		"id":          choreId.String(),
+		"description": "Bruce knows how to can can",
+		"title":       "Canner",
 	}
 
 	choreJSON, _ := json.Marshal(chore)
 	request, _ := http.NewRequest(http.MethodPost, "/api/chore", bytes.NewReader(choreJSON))
 
-	internal.ServeMux.ServeHTTP(responseRecorder, request)
+	internal.ServeMux.ServeHTTP(httptest.NewRecorder(), request)
 
-	collection := client.Database("dutyDB").Collection("chores")
+	getRequest, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
 
-	cursor, err := collection.Find(context.TODO(), bson.D{})
+	getRecorder := httptest.NewRecorder()
+	internal.ServeMux.ServeHTTP(getRecorder, getRequest)
 
-	if err != nil {
-		t.Errorf("MongoDB find error: %s", err)
+	var responseJson []map[string]string
+	if err := json.Unmarshal(getRecorder.Body.Bytes(), &responseJson); err != nil {
+		t.Error("Could not parse server results.")
 	}
 
-	var choreRecords []internal.ChoreRecord
-	err = cursor.All(context.TODO(), &choreRecords)
-
-	if !containsChore(choreRecords, chore) {
-		t.Errorf("List %v, did not contain %v", choreRecords, chore)
-	}
-}
-
-func TestGetChore_GetChoreReturnsChoreFromTheDb(t *testing.T) {
-	responseRecorder := httptest.NewRecorder()
-	request, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
-
-	choreId := uuid.New()
-	chore := internal.ChoreRecord{
-		Id:          choreId.String(),
-		Name:        "Compiled Cans",
-		Description: "Those cruddy cans cant keep complaining",
-		Title:       "Canner",
-	}
-
-	if err := insertChore(chore); err != nil {
-		t.Error("insert was not successful", err)
-	}
-
-	internal.ServeMux.ServeHTTP(responseRecorder, request)
-
-	if responseRecorder.Code != 200 {
-		t.Error("Post was not successful", responseRecorder.Body.String())
-	}
-
-	var choreList []internal.ChoreRecord
-	var body = responseRecorder.Body.Bytes()
-	if err := json.Unmarshal(body, &choreList); err != nil {
-		t.Error(err)
-	}
-
-	if !containsChore(choreList, chore) {
-		t.Errorf("List %v, did not contain %v", choreList, chore)
+	if !containsChore(responseJson, chore) {
+		t.Errorf("List %v, did not contain %v", responseJson, chore)
 	}
 }
 
@@ -234,7 +202,7 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 		t.Error("Post was not successful", responseRecorder.Body.String())
 	}
 
-	var choreList []internal.ChoreRecord
+	var choreList []map[string]interface{}
 	var body = responseRecorder.Body.Bytes()
 	if err := json.Unmarshal(body, &choreList); err != nil {
 		t.Error(err)
@@ -243,10 +211,4 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 	if choreList == nil || len(choreList) != 0 {
 		t.Error("There was unexpected chore content", responseRecorder.Body.String())
 	}
-}
-
-func insertChore(record internal.ChoreRecord) error {
-	collection := client.Database("dutyDB").Collection("chores")
-	_, err := collection.InsertOne(context.Background(), record)
-	return err
 }
