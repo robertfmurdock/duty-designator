@@ -186,9 +186,10 @@ func TestGetChore_GetChoreReturnsAChoreThatWasPosted(t *testing.T) {
 
 	choreId := uuid.New()
 	chore := routing.ChoreRecord{
+		Id:          choreId.String(),
 		Name:        "Compiled Cans",
 		Description: "Those cruddy cans cant keep complaining",
-		Id:          choreId.String(),
+		Title:       "Canner",
 	}
 
 	if err := insertChore(chore); err != nil {
@@ -215,6 +216,11 @@ func TestGetChore_GetChoreReturnsAChoreThatWasPosted(t *testing.T) {
 	if !containsChoreDescription(choreList, chore.Description) {
 		t.Log(choreList)
 		t.Errorf("GetChore did not find chore description from InsertChore")
+	}
+
+	if !containsChoreTitle(choreList, chore.Title) {
+		t.Log(choreList)
+		t.Errorf("GetChore did not find chore title from InsertChore")
 	}
 }
 
@@ -261,6 +267,15 @@ func containsChoreID(s []routing.ChoreRecord, id string) bool {
 func containsChoreDescription(s []routing.ChoreRecord, desc string) bool {
 	for _, a := range s {
 		if a.Description == desc {
+			return true
+		}
+	}
+	return false
+}
+
+func containsChoreTitle(s []routing.ChoreRecord, title string) bool {
+	for _, a := range s {
+		if a.Title == title {
 			return true
 		}
 	}

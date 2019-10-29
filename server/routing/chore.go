@@ -30,6 +30,7 @@ type ChoreRecord struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Id          string `json:"id"`
+	Title       string `json:"title"`
 }
 
 func loadChoreRecords(handlerContext *handlerContext) ([]ChoreRecord, error) {
