@@ -6,9 +6,10 @@ import {Work} from '@material-ui/icons';
 import CloseIcon from '@material-ui/icons/Close';
 
 export default function AddChoreModal(props) {
-    const {open, onClose, addChore} = props;
+    const {open, onClose, onChoreAdd} = props;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [title, setTitle] = useState('');
     return <Dialog className="add-chore-modal"
                    aria-labelledby="customized-dialog-title"
                    open={open}
@@ -20,7 +21,8 @@ export default function AddChoreModal(props) {
         <DialogContent>
             {nameTextField(setName)}
             {descriptionTextField(setDescription)}
-            {saveButton(name, description, addChore)}
+            {titleTextField(setTitle)}
+            {saveButton(name, description, onChoreAdd, title)}
         </DialogContent>
     </Dialog>;
 }
@@ -84,13 +86,25 @@ function descriptionTextField(setDescription) {
     />;
 }
 
-function saveButton(name, description, addChore) {
+function titleTextField(setTitle){
+    return <TextField
+        id="chore-title"
+        label="What are the doers called?"
+        placeholder="Add Title"
+        InputLabelProps={{shrink: true}}
+        onChange={e => setTitle(e.target.value)}
+        margin="dense"
+        fullWidth
+    />;
+}
+
+function saveButton(name, description, onChoreAdd, title) {
     return <Button
         variant="contained"
         color="primary"
         id='save-chore-button'
         disabled={!name}
-        onClick={() => addChore(name, description)}>
+        onClick={() => onChoreAdd({name, description, title})}>
         Update Chore List
     </Button>;
 }

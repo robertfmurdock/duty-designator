@@ -4,42 +4,42 @@ import AddChoreModal from './AddChoreModal.js'
 import {Button} from "@material-ui/core";
 
 describe('AddChoreModal', () => {
-    let dialog;
 
-    beforeEach(() => {
-        dialog = shallow(<AddChoreModal/>);
+    describe('with no props', function () {
+        let addChoreModal;
+
+        beforeEach(() => {
+            addChoreModal = shallow(<AddChoreModal/>);
+        });
+
+        it('save button disabled with no data', () => {
+            expect(addChoreModal.find(Button).props().disabled).toBeTruthy()
+        });
+
+        it('save button enabled with chore name', () => {
+            simulateTyping(addChoreModal, '#chore-name', 'Fake Chore Name');
+            expect(addChoreModal.find(Button).props().disabled).toBeFalsy()
+        });
     });
 
-    test('save button disabled with no data', () => {
-        expect(dialog.find(Button).props().disabled).toBeTruthy()
-    });
-
-    test('save button enabled with chore name', () => {
-        simulateTyping('#chore-name', 'Fake Chore Name');
-        expect(dialog.find(Button).props().disabled).toBeFalsy()
-    });
-
-    test('save button enabled with chore name', () => {
-        simulateTyping('#chore-name', 'Fake Chore Name');
-        expect(dialog.find(Button).props().disabled).toBeFalsy()
-    });
-
-    test('save button does the things', () => {
+    it('when the button is clicked, the add chore callback gets the chore', () => {
         let actualChoreVals = {};
-        const addChoreSpy = (name, description) => actualChoreVals = {name, description};
-        dialog.setProps({addChore: addChoreSpy});
+        const addChoreSpy = (chore) => actualChoreVals = chore;
+        const addChoreModal = shallow(<AddChoreModal onChoreAdd={addChoreSpy}/>);
 
-        const expectedName = simulateTyping('#chore-name', 'Fake Chore Name');
-        const expectedDescription = simulateTyping('#chore-description', 'Fake Chore Description');
+        const expectedName = simulateTyping(addChoreModal, '#chore-name', 'Fake Chore Name');
+        const expectedDescription = simulateTyping(addChoreModal, '#chore-description', 'Fake Chore Description');
+        const expectedTitle = simulateTyping(addChoreModal, '#chore-title', 'Crier');
 
-        dialog.find(Button).simulate("click");
+        addChoreModal.find(Button).simulate("click");
 
         expect(actualChoreVals.name).toBe(expectedName);
         expect(actualChoreVals.description).toBe(expectedDescription);
+        expect(actualChoreVals.title).toBe(expectedTitle);
     });
 
-    const simulateTyping = (id, value) => {
-        dialog.find(id).simulate('change', {target: {value}});
+    const simulateTyping = (wrapper, id, value) => {
+        wrapper.find(id).simulate('change', {target: {value}});
         return value;
     }
 });

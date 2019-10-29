@@ -24,9 +24,9 @@ export default function Dashboard() {
         return <Loading/>
     }
     if (showDutyRoster) {
-        return resultsPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster, setShowDutyRoster)
+        return dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster, setShowDutyRoster)
     } else {
-        return setupPage(
+        return choreCorralPage(
             pioneers,
             setPioneers,
             chores,
@@ -82,7 +82,7 @@ function getData(setPioneers, setChores) {
         })
 }
 
-function setupPage(pioneers, setPioneers, chores, setChores, modalOpen, setModalOpen, setShowDutyRoster, setDataLoaded) {
+function choreCorralPage(pioneers, setPioneers, chores, setChores, modalOpen, setModalOpen, setShowDutyRoster, setDataLoaded) {
     return <div>
         <Container>
             <Box display="flex" flexDirection="row" justifyContent="center">
@@ -146,7 +146,7 @@ function addChoreModal(modalOpen, setModalOpen, chores, setChores) {
     return <AddChoreModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        addChore={(name, description) => addChore(name, description, chores, setModalOpen, setChores)}
+        onChoreAdd={({name, description}) => addChore(name, description, chores, setModalOpen, setChores)}
     />;
 }
 
@@ -157,7 +157,7 @@ const addChore = (name, description, chores, setModalOpen, setChores) => {
     setChores([...chores, newChore]);
 };
 
-function resultsPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster, setShowDutyRoster) {
+function dutyRosterPage(pioneers, chores, dutyRoster, setDutyRoster, showDutyRoster, setShowDutyRoster) {
     return <DutyRoster
         pioneers={pioneers}
         chores={chores}

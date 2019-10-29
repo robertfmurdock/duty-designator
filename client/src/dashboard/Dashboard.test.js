@@ -186,7 +186,7 @@ describe('Dashboard', () => {
         it('When AddChoreModal adds a chore, the chore entry is added to the list', () => {
             const newChore = {id: '5', name: 'Super Easy Chore', description: 'Its so easy'};
             const expectedChores = [...chores, newChore];
-            dashboard.find(AddChoreModal).props().addChore(newChore.name, newChore.description);
+            dashboard.find(AddChoreModal).props()["onChoreAdd"]({name: newChore.name, description: newChore.description});
 
             expect(dashboard.find(ChoreTable).props()["chores"]).toEqual(expectedChores)
         });
