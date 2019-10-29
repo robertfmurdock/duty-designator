@@ -1,6 +1,6 @@
 import {Button, Container} from "@material-ui/core";
 import React from "react";
-import DutyTable from "../duties/DutyTable";
+import DutyTable from "./DutyTable";
 
 export default function DutyRoster(props) {
     const {pioneers, chores, onRespin, onSave, associator} = props;

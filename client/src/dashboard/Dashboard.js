@@ -5,7 +5,7 @@ import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 
 import {associateWithOffset} from "./Associator";
 import {Loading} from "./Loading";
-import DutyRoster from "./DutyRoster";
+import DutyRoster from "../duties/DutyRoster";
 
 const associateFunction = (pioneers, chores) => {
     return associateWithOffset(pioneers, chores, Date.now())

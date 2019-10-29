@@ -5,7 +5,7 @@ import {AddChoreModal, ChoreTable, PioneerTable} from './index';
 import Dashboard from './Dashboard';
 import DutyTable from '../duties/DutyTable';
 import {Loading} from "./Loading";
-import DutyRoster from "./DutyRoster";
+import DutyRoster from "../duties/DutyRoster";
 
 async function waitUntil(untilFunction) {
     const start = new Date();
@@ -43,6 +43,7 @@ describe('Dashboard', () => {
 
     it('while loading pioneers shows loading element and no page', () => {
         fetchMock.mockImplementation(function (number, endpoint) {
+            // noinspection JSIncompatibleTypesComparison
             if (endpoint === '/api/candidate') {
                 return promiseThatDoesNotResolve()
             } else {
@@ -59,6 +60,7 @@ describe('Dashboard', () => {
 
     it('while loading chores shows loading element and no page', () => {
         fetchMock.mockImplementation(function (number, endpoint) {
+            // noinspection JSIncompatibleTypesComparison
             if (endpoint === '/api/chore') {
                 return promiseThatDoesNotResolve()
             } else {
@@ -79,8 +81,8 @@ describe('Dashboard', () => {
         const dashboard = shallow(<Dashboard/>);
         await waitUntil(() => dashboard.find(PioneerTable).length !== 0);
 
-        expect(dashboard.find(PioneerTable).props().pioneers.length).toEqual(0);
-        expect(dashboard.find(ChoreTable).props().chores.length).toEqual(0);
+        expect(dashboard.find(PioneerTable).props()["pioneers"].length).toEqual(0);
+        expect(dashboard.find(ChoreTable).props()["chores"].length).toEqual(0);
     });
 
     it('ChoreTable can open modal', async () => {
@@ -90,7 +92,7 @@ describe('Dashboard', () => {
 
         dashboard.find(ChoreTable)
             .props()
-            .addChoreHandler();
+            ["addChoreHandler"]();
 
         expect(dashboard.find(AddChoreModal).prop('open')).toEqual(true);
     });
@@ -114,14 +116,14 @@ describe('Dashboard', () => {
 
         it('shows a list of pioneers', () => {
             const pioneerTable = dashboard.find(PioneerTable);
-            expect(pioneerTable.props().pioneers).toBe(pioneers);
+            expect(pioneerTable.props()["pioneers"]).toBe(pioneers);
         });
 
         it('When PioneerTable remove last Pioneer, last Pioneer row is removed', () => {
             let pioneerToRemove = pioneers[2];
             simulateRemovePioneer(pioneerToRemove);
 
-            expect(dashboard.find(PioneerTable).props().pioneers).toEqual(pioneers.slice(0, 2))
+            expect(dashboard.find(PioneerTable).props()["pioneers"]).toEqual(pioneers.slice(0, 2))
         });
 
         it('When PioneerTable remove middle Pioneer, middle Pioneer row is removed', () => {
@@ -129,7 +131,7 @@ describe('Dashboard', () => {
             simulateRemovePioneer(pioneerToRemove);
 
             const expectedRemaining = [pioneers[0], pioneers[2]];
-            expect(dashboard.find(PioneerTable).props().pioneers).toEqual(expectedRemaining)
+            expect(dashboard.find(PioneerTable).props()["pioneers"]).toEqual(expectedRemaining)
         });
 
         it('Reset button presents default page', async () => {
@@ -140,11 +142,11 @@ describe('Dashboard', () => {
 
             await waitUntil(() => dashboard.find(PioneerTable).length !== 0);
 
-            expect(dashboard.find(PioneerTable).props().pioneers).toEqual(pioneers)
+            expect(dashboard.find(PioneerTable).props()["pioneers"]).toEqual(pioneers)
         });
 
         function simulateRemovePioneer(pioneerToRemove) {
-            let removeFunction = dashboard.find('PioneerTable').props().onRemove;
+            let removeFunction = dashboard.find('PioneerTable').props()["onRemove"];
             removeFunction(pioneerToRemove)
         }
     });
@@ -169,7 +171,7 @@ describe('Dashboard', () => {
         });
 
         it('will send chores to chore table', () => {
-            const chores = dashboard.find(ChoreTable).props().chores;
+            const chores = dashboard.find(ChoreTable).props()["chores"];
             expect(chores).toEqual(chores);
         });
 
@@ -178,7 +180,7 @@ describe('Dashboard', () => {
             const expectedRemaining = [chores[0], chores[2], chores[3]];
             simulateRemoveChore(choreToRemove);
 
-            expect(dashboard.find(ChoreTable).props().chores).toEqual(expectedRemaining)
+            expect(dashboard.find(ChoreTable).props()["chores"]).toEqual(expectedRemaining)
         });
 
         it('When AddChoreModal adds a chore, the chore entry is added to the list', () => {
@@ -186,11 +188,11 @@ describe('Dashboard', () => {
             const expectedChores = [...chores, newChore];
             dashboard.find(AddChoreModal).props().addChore(newChore.name, newChore.description);
 
-            expect(dashboard.find(ChoreTable).props().chores).toEqual(expectedChores)
+            expect(dashboard.find(ChoreTable).props()["chores"]).toEqual(expectedChores)
         });
 
         function simulateRemoveChore(pioneerToRemove) {
-            let removeFunction = dashboard.find(ChoreTable).props().onRemove;
+            let removeFunction = dashboard.find(ChoreTable).props()["onRemove"];
             removeFunction(pioneerToRemove)
         }
     });
@@ -209,12 +211,12 @@ describe('Dashboard', () => {
         });
 
         it('has pioneer props are equal to dashboard\'s state', () => {
-            expect(dutyRoster.props().pioneers)
+            expect(dutyRoster.props()["pioneers"])
                 .toEqual([])
         });
 
         it('has chore props are equal to dashboard\'s state', () => {
-            expect(dutyRoster.props().chores)
+            expect(dutyRoster.props()["chores"])
                 .toEqual([])
         });
 
@@ -261,7 +263,7 @@ describe('Dashboard', () => {
             ];
 
             chores = [
-                {id: '1', name: 'keyboard kleaner', description: 'k'},
+                {id: '1', name: 'keyboard cleaner', description: 'k'},
             ];
 
             fetchMock.mockReturnValueOnce(
@@ -272,21 +274,21 @@ describe('Dashboard', () => {
         });
 
         it('when saddle up clicked and Date is odd, second pioneer is assigned', () => {
-            dateMock.mockReturnValue(1)
-            dashboard.find('#saddle-up').simulate('click')
+            dateMock.mockReturnValue(1);
+            dashboard.find('#saddle-up').simulate('click');
             const dutyRoster = dashboard.find(DutyRoster).dive();
             expect(dutyRoster.find(DutyTable).props()
-                .duties[0].pioneer.name).toEqual('Everyday Natalie')
-        })
+                ["duties"][0].pioneer.name).toEqual('Everyday Natalie')
+        });
 
         it('when saddle up clicked and Date is even, first pioneer is assigned', () => {
-            dateMock.mockReturnValue(0)
-            dashboard.find('#saddle-up').simulate('click')
+            dateMock.mockReturnValue(0);
+            dashboard.find('#saddle-up').simulate('click');
             const dutyRoster = dashboard.find(DutyRoster).dive();
             expect(dutyRoster.find(DutyTable).props()
-                .duties[0].pioneer.name).toEqual('Friday Jeb')
+                ["duties"][0].pioneer.name).toEqual('Friday Jeb')
         })
-    })
+    });
 
     describe('save button on DutyRoster page', () => {
         let dashboard;
@@ -317,7 +319,7 @@ describe('Dashboard', () => {
             expect(dutyRoster.find('#respin').length).toEqual(1);
             expect(dutyRoster.find('#save').length).toEqual(0)
         })
-    })
+    });
 
     describe('when a duty roster is saved', () => {
         let dashboard;
@@ -332,7 +334,7 @@ describe('Dashboard', () => {
 
         it('is shared with DutyRoster', () => {
             const expectedDutyRoster = [{name: 'jack', chore: 'jest'}];
-            dashboard.find(DutyRoster).props().onSave(expectedDutyRoster);
+            dashboard.find(DutyRoster).props()["onSave"](expectedDutyRoster);
             expect(dashboard.find(DutyRoster).props().dutyRoster).toEqual(expectedDutyRoster);
 
         })

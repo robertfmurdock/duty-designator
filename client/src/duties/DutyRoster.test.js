@@ -1,8 +1,8 @@
 import DutyRoster from "./DutyRoster";
 import {shallow} from 'enzyme';
 import React from "react";
-import associate from "./Associator";
-import DutyTable from "../duties/DutyTable";
+import associate from "../dashboard/Associator";
+import DutyTable from "./DutyTable";
 
 describe('DutyRoster', function () {
     describe('with no dutyRoster', function () {
