@@ -19,11 +19,9 @@ func initializeMux() http.Handler {
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(http.Dir("../client/build")))
-
 	hc := handlerContext{dbClient: client}
-
 	mux.Handle("/api/", http.StripPrefix("/api", apiMux(hc)))
+	mux.Handle("/", http.FileServer(http.Dir("../client/build")))
 
 	return mux
 }
