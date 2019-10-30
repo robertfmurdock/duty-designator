@@ -25,11 +25,8 @@ export default function App() {
             <MuiThemeProvider theme={theme}>
                 <Router>
                     <Switch>
-                        <Route exact path="/">
-                            <TodaysWagonWheel date={new Date()}/>
-                            <Dashboard date={new Date()}/>
-                        </Route>
-                        <Route path="/:date" children={<DateSpecificDash />} />
+                        <Route exact path="/" children={<Today/>}/>
+                        <Route path="/:date" children={<DateSpecificDash/>}/>
                     </Switch>
                 </Router>
             </MuiThemeProvider>
@@ -37,8 +34,18 @@ export default function App() {
     );
 }
 
+function Today() {
+    const today = new Date();
+    return (
+        <div>
+            <TodaysWagonWheel date={today}/>
+            <Dashboard date={today}/>
+        </div>
+    );
+}
+
 function DateSpecificDash() {
-    let { date } = useParams();
+    let {date} = useParams();
     const parsedDate = parse(date, "MMddyyyy", new Date());
 
     return (

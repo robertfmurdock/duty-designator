@@ -1,11 +1,12 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import FetchService from '../utilities/services/fetchService';
-import {AddChoreModal, ChoreTable, PioneerTable} from './index';
+import {ChoreTable, PioneerTable} from './index';
 import Dashboard from './Dashboard';
 import DutyTable from '../duties/DutyTable';
 import {Loading} from "./Loading";
 import DutyRoster from "../duties/DutyRoster";
+import ChoreCorral from "../corral/ChoreCorral";
 
 async function waitUntil(untilFunction) {
     const start = new Date();
@@ -21,7 +22,6 @@ function promiseThatDoesNotResolve() {
 }
 
 describe('Dashboard', () => {
-
     let fetchMock;
 
     beforeEach(() => {
@@ -33,7 +33,7 @@ describe('Dashboard', () => {
     it('while loading data shows loading element and no page', () => {
         fetchMock.mockReturnValue(promiseThatDoesNotResolve());
 
-        const dashboard = shallow(<Dashboard/>);
+        const dashboard = shallow(<Dashboard date={new Date()}/>);
 
         expect(dashboard.find(PioneerTable).length).toEqual(0);
         expect(dashboard.find(ChoreTable).length).toEqual(0);
@@ -50,7 +50,7 @@ describe('Dashboard', () => {
             }
         });
 
-        const dashboard = shallow(<Dashboard/>);
+        const dashboard = shallow(<Dashboard date={new Date()}/>);
 
         expect(dashboard.find(PioneerTable).length).toEqual(0);
         expect(dashboard.find(ChoreTable).length).toEqual(0);
@@ -67,7 +67,7 @@ describe('Dashboard', () => {
             }
         });
 
-        const dashboard = shallow(<Dashboard/>);
+        const dashboard = shallow(<Dashboard date={new Date()}/>);
 
         expect(dashboard.find(PioneerTable).length).toEqual(0);
         expect(dashboard.find(ChoreTable).length).toEqual(0);
@@ -77,124 +77,11 @@ describe('Dashboard', () => {
     it('handles null task and pioneer lists', async function () {
         fetchMock.mockReturnValue(Promise.resolve([]));
 
-        const dashboard = shallow(<Dashboard/>);
-        await waitUntil(() => dashboard.find(PioneerTable).length !== 0);
+        const dashboard = shallow(<Dashboard date={new Date()}/>);
+        await waitUntil(() => dashboard.find(ChoreCorral).length !== 0);
 
-        expect(dashboard.find(PioneerTable).props()["pioneers"].length).toEqual(0);
-        expect(dashboard.find(ChoreTable).props()["chores"].length).toEqual(0);
-    });
-
-    it('ChoreTable can open modal', async () => {
-        fetchMock.mockReturnValue(Promise.resolve([]));
-        const dashboard = shallow(<Dashboard/>);
-        await waitUntil(() => dashboard.find(ChoreTable).length !== 0);
-
-        dashboard.find(ChoreTable)
-            .props()
-            ["addChoreHandler"]();
-
-        expect(dashboard.find(AddChoreModal).prop('open')).toEqual(true);
-    });
-
-    describe('with pioneer data', () => {
-        let dashboard, pioneers;
-
-        beforeEach(() => {
-            pioneers = [
-                {id: ' at thing', name: 'Friday Jeb'},
-                {id: 'something else', name: 'Everyday Natalie'},
-                {id: 'nothing', name: 'Odd Day Rob'}
-            ];
-
-            fetchMock.mockReturnValue(
-                new Promise(resolve => resolve(pioneers))
-            );
-
-            dashboard = shallow(<Dashboard/>);
-        });
-
-        it('shows a list of pioneers', () => {
-            const pioneerTable = dashboard.find(PioneerTable);
-            expect(pioneerTable.props()["pioneers"]).toBe(pioneers);
-        });
-
-        it('When PioneerTable remove last Pioneer, last Pioneer row is removed', () => {
-            let pioneerToRemove = pioneers[2];
-            simulateRemovePioneer(pioneerToRemove);
-
-            expect(dashboard.find(PioneerTable).props()["pioneers"]).toEqual(pioneers.slice(0, 2))
-        });
-
-        it('When PioneerTable remove middle Pioneer, middle Pioneer row is removed', () => {
-            let pioneerToRemove = pioneers[1];
-            simulateRemovePioneer(pioneerToRemove);
-
-            const expectedRemaining = [pioneers[0], pioneers[2]];
-            expect(dashboard.find(PioneerTable).props()["pioneers"]).toEqual(expectedRemaining)
-        });
-
-        it('Reset button presents default page', async () => {
-            let pioneerToRemove = pioneers[0];
-            simulateRemovePioneer(pioneerToRemove);
-
-            dashboard.find('#reset-button').simulate('click');
-
-            await waitUntil(() => dashboard.find(PioneerTable).length !== 0);
-
-            expect(dashboard.find(PioneerTable).props()["pioneers"]).toEqual(pioneers)
-        });
-
-        function simulateRemovePioneer(pioneerToRemove) {
-            let removeFunction = dashboard.find('PioneerTable').props()["onRemove"];
-            removeFunction(pioneerToRemove)
-        }
-    });
-
-    describe('with chore data', () => {
-        let dashboard, chores;
-
-        beforeEach(() => {
-            chores = [
-                {id: '1', name: 'Move chairs'},
-                {id: '2', name: 'Turn off coffee pot'},
-                {id: '3', name: 'Stock fridge with soda'},
-                {id: '4', name: 'Put away dishes'},
-            ];
-
-            fetchMock.mockReturnValue(new Promise(resolve => resolve(chores)));
-            dashboard = shallow(<Dashboard/>);
-        });
-
-        it('calls /api/chore', () => {
-            expect(fetchMock).toBeCalledWith(0, '/api/chore', undefined)
-        });
-
-        it('will send chores to chore table', () => {
-            const chores = dashboard.find(ChoreTable).props()["chores"];
-            expect(chores).toEqual(chores);
-        });
-
-        it('When ChoreTable remove a chore, the chore entry is removed', () => {
-            const choreToRemove = chores[1];
-            const expectedRemaining = [chores[0], chores[2], chores[3]];
-            simulateRemoveChore(choreToRemove);
-
-            expect(dashboard.find(ChoreTable).props()["chores"]).toEqual(expectedRemaining)
-        });
-
-        it('When AddChoreModal adds a chore, the chore entry is added to the list', () => {
-            const newChore = {id: '5', name: 'Super Easy Chore', description: 'Its so easy', title: 'Mouse'};
-            const expectedChores = [...chores, newChore];
-            dashboard.find(AddChoreModal)
-                .props()["onChoreAdd"](newChore);
-
-            expect(dashboard.find(ChoreTable).props()["chores"]).toEqual(expectedChores)
-        });
-
-        function simulateRemoveChore(pioneerToRemove) {
-            let removeFunction = dashboard.find(ChoreTable).props()["onRemove"];
-            removeFunction(pioneerToRemove)
-        }
+        expect(dashboard.find(ChoreCorral).props()["pioneers"].length).toEqual(0);
+        expect(dashboard.find(ChoreCorral).props()["chores"].length).toEqual(0);
     });
 
     describe('DutyRoster', () => {
@@ -204,7 +91,7 @@ describe('Dashboard', () => {
         beforeEach(async () => {
             localStorage.clear();
             fetchMock.mockReturnValue(Promise.resolve([]));
-            dashboard = shallow(<Dashboard/>);
+            dashboard = shallow(<Dashboard date={new Date()}/>);
             await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
             dashboard.find('#saddle-up').simulate('click');
             dutyRoster = dashboard.find(DutyRoster);
@@ -233,7 +120,7 @@ describe('Dashboard', () => {
 
         beforeEach(async () => {
             fetchMock.mockReturnValue(Promise.resolve([]));
-            dashboard = shallow(<Dashboard/>);
+            dashboard = shallow(<Dashboard date={new Date()}/>);
             await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
         });
 
@@ -270,7 +157,7 @@ describe('Dashboard', () => {
                 new Promise(resolve => resolve(pioneers))
             ).mockReturnValueOnce(new Promise(resolve => resolve(chores)));
 
-            dashboard = shallow(<Dashboard/>);
+            dashboard = shallow(<Dashboard date={new Date()}/>);
         });
 
         it('when saddle up clicked and Date is odd, second pioneer is assigned', () => {
@@ -297,7 +184,7 @@ describe('Dashboard', () => {
         beforeEach(async () => {
             localStorage.clear();
             fetchMock.mockReturnValue(Promise.resolve([]));
-            dashboard = shallow(<Dashboard/>);
+            dashboard = shallow(<Dashboard date={new Date()}/>);
             await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
             dashboard.find('#saddle-up').simulate('click');
             dutyRoster = dashboard.find(DutyRoster).dive();
@@ -327,7 +214,7 @@ describe('Dashboard', () => {
         beforeEach(async () => {
             localStorage.clear();
             fetchMock.mockReturnValue(Promise.resolve([]));
-            dashboard = shallow(<Dashboard/>);
+            dashboard = shallow(<Dashboard date={new Date()}/>);
             await waitUntil(() => dashboard.find('#saddle-up').length !== 0);
             dashboard.find('#saddle-up').simulate('click');
         });
