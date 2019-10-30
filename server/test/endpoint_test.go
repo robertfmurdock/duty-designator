@@ -31,23 +31,40 @@ func TestPostPioneerHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 }
 
 func performPostPioneer(pioneerToPost map[string]string, t *testing.T) error {
-	rawPioneer, e := json.Marshal(pioneerToPost)
-	if e != nil {
-		t.Error("Could not marshal pioneer struct")
-		return e
-	}
-	req, err := http.NewRequest(http.MethodPost, "/api/pioneer", bytes.NewReader(rawPioneer))
+	request, responseRecorder, err := buildRequest(http.MethodPost, "/api/pioneer", pioneerToPost, t)
 	if err != nil {
-		t.Error("Could not construct pioneer POST request")
 		return err
 	}
-	postResponseRecorder := httptest.NewRecorder()
-	internal.ServeMux.ServeHTTP(postResponseRecorder, req)
-	if postResponseRecorder.Code != 200 {
-		t.Error("Post was not successful", postResponseRecorder.Body.String())
-		return nil
+
+	sendToEndpoint(responseRecorder, request)
+
+	verifySuccessfulRequest(responseRecorder, t)
+	return nil
+}
+
+func sendToEndpoint(recorder *httptest.ResponseRecorder, request *http.Request) {
+	internal.ServeMux.ServeHTTP(recorder, request)
+}
+
+func verifySuccessfulRequest(recorder *httptest.ResponseRecorder, t *testing.T) {
+	if recorder.Code != 200 {
+		t.Error("Post was not successful", recorder.Body.String())
 	}
-	return err
+}
+
+func buildRequest(method string, url string, body map[string]string, t *testing.T) (*http.Request, *httptest.ResponseRecorder, error) {
+	rawPioneer, err := json.Marshal(body)
+	if err != nil {
+		t.Error("Could not marshal json struct")
+		return nil, nil, err
+	}
+	req, err := http.NewRequest(method, url, bytes.NewReader(rawPioneer))
+	if err != nil {
+		t.Error("Could not construct request")
+		return nil, nil, err
+	}
+	responseRecorder := httptest.NewRecorder()
+	return req, responseRecorder, err
 }
 
 func performGetPioneerRequest(t *testing.T) ([]map[string]string, error) {
@@ -68,32 +85,53 @@ func performGetPioneerRequest(t *testing.T) ([]map[string]string, error) {
 }
 
 func TestPostChore_WillWorkWithGetChore(t *testing.T) {
-	choreId := uuid.New()
 	chore := map[string]string{
 		"name":        "Compiled Cans",
-		"id":          choreId.String(),
+		"id":          uuid.New().String(),
 		"description": "Bruce knows how to can can",
 		"title":       "Canner",
 	}
 
-	choreJSON, _ := json.Marshal(chore)
-	request, _ := http.NewRequest(http.MethodPost, "/api/chore", bytes.NewReader(choreJSON))
+	if err := performPostChore(chore); err != nil {
+		t.Errorf("Post Chore Request failed. %v", err)
+		return
+	}
 
-	internal.ServeMux.ServeHTTP(httptest.NewRecorder(), request)
-
-	getRequest, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
-
-	getRecorder := httptest.NewRecorder()
-	internal.ServeMux.ServeHTTP(getRecorder, getRequest)
-
-	var responseJson []map[string]string
-	if err := json.Unmarshal(getRecorder.Body.Bytes(), &responseJson); err != nil {
-		t.Error("Could not parse server results.")
+	responseJson, err := performGetChores(t)
+	if err != nil {
+		t.Errorf("Get Chore Request failed. %v", err)
+		return
 	}
 
 	if !contains(responseJson, chore) {
 		t.Errorf("List %v, did not contain %v", responseJson, chore)
 	}
+}
+
+func performGetChores(t *testing.T) ([]map[string]string, error) {
+	getRequest, _ := http.NewRequest(http.MethodGet, "/api/chore", nil)
+	getRecorder := httptest.NewRecorder()
+	internal.ServeMux.ServeHTTP(getRecorder, getRequest)
+	var responseJson []map[string]string
+	if err := json.Unmarshal(getRecorder.Body.Bytes(), &responseJson); err != nil {
+		t.Error("Could not parse server results.")
+		return nil, err
+	}
+	return responseJson, nil
+}
+
+func performPostChore(newChore map[string]string) error {
+	choreJSON, err := json.Marshal(newChore)
+	if err != nil {
+		return err
+	}
+
+	request, err := http.NewRequest(http.MethodPost, "/api/chore", bytes.NewReader(choreJSON))
+	if err != nil {
+		return err
+	}
+	internal.ServeMux.ServeHTTP(httptest.NewRecorder(), request)
+	return nil
 }
 
 func contains(s []map[string]string, e map[string]string) bool {
