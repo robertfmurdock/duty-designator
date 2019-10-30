@@ -5,6 +5,7 @@ import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
 import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
 import {BrowserRouter as Router, Switch, Route, useParams} from "react-router-dom";
 import {parse} from 'date-fns';
+import Tumbleweed from "./tumbleweed/Tumbleweed";
 
 const theme = createMuiTheme({
     palette: {
@@ -29,6 +30,8 @@ export default function App() {
                         <Route path="/:date" children={<DateSpecificDash/>}/>
                     </Switch>
                 </Router>
+
+                <Tumbleweed/>
             </MuiThemeProvider>
         </div>
     );
