@@ -26,32 +26,32 @@ func getChoresHandler(writer http.ResponseWriter, _ *http.Request, handlerContex
 	return writeAsJson(writer, chores)
 }
 
-type ChoreRecord struct {
+type choreRecord struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Id          string `json:"id"`
 	Title       string `json:"title"`
 }
 
-func loadChoreRecords(handlerContext *handlerContext) ([]ChoreRecord, error) {
+func loadChoreRecords(handlerContext *handlerContext) ([]choreRecord, error) {
 	choreCollection := handlerContext.dutyDb().Collection("chores")
 	cursor, err := choreCollection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return nil, err
 	}
-	var choreRecords []ChoreRecord
+	var choreRecords []choreRecord
 	if err = cursor.All(context.Background(), &choreRecords); err != nil {
 		return nil, err
 	}
 	if choreRecords != nil {
 		return choreRecords, nil
 	}
-	return []ChoreRecord{}, nil
+	return []choreRecord{}, nil
 }
 
 func postChoreHandler(writer http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
 	decoder := json.NewDecoder(request.Body)
-	var choreRecord ChoreRecord
+	var choreRecord choreRecord
 
 	if err := decoder.Decode(&choreRecord); err != nil {
 		writer.WriteHeader(400)

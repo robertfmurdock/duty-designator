@@ -28,12 +28,12 @@ func getPioneerHandler(writer http.ResponseWriter, _ *http.Request, handlerConte
 	return writeAsJson(writer, records)
 }
 
-type PioneerRecord struct {
+type pioneerRecord struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
 }
 
-func loadPioneerRecords(handlerContext *handlerContext, writer http.ResponseWriter) ([]PioneerRecord, error) {
+func loadPioneerRecords(handlerContext *handlerContext, writer http.ResponseWriter) ([]pioneerRecord, error) {
 	collection := getPioneerCollection(handlerContext)
 	cursor, err := collection.Find(context.Background(), bson.D{})
 
@@ -41,21 +41,21 @@ func loadPioneerRecords(handlerContext *handlerContext, writer http.ResponseWrit
 		return nil, err
 	}
 
-	var rows []PioneerRecord
+	var rows []pioneerRecord
 	err = cursor.All(context.Background(), &rows)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		log.Fatal(err)
 	}
 	if rows == nil {
-		rows = []PioneerRecord{}
+		rows = []pioneerRecord{}
 	}
 	return rows, err
 }
 
 func postPioneerHandler(_ http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
 	decoder := json.NewDecoder(request.Body)
-	var pioneerRecord PioneerRecord
+	var pioneerRecord pioneerRecord
 	err := decoder.Decode(&pioneerRecord)
 	if err != nil {
 		return err
