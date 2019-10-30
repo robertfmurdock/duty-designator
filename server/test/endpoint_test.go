@@ -10,12 +10,12 @@ import (
 func TestPostPioneerHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 	pioneerToPOST := map[string]string{"name": "Alice", "id": uuid.New().String()}
 
-	if err := performPostPioneer(pioneerToPOST, t); err != nil {
+	if err := performPostPioneer(pioneerToPOST); err != nil {
 		t.Errorf("Post Pioneer Request failed. %v", err)
 		return
 	}
 
-	pioneerRecords, err := performGetPioneerRequest(t)
+	pioneerRecords, err := performGetPioneerRequest()
 	if err != nil {
 		t.Errorf("Get Pioneer Request failed. %v", err)
 		return
@@ -26,23 +26,24 @@ func TestPostPioneerHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 	}
 }
 
-func performPostPioneer(pioneerToPost map[string]string, t *testing.T) error {
-	responseRecorder, err := performRequest(http.MethodPost, "/api/pioneer", pioneerToPost, t)
+func performPostPioneer(pioneerToPost map[string]string) error {
+	responseRecorder, err := performRequest(http.MethodPost, "/api/pioneer", pioneerToPost)
 	if err != nil {
 		return err
 	}
 
-	verifySuccessfulRequest(responseRecorder, t)
-	return nil
+	return verifySuccessfulRequest(responseRecorder)
 }
 
-func performGetPioneerRequest(t *testing.T) ([]map[string]string, error) {
-	responseRecorder, err := performRequest(http.MethodGet, "/api/pioneer", nil, t)
+func performGetPioneerRequest() ([]map[string]string, error) {
+	responseRecorder, err := performRequest(http.MethodGet, "/api/pioneer", nil)
 	if err != nil {
 		return nil, err
 	}
-	verifySuccessfulRequest(responseRecorder, t)
-	return parseBodyAsJson(responseRecorder, t)
+	if err := verifySuccessfulRequest(responseRecorder); err != nil {
+		return nil, err
+	}
+	return parseBodyAsJson(responseRecorder)
 }
 
 func TestPostChore_WillWorkWithGetChore(t *testing.T) {
@@ -53,12 +54,12 @@ func TestPostChore_WillWorkWithGetChore(t *testing.T) {
 		"title":       "Canner",
 	}
 
-	if err := performPostChore(chore, t); err != nil {
+	if err := performPostChore(chore); err != nil {
 		t.Errorf("Post Chore Request failed. %v", err)
 		return
 	}
 
-	responseJson, err := performGetChores(t)
+	responseJson, err := performGetChores()
 	if err != nil {
 		t.Errorf("Get Chore Request failed. %v", err)
 		return
@@ -69,22 +70,23 @@ func TestPostChore_WillWorkWithGetChore(t *testing.T) {
 	}
 }
 
-func performGetChores(t *testing.T) ([]map[string]string, error) {
-	responseRecorder, err := performRequest(http.MethodGet, "/api/chore", nil, t)
+func performGetChores() ([]map[string]string, error) {
+	responseRecorder, err := performRequest(http.MethodGet, "/api/chore", nil)
 	if err != nil {
 		return nil, err
 	}
-	verifySuccessfulRequest(responseRecorder, t)
-	return parseBodyAsJson(responseRecorder, t)
+	if err := verifySuccessfulRequest(responseRecorder); err != nil {
+		return nil, err
+	}
+	return parseBodyAsJson(responseRecorder)
 }
 
-func performPostChore(newChore map[string]string, t *testing.T) error {
-	responseRecorder, err := performRequest(http.MethodPost, "/api/chore", newChore, t)
+func performPostChore(newChore map[string]string) error {
+	responseRecorder, err := performRequest(http.MethodPost, "/api/chore", newChore)
 	if err != nil {
 		return err
 	}
-	verifySuccessfulRequest(responseRecorder, t)
-	return nil
+	return verifySuccessfulRequest(responseRecorder)
 }
 
 func jsonArrayContains(s []map[string]string, e map[string]string) bool {
