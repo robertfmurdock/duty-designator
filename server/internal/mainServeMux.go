@@ -10,37 +10,35 @@ import (
 	"net/http"
 )
 
-var ServeMux = initializeMux()
-var ClientPath = "../client/build"
+type ServerConfig struct {
+	ClientPath string
+}
 
-func initializeMux() http.Handler {
+func NewChoreWheelMux(serverConfig *ServerConfig) http.Handler {
 	client, err := getDBClient()
 	if err != nil {
 		log.Fatal(err)
 		return nil
 	}
-
 	mux := http.NewServeMux()
-	mux.Handle("/build/", http.StripPrefix("/build", buildDirectoryHandler()))
+	mux.Handle("/build/", http.StripPrefix("/build", buildDirectoryHandler(serverConfig)))
 
 	hc := handlerContext{dbClient: client}
 
 	mux.Handle("/api/", http.StripPrefix("/api", apiMux(hc)))
-
-	mux.Handle("/", indexHtmlHandler())
+	mux.Handle("/", indexHtmlHandler(serverConfig))
 
 	return mux
 }
 
-func buildDirectoryHandler() http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		http.FileServer(http.Dir(ClientPath)).ServeHTTP(writer, request)
-	})
+func buildDirectoryHandler(config *ServerConfig) http.Handler {
+	return http.FileServer(http.Dir(config.ClientPath))
 }
 
-func indexHtmlHandler() http.Handler {
+func indexHtmlHandler(config *ServerConfig) http.Handler {
+	indexHtmlPath := fmt.Sprintf("%v/index.html", config.ClientPath)
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		http.ServeFile(writer, request, fmt.Sprintf("%v/index.html", ClientPath))
+		http.ServeFile(writer, request, indexHtmlPath)
 	})
 }
 

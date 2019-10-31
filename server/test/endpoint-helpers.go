@@ -31,8 +31,10 @@ func buildRequest(method string, url string, body map[string]string) (*http.Requ
 	return req, responseRecorder, err
 }
 
+var endpointMux = internal.NewChoreWheelMux(&internal.ServerConfig{ClientPath: "../../client/build"})
+
 func sendToEndpoint(recorder *httptest.ResponseRecorder, request *http.Request) {
-	internal.ServeMux.ServeHTTP(recorder, request)
+	endpointMux.ServeHTTP(recorder, request)
 }
 
 func parseBodyAsJson(recorder *httptest.ResponseRecorder) ([]map[string]string, error) {

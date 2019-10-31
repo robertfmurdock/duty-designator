@@ -1,7 +1,6 @@
 package test
 
 import (
-	"duty-designator/server/internal"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"net/http"
@@ -69,7 +68,6 @@ func TestPostChore_WillWorkWithGetChore(t *testing.T) {
 }
 
 func TestIndexHtmlIsReturnedFromRandomPaths(t *testing.T) {
-	internal.ClientPath = "../../client/build"
 	responseRecorder, err := performRequest(http.MethodGet, "/random/thing/not/a/real/path", nil)
 	if err != nil {
 		t.Errorf("Got an error on http request. %v", err)
@@ -88,7 +86,6 @@ func TestIndexHtmlIsReturnedFromRandomPaths(t *testing.T) {
 }
 
 func TestRealPathsStillReturnContent(t *testing.T) {
-	internal.ClientPath = "../../client/build"
 	responseRecorder, err := performRequest(http.MethodGet, "/build/index.css", nil)
 	if err != nil {
 		t.Errorf("Got an error on http request. %v", err)
