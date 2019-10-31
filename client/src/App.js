@@ -3,6 +3,7 @@ import './App.css';
 import Dashboard from './dashboard/Dashboard.js';
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
 import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
+import Tumbleweed from "./tumbleweed/Tumbleweed";
 
 const theme = createMuiTheme({
     palette: {
@@ -23,6 +24,7 @@ export default function App() {
             <MuiThemeProvider theme={theme}>
                 <TodaysWagonWheel date={new Date()}/>
                 <Dashboard/>
+                <Tumbleweed/>
             </MuiThemeProvider>
         </div>
     );
