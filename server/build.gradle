@@ -25,6 +25,8 @@ tasks {
         dependsOn goCheck
     }
 
+    goTest.dependsOn ":client:build"
+    
     task("test") {
         dependsOn goTest
     }

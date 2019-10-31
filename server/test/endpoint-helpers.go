@@ -31,8 +31,10 @@ func buildRequest(method string, url string, body map[string]string) (*http.Requ
 	return req, responseRecorder, err
 }
 
+var endpointMux = internal.NewChoreWheelMux(&internal.ServerConfig{ClientPath: "../../client/build"})
+
 func sendToEndpoint(recorder *httptest.ResponseRecorder, request *http.Request) {
-	internal.ServeMux.ServeHTTP(recorder, request)
+	endpointMux.ServeHTTP(recorder, request)
 }
 
 func parseBodyAsJson(recorder *httptest.ResponseRecorder) ([]map[string]string, error) {
@@ -45,7 +47,7 @@ func parseBodyAsJson(recorder *httptest.ResponseRecorder) ([]map[string]string, 
 
 func verifySuccessfulRequest(recorder *httptest.ResponseRecorder) error {
 	if recorder.Code != 200 {
-		return fmt.Errorf("post was not successful: %v %v", recorder.Code, recorder.Body.String())
+		return fmt.Errorf("request was not successful: %v %v", recorder.Code, recorder.Body.String())
 	}
 	return nil
 }

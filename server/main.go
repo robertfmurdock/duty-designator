@@ -9,7 +9,8 @@ import (
 
 func main() {
 	fmt.Println("Server start!")
-	err := http.ListenAndServe("localhost:8080", internal.ServeMux)
+	config := &internal.ServerConfig{ClientPath: "../client/build"}
+	err := http.ListenAndServe("localhost:8080", internal.NewChoreWheelMux(config))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -3,27 +3,43 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
 )
 
-var ServeMux = initializeMux()
+type ServerConfig struct {
+	ClientPath string
+}
 
-func initializeMux() http.Handler {
+func NewChoreWheelMux(serverConfig *ServerConfig) http.Handler {
 	client, err := getDBClient()
 	if err != nil {
 		log.Fatal(err)
 		return nil
 	}
-
 	mux := http.NewServeMux()
+	mux.Handle("/build/", http.StripPrefix("/build", buildDirectoryHandler(serverConfig)))
+
 	hc := handlerContext{dbClient: client}
+
 	mux.Handle("/api/", http.StripPrefix("/api", apiMux(hc)))
-	mux.Handle("/", http.FileServer(http.Dir("../client/build")))
+	mux.Handle("/", indexHtmlHandler(serverConfig))
 
 	return mux
+}
+
+func buildDirectoryHandler(config *ServerConfig) http.Handler {
+	return http.FileServer(http.Dir(config.ClientPath))
+}
+
+func indexHtmlHandler(config *ServerConfig) http.Handler {
+	indexHtmlPath := fmt.Sprintf("%v/index.html", config.ClientPath)
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		http.ServeFile(writer, request, indexHtmlPath)
+	})
 }
 
 func apiMux(hc handlerContext) *http.ServeMux {
