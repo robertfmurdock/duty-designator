@@ -60,11 +60,8 @@ func requestWithJsonBody(bodyStruct interface{}) (*http.Request, error) {
 }
 
 func TestGetChore_GetChoreReturnsChoreFromTheDb(t *testing.T) {
-	responseRecorder := httptest.NewRecorder()
-
-	choreId := uuid.New()
 	chore := choreRecord{
-		Id:          choreId.String(),
+		Id:          uuid.New().String(),
 		Name:        "Compiled Cans",
 		Description: "Those cruddy cans cant keep complaining",
 		Title:       "Canner",
@@ -75,6 +72,8 @@ func TestGetChore_GetChoreReturnsChoreFromTheDb(t *testing.T) {
 	}
 
 	hC := handlerContext{dbClient: client}
+	responseRecorder := httptest.NewRecorder()
+
 	if err := getChoresHandler(responseRecorder, &http.Request{}, &hC); err != nil {
 		t.Errorf("post error: %s", err)
 	}
@@ -84,8 +83,8 @@ func TestGetChore_GetChoreReturnsChoreFromTheDb(t *testing.T) {
 	}
 
 	var choreList []choreRecord
-	var body = responseRecorder.Body.Bytes()
-	if err := json.Unmarshal(body, &choreList); err != nil {
+
+	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &choreList); err != nil {
 		t.Error(err)
 	}
 
