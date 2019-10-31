@@ -12,41 +12,51 @@ import (
 )
 
 func TestPostChore_WillWriteToDb(t *testing.T) {
-	responseRecorder := httptest.NewRecorder()
-
-	choreId := uuid.New()
 	chore := choreRecord{
 		Name: "Compiled Cans",
-		Id:   choreId.String(),
+		Id:   uuid.New().String(),
 	}
 
-	choreJSON, _ := json.Marshal(chore)
-	request, _ := http.NewRequest(http.MethodPost, "/thisIsNotTestedHere", bytes.NewReader(choreJSON))
+	request, err := requestWithJsonBody(chore)
+	if err != nil {
+		t.Errorf("Could not produce request %v", err)
+	}
 
 	hC := handlerContext{dbClient: client}
 
-	if err := postChoreHandler(responseRecorder, request, &hC); err != nil {
+	if err := postChoreHandler(httptest.NewRecorder(), request, &hC); err != nil {
 		t.Errorf("post error: %s", err)
+		return
 	}
 
-	collection := client.Database("dutyDB").Collection("chores")
-
-	cursor, err := collection.Find(context.TODO(), bson.D{})
-
-	if err != nil {
-		t.Errorf("MongoDB find error: %s", err)
-	}
-
-	var choreRecords []choreRecord
-	err = cursor.All(context.TODO(), &choreRecords)
-
-	if err != nil {
-		t.Errorf("MongoDB load error: %s", err)
-	}
+	choreRecords := loadChoresFromDb(t)
 
 	if !containsChore(choreRecords, chore) {
 		t.Errorf("List %v, did not contain %v", choreRecords, chore)
 	}
+}
+
+func loadChoresFromDb(t *testing.T) []choreRecord {
+	collection := client.Database("dutyDB").Collection("chores")
+	cursor, err := collection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		t.Errorf("MongoDB find error: %s", err)
+	}
+	var choreRecords []choreRecord
+	err = cursor.All(context.TODO(), &choreRecords)
+	if err != nil {
+		t.Errorf("MongoDB load error: %s", err)
+	}
+	return choreRecords
+}
+
+func requestWithJsonBody(bodyStruct interface{}) (*http.Request, error) {
+	choreJSON, err := json.Marshal(bodyStruct)
+	if err != nil {
+		return nil, err
+	}
+	request, err := http.NewRequest(http.MethodPost, "/thisIsNotTestedHere", bytes.NewReader(choreJSON))
+	return request, err
 }
 
 func TestGetChore_GetChoreReturnsChoreFromTheDb(t *testing.T) {

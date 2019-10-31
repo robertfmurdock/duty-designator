@@ -45,7 +45,7 @@ func parseBodyAsJson(recorder *httptest.ResponseRecorder) ([]map[string]string, 
 
 func verifySuccessfulRequest(recorder *httptest.ResponseRecorder) error {
 	if recorder.Code != 200 {
-		return fmt.Errorf("post was not successful: %v %v", recorder.Code, recorder.Body.String())
+		return fmt.Errorf("request was not successful: %v %v", recorder.Code, recorder.Body.String())
 	}
 	return nil
 }
