@@ -13,6 +13,14 @@ node {
 
 tasks {
 
+    val reactClean by creating(Delete::class) {
+        setDelete("./build")
+    }
+
+    val clean by creating {
+        dependsOn(reactClean)
+    }
+
     val yarn by getting(YarnTask::class) {
 
     }
@@ -30,6 +38,7 @@ tasks {
 
     val build by creating(YarnTask::class) {
         dependsOn(yarn)
+        mustRunAfter(reactClean)
         inputs.dir("src")
         inputs.dir("public")
         inputs.file("package.json")
@@ -42,5 +51,7 @@ tasks {
     val check by creating {
         dependsOn(test)
     }
+
+
 
 }
