@@ -1,4 +1,4 @@
-import AddChoreModal from "./AddChoreModal";
+import AddChoreModal from "../corral/AddChoreModal";
 import ChoreTable from "../chores/ChoreTable";
 import PioneerTable from "../pioneers/PioneerTable";
 

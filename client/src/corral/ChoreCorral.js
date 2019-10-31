@@ -2,11 +2,11 @@ import {Box, Button, Container} from "@material-ui/core";
 import React, {useState} from "react";
 import {AddChoreModal, ChoreTable, PioneerTable} from "../dashboard";
 import FetchService from "../utilities/services/fetchService";
+import {Link} from "react-router-dom";
 
-export default function ChoreCorral(props) {
+export default function ChoreCorral() {
     const [pioneers, setPioneers] = useState([]);
     const [chores, setChores] = useState([]);
-    const [showDutyRoster, setShowDutyRoster] = useState(false);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -29,26 +29,13 @@ export default function ChoreCorral(props) {
             </Box>
             <Box>
                 {resetButton(setDataLoaded)}
-                {saddleUpButton(setShowDutyRoster)}
+                {saddleUpButton(pioneers, chores)}
             </Box>
         </Container>
     </div>;
 }
 
-function fakeData() {
-    return Promise.all([[
-        {id: ' at thing', name: 'Friday Jeb'},
-        {id: 'something else', name: 'Everyday Natalie'},
-        {id: 'nothing', name: 'Odd Day Rob'}
-    ], [
-        {id: ' at thing', name: 'Chore 1'},
-        {id: 'something else', name: 'Chore B'},
-        {id: 'nothing', name: 'Chore 123'}
-    ]]);
-}
-
 function getData() {
-    // return fakeData()
     return Promise.all([
         FetchService.get(0, "/api/pioneer", undefined),
         FetchService.get(0, "/api/chore", undefined)
@@ -81,8 +68,23 @@ function resetButton(setDataLoaded) {
     return button("reset-button", "Reset", () => setDataLoaded(false));
 }
 
-function saddleUpButton(setShowDutyRoster) {
-    return button("saddle-up", "Saddle Up", () => setShowDutyRoster(true));
+function saddleUpButton(pioneers, chores) {
+    return <Link
+        id="saddle-up"
+        to={{
+            pathname: "/roster",
+            state: {pioneers, chores}
+        }}
+        style={{textDecoration: "none"}}
+    >
+        <Button
+            color="primary"
+            size="large"
+            variant="contained"
+        >
+            Saddle Up
+        </Button>
+    </Link>
 }
 
 const button = (id, text, onClick) => (

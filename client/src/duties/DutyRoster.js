@@ -1,55 +1,64 @@
 import {Button, Container} from "@material-ui/core";
-import React from "react";
+import React, {useState} from "react";
 import DutyTable from "./DutyTable";
+import {associateWithOffset} from "./Associator";
+import {saveStuff} from "../utilities/services/localStorageService";
+import {format} from "date-fns";
 
 export default function DutyRoster(props) {
-    const {pioneers, chores, onRespin, onSave, associator} = props;
-    let {dutyRoster} = props;
-    let canSave = !dutyRoster;
-    if(!dutyRoster){
-        dutyRoster = associator(pioneers, chores);
-    }
+    const [canSave, setCanSave] = useState(true);
+    const {pioneers, chores} = props;
+
+    let roster = associator(pioneers, chores);
+    const [dutyRoster, setDutyRoster] = useState(roster);
+
     return <Container>
-        <Container className="results">
-            <DutyTable duties={dutyRoster}/>
-        </Container>
-        {respinButton(onRespin)}
-        {conditionallyRenderResultsButtons(canSave, dutyRoster, onSave)}
-        {conditionallyRenderSavedConfirmation(canSave)}
+        <DutyTable duties={dutyRoster}/>
+        {respinButton(setCanSave, setDutyRoster, pioneers, chores)}
+        {conditionalButtons(canSave, setCanSave, dutyRoster)}
     </Container>;
 }
 
-function respinButton(onRespin) {
+const associator = (pioneers, chores) => {
+    return associateWithOffset(pioneers, chores, Date.now())
+};
+
+function conditionalButtons(canSave, setCanSave, dutyRoster) {
+    return canSave
+        ? saveButton(setCanSave, dutyRoster)
+        : <p id='saved-confirmation'>Save Confirmed!</p>;
+}
+
+function respinButton(setCanSave, setDutyRoster, pioneers, chores) {
     return <Button
         color="secondary"
         size="large"
         variant="contained"
         id="respin"
-        onClick={onRespin}>
+        onClick={() => {
+            saveWithDate(false);
+            setCanSave(true);
+            setDutyRoster(associator(pioneers, chores));
+        }}>
         Respin this Wagon Wheel
     </Button>;
 }
 
-function conditionallyRenderResultsButtons(canSave, dutyRoster, onSave) {
-    if (canSave) {
-        return <div>
-            {saveButton(onSave, dutyRoster)}</div>;
-    }
-}
-
-function saveButton(onSave, dutyRoster) {
+function saveButton(setCanSave, dutyRoster) {
     return <Button
         color="primary"
         size="large"
         variant="contained"
         id="save"
-        onClick={() => {onSave(dutyRoster)}}>
+        onClick={() => {
+            saveWithDate(dutyRoster);
+            setCanSave(false);
+        }}>
         Save this Wagon Wheel
     </Button>;
 }
 
-function conditionallyRenderSavedConfirmation(canSave) {
-    if (!canSave) {
-        return <p id='saved-confirmation'>Save Confirmed!</p>
-    }
+function saveWithDate(dutyRoster) {
+    const date = format(new Date(), 'MM/dd/yyyy');
+    saveStuff({dutyRoster}, date);
 }

@@ -3,5 +3,5 @@ import React from 'react';
 import {ReactComponent as TumbleweedSvg} from './tumbleweed.svg';
 
 export default function Tumbleweed () {
-    return <TumbleweedSvg class="Tumbleweed"/>
+    return <TumbleweedSvg className="Tumbleweed"/>
 }

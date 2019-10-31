@@ -3,21 +3,7 @@ import {AddChoreModal, ChoreTable, PioneerTable} from "../dashboard";
 import React from "react";
 import ChoreCorral from "./ChoreCorral";
 import FetchService from "../utilities/services/fetchService";
-
-async function waitUntil(untilFunction) {
-    const start = new Date();
-    while (!untilFunction() && (new Date() - start) < 300) {
-        await yield25()
-    }
-
-    expect(untilFunction()).toBe(true);
-}
-
-function yield25() {
-    return new Promise((resolve) => {
-        setInterval(resolve, 25)
-    });
-}
+import {waitUntil} from "../utilities/testUtils";
 
 describe('ChoreCorral', function () {
     it('handles null chore and pioneer lists', async function () {

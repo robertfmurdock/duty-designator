@@ -3,9 +3,11 @@ import './App.css';
 import Dashboard from './dashboard/Dashboard.js';
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
 import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
-import {BrowserRouter as Router, Switch, Route, useParams} from "react-router-dom";
+import {BrowserRouter as Router, Switch, Route, useParams, useLocation} from "react-router-dom";
 import {parse} from 'date-fns';
 import Tumbleweed from "./tumbleweed/Tumbleweed";
+import DutyRoster from "./duties/DutyRoster";
+import HistoricalRoster from "./duties/HistoricalRoster";
 
 const theme = createMuiTheme({
     palette: {
@@ -26,8 +28,9 @@ export default function App() {
             <MuiThemeProvider theme={theme}>
                 <Router>
                     <Switch>
-                        <Route exact path="/" children={<Today/>}/>
-                        <Route path="/:date" children={<DateSpecificDash/>}/>
+                        <Route exact path="/" children={<WithoutDate/>}/>
+                        <Route exact path="/roster" component={Roster}/>
+                        <Route path="/roster/:date" children={<WithDate/>}/>
                     </Switch>
                 </Router>
 
@@ -37,24 +40,30 @@ export default function App() {
     );
 }
 
-function Today() {
-    const today = new Date();
-    return (
-        <div>
-            <TodaysWagonWheel date={today}/>
-            <Dashboard date={today}/>
-        </div>
-    );
-}
+const Roster = () => {
+    const {pioneers, chores} = useLocation().state;
+    return <div>
+        <TodaysWagonWheel date={new Date()}/>
+        <DutyRoster
+            pioneers={pioneers}
+            chores={chores}
+        />
+    </div>
+};
 
-function DateSpecificDash() {
+const WithoutDate = () => {
+    const date = new Date();
+    return <div>
+        <TodaysWagonWheel date={date}/>
+        <Dashboard date={date}/>
+    </div>
+};
+
+const WithDate = () => {
     let {date} = useParams();
     const parsedDate = parse(date, "MMddyyyy", new Date());
-
-    return (
-        <div>
-            <TodaysWagonWheel date={parsedDate}/>
-            <Dashboard date={parsedDate}/>
-        </div>
-    );
-}
+    return <div>
+        <TodaysWagonWheel date={parsedDate}/>
+        <HistoricalRoster date={parsedDate}/>
+    </div>
+};
