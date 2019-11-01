@@ -3,8 +3,8 @@ import './App.css';
 import Dashboard from './dashboard/Dashboard.js';
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
 import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
-import {BrowserRouter as Router, Switch, Route, useParams, useLocation} from "react-router-dom";
-import {parse} from 'date-fns';
+import {BrowserRouter as Router, Switch, Route, useParams, useLocation, Redirect} from "react-router-dom";
+import {parse, isToday} from 'date-fns';
 import Tumbleweed from "./tumbleweed/Tumbleweed";
 import DutyRoster from "./duties/DutyRoster";
 import HistoricalRoster from "./duties/HistoricalRoster";
@@ -62,8 +62,10 @@ const WithoutDate = () => {
 const WithDate = () => {
     let {date} = useParams();
     const parsedDate = parse(date, "MMddyyyy", new Date());
-    return <div>
-        <TodaysWagonWheel date={parsedDate}/>
-        <HistoricalRoster date={parsedDate}/>
-    </div>
+    return isToday(parsedDate)
+        ? <Redirect to="/"/>
+        : <div>
+            <TodaysWagonWheel date={parsedDate}/>
+            <HistoricalRoster date={parsedDate}/>
+        </div>
 };
