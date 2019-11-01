@@ -1,9 +1,11 @@
 import React, {useState} from "react";
-import {Button, Dialog, DialogContent, IconButton, TextField, Typography} from "@material-ui/core";
+import {Box, Button, Dialog, DialogContent, IconButton, TextField, Typography} from "@material-ui/core";
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import {withStyles} from "@material-ui/core/styles";
 import {Work} from '@material-ui/icons';
 import CloseIcon from '@material-ui/icons/Close';
+
+
 
 export default function AddChoreModal(props) {
     const {open, onClose, onChoreAdd} = props;
@@ -14,16 +16,31 @@ export default function AddChoreModal(props) {
                    aria-labelledby="customized-dialog-title"
                    open={open}
                    onClose={onClose}>
-        <DialogTitle id="customized-dialog-title" onClose={onClose}>
-            <Work/>
-        </DialogTitle>
+        <Box p={2} border={20}>
+            <DialogTitle id="customized-dialog-title" onClose={onClose}>
+                <Work/>
+            </DialogTitle>
 
-        <DialogContent>
-            {nameTextField(setName)}
-            {descriptionTextField(setDescription)}
-            {titleTextField(setTitle)}
-            {saveButton(name, description, onChoreAdd, title)}
-        </DialogContent>
+            <DialogContent>
+                <Box p={0.5}>
+                <Typography>What is the name of Chore you want to add to the list?</Typography>
+                {nameTextField(setName)}
+                </Box>
+                <Box p={0.5}>
+                <Typography>What is the description of Chore you want to add to the list?</Typography>
+                {descriptionTextField(setDescription)}
+                </Box>
+                <Box p={0.5}>
+                <Typography>What are the doers called?</Typography>
+                {titleTextField(setTitle)}
+                </Box>
+
+                <Box m={0} p={3}>
+                    {saveButton(name, description, onChoreAdd, title)}
+                </Box>
+
+            </DialogContent>
+        </Box>
     </Dialog>;
 }
 
@@ -34,11 +51,14 @@ const styles = theme => ({
     },
     closeButton: {
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        right: theme.spacing(4),
+        top: theme.spacing(3),
         color: theme.palette.text.primary,
     },
 });
+
+
+
 
 function closeButton(classes, onClose) {
     return <IconButton
@@ -64,12 +84,12 @@ const DialogTitle = withStyles(styles)(props => {
 function nameTextField(setName) {
     return <TextField
         id="chore-name"
-        label="What is the name of Chore you want to add to the list?"
         placeholder="Add Chore Here"
         InputLabelProps={{shrink: true}}
         onChange={e => setName(e.target.value)}
         autoFocus
         margin="dense"
+        variant={"outlined"}
         fullWidth
     />;
 }
@@ -77,23 +97,23 @@ function nameTextField(setName) {
 function descriptionTextField(setDescription) {
     return <TextField
         id="chore-description"
-        label="What is the description of Chore you want to add to the list?"
-        placeholder="Add Description Name"
+        placeholder="Add Description Here"
         InputLabelProps={{shrink: true}}
         onChange={e => setDescription(e.target.value)}
         margin="dense"
+        variant={"outlined"}
         fullWidth
     />;
 }
 
-function titleTextField(setTitle){
+function titleTextField(setTitle) {
     return <TextField
         id="chore-title"
-        label="What are the doers called?"
-        placeholder="Add Title"
+        placeholder="Add Title Here"
         InputLabelProps={{shrink: true}}
         onChange={e => setTitle(e.target.value)}
         margin="dense"
+        variant={"outlined"}
         fullWidth
     />;
 }
