@@ -7,11 +7,12 @@ import {format} from "date-fns";
 
 export default function DutyRoster(props) {
     const [canSave, setCanSave] = useState(true);
-    const {pioneers, chores} = props;
+    const [pioneers, setPioneers] = useState(props.pioneers);
+    const [chores, setChores] = useState(props.chores);
     const [dutyRoster, setDutyRoster] = useState(false);
 
     if(!dutyRoster) {
-        loadState(setCanSave, setDutyRoster, pioneers, chores);
+        loadState(setCanSave, setDutyRoster, pioneers, chores, setPioneers, setChores);
     }
 
     return <Container>
@@ -20,20 +21,6 @@ export default function DutyRoster(props) {
         {conditionalButtons(canSave, setCanSave, dutyRoster)}
     </Container>;
 }
-
-function loadState(setCanSave, setDutyRoster, pioneers, chores) {
-    const localBrowserState = loadStuff(today(new Date()));
-    if (localBrowserState !== undefined) {
-        setCanSave(false);
-        setDutyRoster(localBrowserState.dutyRoster);
-        return;
-    }
-
-    setDutyRoster(associator(pioneers, chores));
-    setCanSave(true);
-}
-
-const today = date => format(date, 'MM/dd/yyyy');
 
 const associator = (pioneers, chores) => {
     return associateWithOffset(pioneers, chores, Date.now())
@@ -79,3 +66,20 @@ function saveWithDate(dutyRoster) {
     const date = format(new Date(), 'MM/dd/yyyy');
     saveStuff({dutyRoster}, date);
 }
+
+function loadState(setCanSave, setDutyRoster, pioneers, chores, setPioneers, setChores) {
+    const localBrowserState = loadStuff(today(new Date()));
+    if (localBrowserState !== undefined) {
+        setCanSave(false);
+        const roster = localBrowserState.dutyRoster;
+        setDutyRoster(roster);
+        setPioneers(roster.map(duty => duty.pioneer));
+        setChores(roster.map(duty => duty.chore));
+        return;
+    }
+
+    setDutyRoster(associator(pioneers, chores));
+    setCanSave(true);
+}
+
+const today = date => format(date, 'MM/dd/yyyy');

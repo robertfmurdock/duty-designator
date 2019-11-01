@@ -3,7 +3,7 @@ import {Loading} from "./Loading";
 import {loadStuff} from "../utilities/services/localStorageService";
 import {format} from "date-fns";
 import ChoreCorral from "../corral/ChoreCorral";
-import HistoricalRoster from "../duties/HistoricalRoster";
+import DutyRoster from "../duties/DutyRoster";
 
 export default function Dashboard(props) {
     const [dataLoaded, setDataLoaded] = useState(undefined);
@@ -15,9 +15,7 @@ export default function Dashboard(props) {
         return <Loading/>
     }
 
-    return showDutyRoster
-        ? <HistoricalRoster date={date}/>
-        : <ChoreCorral/>;
+    return showDutyRoster ? <DutyRoster/> : <ChoreCorral/>;
 }
 
 function loadState(setShowDutyRoster, setDataLoaded, date) {

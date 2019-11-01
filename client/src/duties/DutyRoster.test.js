@@ -49,10 +49,26 @@ describe('DutyRoster', function () {
     });
 
     test('given a duty roster is saved, do not show saved button', () => {
-        localStorage.setItem(format(new Date(), 'MM/dd/yyyy'), JSON.stringify({dutyRoster: 7}));
-        const dutyRoster = shallow(<DutyRoster chores={["codin"]} pioneers={["Pioneer Jeb"]}/>);
+        const pioneer = {name: "jack"};
+        const chore = {name: "jest"};
+        const date = format(new Date(), "MM/dd/yyyy");
+        localStorage.setItem(date, JSON.stringify({dutyRoster: [{pioneer, chore}]}));
+
+        const dutyRoster = shallow(<DutyRoster/>);
 
         expect(dutyRoster.find('#save').length).toEqual(0);
         expect(dutyRoster.find('#saved-confirmation').length).toEqual(1);
+    });
+
+    test('given a duty roster is saved, pioneers and chores are available for a respin', () => {
+        const pioneer = {name: "jack"};
+        const chore = {name: "jest"};
+        const date = format(new Date(), "MM/dd/yyyy");
+        localStorage.setItem(date, JSON.stringify({dutyRoster: [{pioneer, chore}]}));
+
+        const dutyRoster = shallow(<DutyRoster/>);
+        dutyRoster.find("#respin").simulate("click");
+
+        expect(dutyRoster.find(DutyTable).props().duties).toEqual([{pioneer, chore}]);
     });
 });

@@ -1,11 +1,10 @@
 import React from "react";
 import {Container, Typography} from "@material-ui/core";
-import {format, subDays, addDays} from 'date-fns';
+import {format, subDays, addDays, isToday} from 'date-fns';
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {ReactComponent as WheelSvg} from './wheel.svg';
 import {Link} from "react-router-dom";
-import {isToday} from "date-fns";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
@@ -36,7 +35,7 @@ export default function (props) {
                 {format(props.date, 'MM/dd/yyyy')}
 
                 {!isToday(props.date) &&
-                    <Link to={`/roster/${(plusOneDay(props.date))}`} className="back-btn">
+                    <Link to={`/roster/${(plusOneDay(props.date))}`} className="forward-btn">
                         <ChevronRightIcon/>
                     </Link>
                 }

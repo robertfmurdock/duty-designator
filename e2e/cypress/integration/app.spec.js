@@ -1,7 +1,7 @@
+import {format, subDays} from 'date-fns';
 const uuid = require('uuid/v4');
 
 context('Actions', () => {
-
     async function insertCandidate(candidate) {
         await fetch("http://localhost:8080/api/pioneer", {
             method: "POST",
@@ -117,7 +117,7 @@ context('Actions', () => {
                 cy.clock().then(clock => clock.restore());
                 cy.visit('http://localhost:8080');
             });
-            
+
             it('there is prepare to spin page', function () {
                 cy.get("#saddle-up").should('have.length', 1);
             });
@@ -128,9 +128,8 @@ context('Actions', () => {
             });
         });
     });
-
-    xdescribe('remove pioneer from candidate list, save and respin', () => {
-        const candidate = {name: "Cammeron Mitchel", id: uuid()};
+    describe('remove pioneer from candidate list, save and respin', () => {
+        const candidate = {name: "Very Unique Name", id: uuid()};
 
         beforeEach(async function () {
             await insertCandidate(candidate);
@@ -145,10 +144,40 @@ context('Actions', () => {
             cy.visit('http://localhost:8080');
         });
 
-        it('reset will return pioneer to list', () => {
-            cy.get("#reset-button").click();
-            cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
-                .should('have.text', candidate.name);
+        it('reset will return to duty roster with respin option', () => {
+            cy.get("#respin").should('have.length', 1);
+            cy.get("#save").should('have.length', 0);
+            cy.should('not.contain', candidate.name);
+        });
+    });
+
+    describe('forward and back buttons', () => {
+        beforeEach(() => {
+            cy.visit('http://localhost:8080');
+        });
+
+        it('back button will take you to the historial roster page for yesterday', () => {
+            const yesterday = format(subDays(new Date(), 1), 'MMddyyyy');
+            cy.get(".back-btn").click();
+            cy.url().should('eq', `http://localhost:8080/roster/${yesterday}`);
+        });
+
+        it('will take you to the historical roster for today', () => {
+            const today = format(new Date(), 'MMddyyyy');
+            cy.get(".back-btn").click();
+            cy.get(".forward-btn").click();
+            cy.url().should('eq', `http://localhost:8080/roster/${today}`);
+        });
+    });
+
+    describe('visiting historical duty rosters', () => {
+        beforeEach(function () {
+            cy.visit(`http://localhost:8080/roster/10102010`);
+        });
+
+        it('there will be no respin or save buttons', () => {
+            cy.get("#respin").should('have.length', 0);
+            cy.get("#save").should('have.length', 0);
         });
     });
 });
