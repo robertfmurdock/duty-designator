@@ -48,5 +48,5 @@ and from terminal shell
 ```
 unzip initialData.zip
 mongoimport --type=csv --file=chores.csv --headerline -ddutyDB -cchores
-mongoimport --type=csv --file=pioneers.csv --headerline -ddutyDB -ccandidates
+mongoimport --type=csv --file=pioneers.csv --headerline -ddutyDB -cpioneers
 ```
