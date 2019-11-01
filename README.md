@@ -1,7 +1,6 @@
 ## Install Tools
 - [Install go](https://golang.org/doc/install)
 - [Install Node](https://nodejs.org/en/)
-- `brew install dep`
 - `brew tap mongodb/brew`
 - `brew install mongodb-community`
 
