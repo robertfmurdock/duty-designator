@@ -6,7 +6,7 @@ plugins {
 
 golang {
     packagePath = "duty-designator/server"
-    goVersion = '1.13.1'
+    goVersion = '1.13.4'
 }
 
 dependencies {
