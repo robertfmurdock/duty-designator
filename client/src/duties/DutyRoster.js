@@ -1,16 +1,18 @@
-import {Button, Container} from "@material-ui/core";
+import {Button, Container, Typography} from "@material-ui/core";
 import React, {useState} from "react";
 import DutyTable from "./DutyTable";
 import {associateWithOffset} from "./Associator";
-import {saveStuff} from "../utilities/services/localStorageService";
+import {loadStuff, saveStuff} from "../utilities/services/localStorageService";
 import {format} from "date-fns";
 
 export default function DutyRoster(props) {
     const [canSave, setCanSave] = useState(true);
     const {pioneers, chores} = props;
+    const [dutyRoster, setDutyRoster] = useState(false);
 
-    let roster = associator(pioneers, chores);
-    const [dutyRoster, setDutyRoster] = useState(roster);
+    if(!dutyRoster) {
+        loadState(setCanSave, setDutyRoster, pioneers, chores);
+    }
 
     return <Container>
         <DutyTable duties={dutyRoster}/>
@@ -19,6 +21,20 @@ export default function DutyRoster(props) {
     </Container>;
 }
 
+function loadState(setCanSave, setDutyRoster, pioneers, chores) {
+    const localBrowserState = loadStuff(today(new Date()));
+    if (localBrowserState !== undefined) {
+        setCanSave(false);
+        setDutyRoster(localBrowserState.dutyRoster);
+        return;
+    }
+
+    setDutyRoster(associator(pioneers, chores));
+    setCanSave(true);
+}
+
+const today = date => format(date, 'MM/dd/yyyy');
+
 const associator = (pioneers, chores) => {
     return associateWithOffset(pioneers, chores, Date.now())
 };
@@ -26,7 +42,9 @@ const associator = (pioneers, chores) => {
 function conditionalButtons(canSave, setCanSave, dutyRoster) {
     return canSave
         ? saveButton(setCanSave, dutyRoster)
-        : <p id='saved-confirmation'>Save Confirmed!</p>;
+        : <Typography id='saved-confirmation' variant="body2" color='textPrimary'>
+            Save Confirmed!
+        </Typography>;
 }
 
 function respinButton(setCanSave, setDutyRoster, pioneers, chores) {
@@ -36,7 +54,6 @@ function respinButton(setCanSave, setDutyRoster, pioneers, chores) {
         variant="contained"
         id="respin"
         onClick={() => {
-            saveWithDate(false);
             setCanSave(true);
             setDutyRoster(associator(pioneers, chores));
         }}>
