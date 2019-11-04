@@ -1,20 +1,21 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Typography} from "@material-ui/core";
 import FetchService from "../utilities/services/fetchService";
 
 export default function ChoreHistory(props) {
-    const [pioneerId, setPioneerId] = useState(props.id)
+    const [dataLoaded, setDataLoaded] = useState(false);
     const [pioneer, setPioneer] = useState({});
 
-    console.log("something")
-    useEffect(() => {
-        console.log("[[[[[Got here]]]]]]]")
-        // FetchService.get(0, "/api/pioneerById", undefined)
-        //     .then(pioneer => setPioneer(pioneer))
-        //     .catch(() => {
-        //         console.warn("Problem fetching pioneer");
-        //     });
-    });
+    if (!dataLoaded) {
+        FetchService.post(0, "/api/pioneerById", {id: props.id},undefined)
+            .then(pioneer => {
+                setPioneer(pioneer);
+                setDataLoaded(true);
+            })
+            .catch(err => {
+                console.warn("Problem fetching pioneer", err);
+            });
+    }
 
     return <div>
         <Typography
