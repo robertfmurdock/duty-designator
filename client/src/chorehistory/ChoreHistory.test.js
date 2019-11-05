@@ -9,13 +9,14 @@ describe('ChoreHistory', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        localStorage.clear();
         fetchMock = FetchService.post = jest.fn();
         fetchMock.mockReturnValue(wrapInPromise(({})));
     });
 
     it('renders without crashing', () => {
         let choreHistory = shallow(<ChoreHistory id={'0'}/>);
-        expect(choreHistory.find('.pioneer-name').length).toEqual(1);
+        expect(choreHistory.find('.history-header').length).toEqual(1);
     });
 
 
@@ -28,7 +29,7 @@ describe('ChoreHistory', () => {
         );
 
         let choreHistory = shallow(<ChoreHistory id={id}/>);
-        await waitUntil(() => choreHistory.find('.pioneer-name').text() !== "");
+        await waitUntil(() => choreHistory.find('.pioneer-name').length !== 0);
 
         expect(choreHistory.find('.pioneer-name').text()).toBe(name);
     });
@@ -42,8 +43,19 @@ describe('ChoreHistory', () => {
         );
 
         let choreHistory = shallow(<ChoreHistory id={id}/>);
-        await waitUntil(() => choreHistory.find('.pioneer-name').text() !== "");
+        await waitUntil(() => choreHistory.find('.pioneer-name').length !== 0);
         expect(choreHistory.find('.pioneer-name').text()).toBe(name)
+    });
+
+    it('can get single pioneer from local storage with arbitrary date', () => {
+        const pioneer = {name: "Juan Bonfante", id: "4"};
+        localStorage.setItem('10/29/2019', JSON.stringify({dutyRoster: [{pioneer: {name: "Guy", id: "7"}, chore: {}}]}));
+        localStorage.setItem('11/01/2019', JSON.stringify({dutyRoster: false}));
+        localStorage.setItem('11/02/2019', JSON.stringify({dutyRoster: [{pioneer, chore: {}}]}));
+
+        let choreHistory = shallow(<ChoreHistory id={pioneer.id}/>);
+
+        expect(choreHistory.find('.pioneer-name').text()).toBe(pioneer.name)
     });
 
     const wrapInPromise = response => new Promise(resolve => resolve(response));
