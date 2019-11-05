@@ -4,20 +4,14 @@ import {AddChoreModal, ChoreTable, PioneerTable} from "../dashboard";
 import FetchService from "../utilities/services/fetchService";
 import {Link} from "react-router-dom";
 
-export default function ChoreCorral() {
-    const [pioneers, setPioneers] = useState([]);
-    const [chores, setChores] = useState([]);
+export default function ChoreCorral(props) {
+    const [pioneers, setPioneers] = useState(props.pioneers || []);
+    const [chores, setChores] = useState(props.chores || []);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
 
-    if (!dataLoaded) {
-        getData(setPioneers, setChores)
-            .then(results => {
-                const [pioneers, chores] = results;
-                setPioneers(pioneers);
-                setChores(chores);
-                setDataLoaded(true);
-            });
+    if (dataLoaded === false) {
+        handleDataLoad(props, setDataLoaded, setPioneers, setChores);
     }
 
     return <div>
@@ -28,11 +22,33 @@ export default function ChoreCorral() {
                 {addChoreModal(modalOpen, setModalOpen, chores, setChores)}
             </Box>
             <Box>
-                {resetButton(setDataLoaded)}
+                {resetButton(setPioneers, setChores, setDataLoaded)}
                 {saddleUpButton(pioneers, chores)}
             </Box>
         </Container>
     </div>;
+}
+
+function handleDataLoad(props, setDataLoaded, setPioneers, setChores) {
+    if (hasProvidedData(props)) {
+        setDataLoaded(true);
+    } else {
+        startDataLoad(setPioneers, setChores, setDataLoaded);
+    }
+}
+
+function hasProvidedData(props) {
+    return !!props.pioneers && !!props.chores;
+}
+
+function startDataLoad(setPioneers, setChores, setDataLoaded) {
+    getData(setPioneers, setChores)
+        .then(results => {
+            const [pioneers, chores] = results;
+            setPioneers(pioneers);
+            setChores(chores);
+            setDataLoaded(true);
+        });
 }
 
 function getData() {
@@ -64,8 +80,8 @@ const choreTable = (chores, setChores, setModalOpen) => (
     />
 );
 
-function resetButton(setDataLoaded) {
-    return button("reset-button", "Reset", () => setDataLoaded(false));
+function resetButton(setPioneers, setChores, setDataLoaded) {
+    return button("reset-button", "Reset", () => startDataLoad(setPioneers, setChores, setDataLoaded));
 }
 
 function saddleUpButton(pioneers, chores) {

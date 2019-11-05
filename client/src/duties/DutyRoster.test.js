@@ -14,7 +14,8 @@ describe('DutyRoster', function () {
         const pioneer = {name: "jack"};
         const chore = {name: "jest"};
         const date = format(new Date(), "MM/dd/yyyy");
-        const dutyRoster = shallow(<DutyRoster pioneers={[pioneer]} chores={[chore]}/>);
+        const history = {push: jest.fn()};
+        const dutyRoster = shallow(<DutyRoster pioneers={[pioneer]} chores={[chore]} history={history}/>);
 
         dutyRoster.find('#save').simulate('click');
 
@@ -22,8 +23,8 @@ describe('DutyRoster', function () {
     });
 
     test('given no chores returns nothing', () => {
-        const dutyRoster = shallow(<DutyRoster chores={[]} pioneers={[]}/>)
-        expect(dutyRoster.find(DutyTable).props().duties).toEqual([]);
+        const dutyRoster = shallow(<DutyRoster chores={[]} pioneers={[]}/>);
+        expect(dutyRoster.find(DutyTable).props()['duties']).toEqual([]);
     });
 
     test('given associator that returns 7 get duties of 7', () => {
@@ -31,7 +32,7 @@ describe('DutyRoster', function () {
         const chore = {name: "jest"};
         const dutyRoster = shallow(<DutyRoster pioneers={[pioneer]} chores={[chore]}/>);
 
-        expect(dutyRoster.find(DutyTable).props().duties).toEqual([{pioneer, chore}]);
+        expect(dutyRoster.find(DutyTable).props()['duties']).toEqual([{pioneer, chore}]);
     });
 
     test('given associate and one pioneer and one chore get one duty', () => {

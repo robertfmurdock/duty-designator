@@ -1,4 +1,5 @@
 import {format, subDays} from 'date-fns';
+
 const uuid = require('uuid/v4');
 
 context('Actions', () => {
@@ -73,8 +74,8 @@ context('Actions', () => {
                 .should('have.text', chore.title);
         });
 
-        describe('and reload', function() {
-            beforeEach(function() {
+        describe('and reload', function () {
+            beforeEach(function () {
                 cy.reload();
             });
 
@@ -92,8 +93,9 @@ context('Actions', () => {
             });
         });
 
-        it('respin then you can save again', () => {
+        it('respin, and saddle up, then you can save again', () => {
             cy.get("#respin").click();
+            cy.get("#saddle-up").click();
             cy.get('#save').should('have.length', 1)
         });
 
@@ -104,16 +106,17 @@ context('Actions', () => {
             cy.get("#save").should('have.length', 0);
         });
 
-        it('respin, reload, respin and you can save again', () => {
+        it('respin, reload, respin, saddle up, and you can save again', () => {
             cy.get("#respin").click();
             cy.reload();
+            cy.get("#saddle-up").click();
             cy.get("#respin").click();
-
+            cy.get("#saddle-up").click();
             cy.get("#save").should('have.length', 1);
         });
 
-        describe('and it becomes tomorrow', function() {
-            beforeEach(function() {
+        describe('and it becomes tomorrow', function () {
+            beforeEach(function () {
                 cy.clock().then(clock => clock.restore());
                 cy.visit('http://localhost:8080');
             });
@@ -131,7 +134,7 @@ context('Actions', () => {
     describe('remove pioneer from candidate list, save and respin', () => {
         const candidate = {name: "Very Unique Name", id: uuid()};
 
-        beforeEach(async function () {
+        before(async function () {
             await insertCandidate(candidate);
         });
 
@@ -141,13 +144,17 @@ context('Actions', () => {
             cy.get("#saddle-up").click();
             cy.get("#save").click();
             cy.get("#respin").click();
-            cy.visit('http://localhost:8080');
         });
 
-        it('reset will return to duty roster with respin option', () => {
-            cy.get("#respin").should('have.length', 1);
-            cy.get("#save").should('have.length', 0);
-            cy.should('not.contain', candidate.name);
+        it('the removed pioneer does not appear on the chore corral', function () {
+            cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
+                .should('not.to.exist');
+        });
+
+        it('reset will return pioneer to list', () => {
+            cy.get("#reset-button").click();
+            cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
+                .should('have.text', candidate.name);
         });
     });
 
@@ -180,7 +187,7 @@ context('Actions', () => {
         it('will redirect user to home if date is today', () => {
             const today = format(new Date(), 'MMddyyyy');
             cy.visit(`http://localhost:8080/roster/${today}`);
-            cy.url().should('eq', 'http://localhost:8080/');
+            cy.url().should('eq', 'http://localhost:8080/corral');
         });
     });
 });

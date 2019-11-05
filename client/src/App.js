@@ -8,6 +8,8 @@ import {parse, isToday} from 'date-fns';
 import Tumbleweed from "./tumbleweed/Tumbleweed";
 import DutyRoster from "./duties/DutyRoster";
 import HistoricalRoster from "./duties/HistoricalRoster";
+import ChoreCorral from "./corral/ChoreCorral";
+import {useHistory} from "react-router-dom";
 
 const theme = createMuiTheme({
     palette: {
@@ -29,7 +31,8 @@ export default function App() {
                 <Router>
                     <Switch>
                         <Route exact path="/" children={<WithoutDate/>}/>
-                        <Route exact path="/roster" component={Roster}/>
+                        <Route exact path="/corral" component={ChoreCorralPage}/>
+                        <Route exact path="/roster" component={DutyRosterPage}/>
                         <Route path="/roster/:date" children={<WithDate/>}/>
                     </Switch>
                 </Router>
@@ -40,14 +43,18 @@ export default function App() {
     );
 }
 
-const Roster = () => {
-    const {pioneers, chores} = useLocation().state;
+const DutyRosterPage = () => {
+    const history = useHistory();
     return <div>
         <TodaysWagonWheel date={new Date()}/>
-        <DutyRoster
-            pioneers={pioneers}
-            chores={chores}
-        />
+        <DutyRoster {...useLocation().state} history={history}/>
+    </div>
+};
+
+const ChoreCorralPage = () => {
+    return <div>
+        <TodaysWagonWheel date={new Date()}/>
+        <ChoreCorral {...useLocation().state}/>
     </div>
 };
 
