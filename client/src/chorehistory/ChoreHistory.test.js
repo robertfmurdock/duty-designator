@@ -49,7 +49,7 @@ describe('ChoreHistory', () => {
 
     it('can get single pioneer from local storage with arbitrary date', () => {
         const pioneer = {name: "Juan Bonfante", id: "4"};
-        localStorage.setItem('10/29/2019', JSON.stringify({dutyRoster: [{pioneer: {name: "Guy", id: "7"}, chore: {}}]}));
+        localStorage.setItem('10/29/2019', JSON.stringify({dutyRoster: [{pioneer: {name: "Guy", id: "7"}}]}));
         localStorage.setItem('11/01/2019', JSON.stringify({dutyRoster: false}));
         localStorage.setItem('11/02/2019', JSON.stringify({dutyRoster: [{pioneer, chore: {}}]}));
 

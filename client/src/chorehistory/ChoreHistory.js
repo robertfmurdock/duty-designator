@@ -7,36 +7,38 @@ function flattenList(themRosters) {
     return [].concat.apply([], themRosters);
 }
 
+function findPioneerDutyInLocalStorage(id) {
+    let rosters = Object.keys(localStorage)
+        .map(date => loadStuff(date).dutyRoster)
+        .filter(roster => roster !== false);
+
+    return flattenList(rosters)
+        .find(duty => duty.pioneer.id === id);
+}
+
+function setPioneerFromServer(id, setPioneer) {
+    FetchService.post(0, "/api/pioneerById", {id}, undefined)
+        .then(pioneer => setPioneer(pioneer))
+        .catch(err => console.warn("Problem fetching pioneer", err));
+}
+
 export default function ChoreHistory(props) {
     const [dataLoaded, setDataLoaded] = useState(false);
     const [pioneer, setPioneer] = useState(undefined);
 
     if (!dataLoaded) {
-        FetchService.post(0, "/api/pioneerById", {id: props.id}, undefined)
-            .then(pioneer => {
-                setPioneer(pioneer);
-            })
-            .catch(err => {
-                console.warn("Problem fetching pioneer", err);
-            });
+        setPioneerFromServer(props.id, setPioneer);
 
-        let rosters = Object.keys(localStorage)
-            .map(key => loadStuff(key).dutyRoster)
-            .filter(roster => roster !== false);
-
-        let duty = flattenList(rosters).find(duty => {
-            return duty.pioneer.id === props.id;
-        });
-
-        if (duty) {
-            setPioneer(duty.pioneer)
+        const dutyWithMatchedPioneerId = findPioneerDutyInLocalStorage(props.id);
+        if (dutyWithMatchedPioneerId) {
+            setPioneer(dutyWithMatchedPioneerId.pioneer)
         }
 
         setDataLoaded(true);
     }
 
     return <div>
-        <Typography variant={"h1"} className={"history-header"}>Pioneer History</Typography>
+        <Typography variant="h1" className="history-header">Pioneer History</Typography>
         {pioneer &&
         <Typography
             variant="body1"
