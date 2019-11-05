@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 )
 
-func performRequest(method string, url string, body map[string]string) (*httptest.ResponseRecorder, error) {
+func performRequest(method string, url string, body interface{}) (*httptest.ResponseRecorder, error) {
 	request, responseRecorder, err := buildRequest(method, url, body)
 	if err != nil {
 		return nil, err
@@ -18,7 +18,7 @@ func performRequest(method string, url string, body map[string]string) (*httptes
 	return responseRecorder, nil
 }
 
-func buildRequest(method string, url string, body map[string]string) (*http.Request, *httptest.ResponseRecorder, error) {
+func buildRequest(method string, url string, body interface{}) (*http.Request, *httptest.ResponseRecorder, error) {
 	rawPioneer, err := json.Marshal(body)
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not marshal json struct: %w", err)

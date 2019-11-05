@@ -1,6 +1,8 @@
 package test
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"net/http"
@@ -25,6 +27,62 @@ func TestPostPioneerHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 	if !jsonArrayContains(pioneerRecords, pioneerToPOST) {
 		t.Errorf("Slice %v\n did not contain: %v", pioneerRecords, pioneerToPOST)
 	}
+}
+
+func TestPutCorral_AfterPutCanGetCorral(t *testing.T) {
+	pioneer := map[string]interface{}{"name": "Alice", "id": uuid.New().String()}
+	chore := map[string]interface{}{
+		"name":        "Compiled Cans",
+		"id":          uuid.New().String(),
+		"description": "Bruce knows how to can can",
+		"title":       "Canner",
+	}
+	date := "11-11-11"
+
+	corral := map[string]interface{}{
+		"date":     date,
+		"pioneers": []interface{}{pioneer},
+		"chores":   []interface{}{chore},
+	}
+
+	if err := performPutCorral(corral); err != nil {
+		t.Errorf("Post Corral Request failed. %v", err)
+		return
+	}
+
+	resultCorral, err := performGetCorralRequest(date)
+	if err != nil {
+		t.Errorf("Get Corral Request failed. %v", err)
+		return
+	}
+
+	if !cmp.Equal(corral, *resultCorral) {
+		t.Errorf("Returned corral was not equal:\n%v", cmp.Diff(corral, *resultCorral))
+	}
+}
+
+func performGetCorralRequest(date string) (*map[string]interface{}, error) {
+	responseRecorder, err := performRequest(http.MethodGet, fmt.Sprintf("/api/corral/%s", date), nil)
+	if err != nil {
+		return nil, err
+	}
+	if err := verifySuccessfulRequest(responseRecorder); err != nil {
+		return nil, err
+	}
+
+	var actualResponseBody map[string]interface{}
+	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
+		return nil, fmt.Errorf("could not parse server results: %w, %s", err, responseRecorder.Body.Bytes())
+	}
+	return &actualResponseBody, nil
+}
+
+func performPutCorral(corralToPut map[string]interface{}) error {
+	responseRecorder, err := performRequest(http.MethodPut, fmt.Sprintf("/api/corral/%s", corralToPut["date"]), corralToPut)
+	if err != nil {
+		return err
+	}
+	return verifySuccessfulRequest(responseRecorder)
 }
 
 func performPostPioneer(pioneerToPost map[string]string) error {

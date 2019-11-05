@@ -61,7 +61,6 @@ const ChoreCorralPage = () => {
 const WithoutDate = () => {
     const date = new Date();
     return <div>
-        <TodaysWagonWheel date={date}/>
         <Dashboard date={date}/>
     </div>
 };

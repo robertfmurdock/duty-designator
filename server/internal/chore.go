@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func choreMethodRoute(request *http.Request) mongoHandler {
+func choreHandler(request *http.Request) mongoHandler {
 	switch request.Method {
 	case http.MethodGet:
 		return getChoresHandler

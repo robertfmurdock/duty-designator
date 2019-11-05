@@ -54,8 +54,8 @@ context('Actions', () => {
     describe('When we save the spin results', () => {
         const chore = {id: uuid(), name: "Cow tipper", description: "Give some tips to cows", title: 'Tipper'};
 
-        before(function () {
-            insertChore(chore);
+        before(async function () {
+            await insertChore(chore);
         });
 
         beforeEach(function () {
@@ -68,8 +68,7 @@ context('Actions', () => {
             cy.get("#save").click();
         });
 
-
-        it('has chore title', () => {
+        it('on the roster page the chore title', () => {
             cy.get(`.duty-pioneer-title[data-duty-id=${chore.id}]`, {timeout: 2000})
                 .should('have.text', chore.title);
         });
