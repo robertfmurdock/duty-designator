@@ -23,6 +23,19 @@ describe('ChoreCorral', function () {
         expect(choreCorral.find(AddChoreModal).prop('open')).toEqual(true);
     });
 
+    it('when given chore and pioneer lists, no fetches will occur', () => {
+        const pioneers = [{id: 'something else', name: 'Everyday Natalie'}];
+        const chores = [{id: 'bg', name: 'Bean Grinder'}];
+
+        const fetchMock = FetchService.get = jest.fn();
+
+        const wrapper = shallow(<ChoreCorral pioneers={pioneers} chores={chores}/>);
+
+        expect(fetchMock.mock.calls.length).toBe(0);
+        expect(wrapper.find(PioneerTable).props()["pioneers"]).toEqual(pioneers);
+        expect(wrapper.find(ChoreTable).props()["chores"]).toEqual(chores);
+    });
+
     describe('with pioneer data', () => {
         let choreCorral, pioneers;
 
@@ -36,7 +49,7 @@ describe('ChoreCorral', function () {
             let fetchMock = FetchService.get = jest.fn();
             fetchMock.mockReturnValue(new Promise(resolve => resolve(pioneers)));
 
-            choreCorral = shallow(<ChoreCorral pioneers={pioneers}/>);
+            choreCorral = shallow(<ChoreCorral/>);
         });
 
         it('shows a list of pioneers', () => {

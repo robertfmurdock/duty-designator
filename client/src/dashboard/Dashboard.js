@@ -2,8 +2,7 @@ import React, {useState} from 'react';
 import {Loading} from "./Loading";
 import {loadStuff} from "../utilities/services/localStorageService";
 import {format} from "date-fns";
-import ChoreCorral from "../corral/ChoreCorral";
-import DutyRoster from "../duties/DutyRoster";
+import {Redirect} from "react-router-dom";
 
 export default function Dashboard(props) {
     const [dataLoaded, setDataLoaded] = useState(undefined);
@@ -15,7 +14,9 @@ export default function Dashboard(props) {
         return <Loading/>
     }
 
-    return showDutyRoster ? <DutyRoster/> : <ChoreCorral/>;
+    return showDutyRoster ?
+        <Redirect to='/roster'/>
+        : <Redirect to='/corral'/>;
 }
 
 function loadState(setShowDutyRoster, setDataLoaded, date) {

@@ -4,21 +4,23 @@ import DutyTable from "./DutyTable";
 import {associateWithOffset} from "./Associator";
 import {loadStuff, saveStuff} from "../utilities/services/localStorageService";
 import {format} from "date-fns";
+import {Link} from "react-router-dom";
 
 export default function DutyRoster(props) {
     const [canSave, setCanSave] = useState(true);
     const [pioneers, setPioneers] = useState(props.pioneers);
     const [chores, setChores] = useState(props.chores);
     const [dutyRoster, setDutyRoster] = useState(false);
+    const history = props.history;
 
-    if(!dutyRoster) {
-        loadState(setCanSave, setDutyRoster, pioneers, chores, setPioneers, setChores);
+    if (!dutyRoster) {
+        loadState(setCanSave, setDutyRoster, pioneers, chores, setPioneers, setChores, props);
     }
 
     return <Container>
         <DutyTable duties={dutyRoster}/>
-        {respinButton(setCanSave, setDutyRoster, pioneers, chores)}
-        {conditionalButtons(canSave, setCanSave, dutyRoster)}
+        {respinButton(pioneers, chores)}
+        {conditionalButtons(canSave, setCanSave, dutyRoster, history)}
     </Container>;
 }
 
@@ -26,29 +28,31 @@ const associator = (pioneers, chores) => {
     return associateWithOffset(pioneers, chores, Date.now())
 };
 
-function conditionalButtons(canSave, setCanSave, dutyRoster) {
+function conditionalButtons(canSave, setCanSave, dutyRoster, history) {
     return canSave
-        ? saveButton(setCanSave, dutyRoster)
+        ? saveButton(setCanSave, dutyRoster, history)
         : <Typography id='saved-confirmation' variant="body2" color='textPrimary'>
             Save Confirmed!
         </Typography>;
 }
 
-function respinButton(setCanSave, setDutyRoster, pioneers, chores) {
-    return <Button
+function respinButton(pioneers, chores) {
+    return <Link
+        to={{
+            pathname: "/corral",
+            state: {pioneers, chores}
+        }}
+    ><Button
         color="secondary"
         size="large"
         variant="contained"
         id="respin"
-        onClick={() => {
-            setCanSave(true);
-            setDutyRoster(associator(pioneers, chores));
-        }}>
+    >
         Respin this Wagon Wheel
-    </Button>;
+    </Button></Link>;
 }
 
-function saveButton(setCanSave, dutyRoster) {
+function saveButton(setCanSave, dutyRoster, history) {
     return <Button
         color="primary"
         size="large"
@@ -57,6 +61,7 @@ function saveButton(setCanSave, dutyRoster) {
         onClick={() => {
             saveWithDate(dutyRoster);
             setCanSave(false);
+            history.push('/roster')
         }}>
         Save this Wagon Wheel
     </Button>;
@@ -67,10 +72,19 @@ function saveWithDate(dutyRoster) {
     saveStuff({dutyRoster}, date);
 }
 
-function loadState(setCanSave, setDutyRoster, pioneers, chores, setPioneers, setChores) {
+function determineWhetherShouldAllowSave(props, setCanSave) {
+    if (!!props.pioneers && !!props.chores) {
+        setCanSave(true);
+    } else {
+        setCanSave(false);
+    }
+}
+
+function loadState(setCanSave, setDutyRoster, pioneers, chores, setPioneers, setChores, props) {
     const localBrowserState = loadStuff(today(new Date()));
     if (localBrowserState !== undefined) {
-        setCanSave(false);
+        determineWhetherShouldAllowSave(props, setCanSave);
+
         const roster = localBrowserState.dutyRoster;
         setDutyRoster(roster);
         setPioneers(roster.map(duty => duty.pioneer));
