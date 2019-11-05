@@ -9,6 +9,6 @@ export async function waitUntil(untilFunction) {
 
 function yield25() {
     return new Promise((resolve) => {
-        setInterval(resolve, 25)
+        setTimeout(resolve, 25)
     });
 }
