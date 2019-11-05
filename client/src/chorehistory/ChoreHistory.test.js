@@ -58,5 +58,11 @@ describe('ChoreHistory', () => {
         expect(choreHistory.find('.pioneer-name').text()).toBe(pioneer.name)
     });
 
+    it('will not try to render pioneer if no info is available', () => {
+        let choreHistory = shallow(<ChoreHistory id="7"/>);
+        expect(choreHistory.find('.pioneer-name').length).toEqual(0);
+        expect(choreHistory.find('.no-pioneer').length).toEqual(1);
+    });
+
     const wrapInPromise = response => new Promise(resolve => resolve(response));
 });
