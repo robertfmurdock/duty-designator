@@ -6,7 +6,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"net/http"
-	"reflect"
 	"strings"
 	"testing"
 )
@@ -86,25 +85,24 @@ func performPutCorral(corralToPut map[string]interface{}) error {
 	return verifySuccessfulRequest(responseRecorder)
 }
 
-func TestGetPioneerById(t *testing.T) {
-	pioneerToPOST := map[string]string{"name": "Dewy Dooter", "id": uuid.New().String()}
-
-	if err := performPostPioneer(pioneerToPOST); err != nil {
-		t.Errorf("Post Pioneer Request failed. %v", err)
-		return
-	}
-
-	pioneerRecords, err := performGetPioneerById(pioneerToPOST["id"])
-	if err != nil {
-		t.Errorf("Get Pioneer Request failed. %v", err)
-		return
-	}
-
-	if !reflect.DeepEqual(pioneerRecords, pioneerToPOST) {
-		t.Errorf("Slice %v\n did not contain: %v", pioneerRecords, pioneerToPOST)
-	}
-}
-
+//func TestGetPioneerById(t *testing.T) {
+//	pioneerToPOST := map[string]string{"name": "Dewy Dooter", "id": uuid.New().String()}
+//
+//	if err := performPostPioneer(pioneerToPOST); err != nil {
+//		t.Errorf("Post Pioneer Request failed. %v", err)
+//		return
+//	}
+//
+//	pioneerRecords, err := performGetPioneerById(pioneerToPOST["id"])
+//	if err != nil {
+//		t.Errorf("Get Pioneer Request failed. %v", err)
+//		return
+//	}
+//
+//	if !reflect.DeepEqual(pioneerRecords, pioneerToPOST) {
+//		t.Errorf("Slice %v\n did not contain: %v", pioneerRecords, pioneerToPOST)
+//	}
+//}
 
 func performPostPioneer(pioneerToPost map[string]string) error {
 	responseRecorder, err := performRequest(http.MethodPost, "/api/pioneer", pioneerToPost)
@@ -211,9 +209,6 @@ func performPostChore(newChore map[string]string) error {
 	}
 	return verifySuccessfulRequest(responseRecorder)
 }
-
-
-
 
 func jsonArrayContains(s []map[string]string, e map[string]string) bool {
 	for _, a := range s {

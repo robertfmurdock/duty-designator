@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"reflect"
 	"testing"
 	"time"
@@ -109,8 +111,9 @@ func TestGetPioneersById_RespondsWithSinglePioneerJson(t *testing.T) {
 	}
 
 	responseRecorder := httptest.NewRecorder()
+	pioneerUrl := url.URL{Path: fmt.Sprintf("/pioneers/%s", expectedPioneer.Id)}
 	hC := handlerContext{dbClient: client}
-	if err := getPioneerByIdHandler(responseRecorder, &http.Request{}, &hC); err != nil {
+	if err := getPioneerByIdHandler(responseRecorder, &http.Request{URL: &pioneerUrl}, &hC); err != nil {
 		t.Errorf("handler error: %s", err)
 	}
 

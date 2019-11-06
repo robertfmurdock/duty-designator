@@ -3,10 +3,12 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"net/http"
+	"path"
 )
 
 func pioneerHandler(request *http.Request) mongoHandler {
@@ -33,8 +35,9 @@ func getPioneerHandler(writer http.ResponseWriter, _ *http.Request, handlerConte
 }
 
 func getPioneerByIdHandler(writer http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
-	request.URL.Parse()
-	record, err := loadSinglePioneerRecord(handlerContext, writer)
+	id := path.Base(request.URL.Path)
+	fmt.Println(id)
+	record, err := loadSinglePioneerRecord(id, handlerContext, writer)
 	if err != nil {
 		return err
 	}
@@ -42,9 +45,9 @@ func getPioneerByIdHandler(writer http.ResponseWriter, request *http.Request, ha
 	return writeAsJson(writer, record)
 }
 
-func loadSinglePioneerRecord(handlerContext *handlerContext, writer http.ResponseWriter) (pioneerRecord, error) {
+func loadSinglePioneerRecord(id string, handlerContext *handlerContext, writer http.ResponseWriter) (pioneerRecord, error) {
 	collection := getPioneerCollection(handlerContext)
-	singleResult := collection.FindOne(context.Background(), pioneerRecord{Id: "1"})
+	singleResult := collection.FindOne(context.Background(), bson.M{"id": id})
 
 	var row pioneerRecord
 
