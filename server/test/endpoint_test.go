@@ -55,8 +55,43 @@ func TestPutCorral_AfterPutCanGetCorral(t *testing.T) {
 		return
 	}
 
-	if !cmp.Equal(corral, *resultCorral) {
-		t.Errorf("Returned corral was not equal:\n%v", cmp.Diff(corral, *resultCorral))
+	assertCorralsEqual(corral, *resultCorral, t)
+}
+
+func TestPutCorralMultipleTimes_GetWillReturnTheLatest(t *testing.T) {
+	date := "11-11-11"
+	corral := map[string]interface{}{
+		"date":     date,
+		"pioneers": []interface{}{},
+		"chores":   []interface{}{},
+	}
+	if err := performPutCorral(corral); err != nil {
+		t.Errorf("Post Corral Request failed. %v", err)
+		return
+	}
+
+	updatedCorral := map[string]interface{}{
+		"date":     date,
+		"pioneers": []interface{}{map[string]interface{}{"name": "Rose", "id": uuid.New().String()}},
+		"chores":   []interface{}{},
+	}
+	if err := performPutCorral(updatedCorral); err != nil {
+		t.Errorf("Post Corral Request failed. %v", err)
+		return
+	}
+
+	resultCorral, err := performGetCorralRequest(date)
+	if err != nil {
+		t.Errorf("Get Corral Request failed. %v", err)
+		return
+	}
+
+	assertCorralsEqual(updatedCorral, *resultCorral, t)
+}
+
+func assertCorralsEqual(expected map[string]interface{}, actual map[string]interface{}, t *testing.T) {
+	if !cmp.Equal(expected, actual) {
+		t.Errorf("Returned expected was not equal:\n%v", cmp.Diff(expected, actual))
 	}
 }
 
