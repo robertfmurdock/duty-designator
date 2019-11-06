@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Box, Table, TableBody, TableCell, TableRow, Typography} from "@material-ui/core";
+import {Typography} from "@material-ui/core";
 import FetchService from "../utilities/services/fetchService";
 import {loadStuff} from "../utilities/services/localStorageService";
 import ChoreHistoryTable from "./ChoreHistoryTable";
@@ -81,7 +81,7 @@ function setPioneerFromLocalStorage(id, setPioneer, setChoreCounts) {
 }
 
 function setPioneerFromServer(id, currentPioneer, setPioneer) {
-    FetchService.get(0, `/api/pioneerById?id=${id}`, undefined)
+    FetchService.get(0, `/api/pioneer/${id}`, undefined)
         .then(pioneer => {
             if(!currentPioneer) {
                 setPioneer(pioneer);

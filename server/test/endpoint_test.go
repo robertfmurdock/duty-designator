@@ -4,6 +4,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"net/http"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -27,6 +28,26 @@ func TestPostPioneerHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
 	}
 }
 
+func TestGetPioneerById(t *testing.T) {
+	pioneerToPOST := map[string]string{"name": "Dewy Dooter", "id": uuid.New().String()}
+
+	if err := performPostPioneer(pioneerToPOST); err != nil {
+		t.Errorf("Post Pioneer Request failed. %v", err)
+		return
+	}
+
+	pioneerRecords, err := performGetPioneerById(pioneerToPOST["id"])
+	if err != nil {
+		t.Errorf("Get Pioneer Request failed. %v", err)
+		return
+	}
+
+	if !reflect.DeepEqual(pioneerRecords, pioneerToPOST) {
+		t.Errorf("Slice %v\n did not contain: %v", pioneerRecords, pioneerToPOST)
+	}
+}
+
+
 func performPostPioneer(pioneerToPost map[string]string) error {
 	responseRecorder, err := performRequest(http.MethodPost, "/api/pioneer", pioneerToPost)
 	if err != nil {
@@ -37,6 +58,17 @@ func performPostPioneer(pioneerToPost map[string]string) error {
 
 func performGetPioneerRequest() ([]map[string]string, error) {
 	responseRecorder, err := performRequest(http.MethodGet, "/api/pioneer", nil)
+	if err != nil {
+		return nil, err
+	}
+	if err := verifySuccessfulRequest(responseRecorder); err != nil {
+		return nil, err
+	}
+	return parseBodyAsJsonArray(responseRecorder)
+}
+
+func performGetPioneerById(pioneerID string) (map[string]string, error) {
+	responseRecorder, err := performRequest(http.MethodGet, "/api/pioneer/"+pioneerID, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +143,7 @@ func performGetChores() ([]map[string]string, error) {
 	if err := verifySuccessfulRequest(responseRecorder); err != nil {
 		return nil, err
 	}
-	return parseBodyAsJson(responseRecorder)
+	return parseBodyAsJsonArray(responseRecorder)
 }
 
 func performPostChore(newChore map[string]string) error {
@@ -121,6 +153,9 @@ func performPostChore(newChore map[string]string) error {
 	}
 	return verifySuccessfulRequest(responseRecorder)
 }
+
+
+
 
 func jsonArrayContains(s []map[string]string, e map[string]string) bool {
 	for _, a := range s {
