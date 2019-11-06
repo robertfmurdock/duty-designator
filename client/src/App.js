@@ -1,16 +1,17 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import Dashboard from './dashboard/Dashboard.js';
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
 import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
 import {BrowserRouter as Router, Switch, Route, useParams, useLocation, Redirect} from "react-router-dom";
-import {parse, isToday} from 'date-fns';
+import {parse, isToday, format} from 'date-fns';
 import Tumbleweed from "./tumbleweed/Tumbleweed";
 import DutyRoster from "./duties/DutyRoster";
 import HistoricalRoster from "./duties/HistoricalRoster";
 import ChoreCorral from "./corral/ChoreCorral";
 import {useHistory} from "react-router-dom";
 import PioneerDutyHistory from "./chorehistory/PioneerDutyHistory";
+import FetchService from "./utilities/services/fetchService";
 
 const theme = createMuiTheme({
     palette: {
@@ -45,18 +46,40 @@ export default function App() {
     );
 }
 
+async function loadCorral(date, setCorral) {
+    const results = await FetchService.get(0, `/api/corral/${date}`, undefined);
+    setCorral(results);
+}
+
+const apiDateFormat = 'yyyy-MM-dd';
+
 const DutyRosterPage = () => {
     const history = useHistory();
+    const [dataLoading, setDataLoading] = useState(false);
+    const [corral, setCorral] = useState(null);
+
+    if (!dataLoading) {
+        const today = format(new Date(), apiDateFormat);
+        loadCorral(today, setCorral, setDataLoading)
+            .catch(err => console.error(err));
+        setDataLoading(true);
+    }
+
+    if (corral == null) {
+        return <div/>
+    }
+
     return <div>
         <TodaysWagonWheel date={new Date()}/>
-        <DutyRoster {...useLocation().state} history={history}/>
+        <DutyRoster {...corral} history={history}/>
     </div>
 };
 
 const ChoreCorralPage = () => {
+    const history = useHistory();
     return <div>
         <TodaysWagonWheel date={new Date()}/>
-        <ChoreCorral {...useLocation().state}/>
+        <ChoreCorral {...useLocation().state} history={history}/>
     </div>
 };
 
@@ -81,4 +104,4 @@ const WithDate = () => {
 const PioneerHistory = () => {
     const {id} = useParams();
     return <PioneerDutyHistory id={id}/>
-}
+};
