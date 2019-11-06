@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestPostPioneerHandler_AfterPostCanGetInformationFromGet(t *testing.T) {
@@ -70,6 +71,7 @@ func TestPutCorralMultipleTimes_GetWillReturnTheLatest(t *testing.T) {
 		return
 	}
 
+	time.Sleep(1 * time.Millisecond)
 	updatedCorral := map[string]interface{}{
 		"date":     date,
 		"pioneers": []interface{}{map[string]interface{}{"name": "Rose", "id": uuid.New().String()}},

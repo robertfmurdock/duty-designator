@@ -77,7 +77,7 @@ describe('PioneerDutyHistory', () => {
             expect(dutyHistory.find(DutyHistoryTable).props().pioneer.name).toBe(pioneer.name)
         });
 
-        it('will list users chore history ', async () => {
+        it('will list users duty history ', async () => {
             const chore2 = {name: "Saloon DJ", id: "8"};
             localStorage.setItem('10/29/2019', stringifyRoster(
                 [{pioneer, chore: chore}, {pioneer, chore: chore2}]

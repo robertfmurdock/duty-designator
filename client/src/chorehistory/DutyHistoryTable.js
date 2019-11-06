@@ -11,15 +11,29 @@ export default function DutyHistoryTable(props) {
         <Box border={2} borderColor="text.secondary">
             <Table>
                 <TableBody>
-                    {choreCounts.map(chore => choreRow(chore))}
+                    {something(choreCounts)}
                 </TableBody>
             </Table>
         </Box>
     </Box>
 }
 
+const something = choreCounts => (
+    choreCounts.length > 0
+        ? choreCounts.map(chore => choreRow(chore))
+        : <Typography
+            className="lazy-pioneer-msg"
+            variant="body2"
+            color="textPrimary"
+            align="center"
+            gutterBottom
+        >
+        This is one lazy pioneer!
+        </Typography>
+);
+
 function choreRow(choreCount) {
-    return <TableRow key={choreCount.id}>
+    return <TableRow key={choreCount.id} className="chore-count-row">
         <TableCell className="chore" data-chore-id={choreCount.id}>
             <Typography variant="h6" color='textPrimary' className="chore-name">
                 {choreCount.name}

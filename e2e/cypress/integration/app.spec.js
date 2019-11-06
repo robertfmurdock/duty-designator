@@ -1,15 +1,10 @@
 import {format, subDays} from 'date-fns';
+import {insertCandidate, insertChore} from "./integrationHelpers";
 
 const uuid = require('uuid/v4');
 
 context('Actions', () => {
-    async function insertCandidate(candidate) {
-        await fetch("http://localhost:8080/api/pioneer", {
-            method: "POST",
-            body: JSON.stringify(candidate),
-            signal: undefined
-        });
-    }
+
 
     describe('when a new candidate is posted', function () {
         const candidate = {name: "Jimmy Cypress", id: uuid()};
@@ -26,14 +21,6 @@ context('Actions', () => {
                 .should('have.text', candidate.name);
         });
     });
-
-    async function insertChore(chore) {
-        await fetch("http://localhost:8080/api/chore", {
-            method: "POST",
-            body: JSON.stringify(chore),
-            signal: undefined
-        });
-    }
 
     describe('when a new chore is posted', () => {
         const chore = {name: "Dastardly Dishes", id: uuid()};
