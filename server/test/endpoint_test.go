@@ -1,8 +1,6 @@
 package test
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"net/http"
@@ -62,30 +60,6 @@ func TestPutCorral_AfterPutCanGetCorral(t *testing.T) {
 	}
 }
 
-func performGetCorralRequest(date string) (*map[string]interface{}, error) {
-	responseRecorder, err := performRequest(http.MethodGet, fmt.Sprintf("/api/corral/%s", date), nil)
-	if err != nil {
-		return nil, err
-	}
-	if err := verifySuccessfulRequest(responseRecorder); err != nil {
-		return nil, err
-	}
-
-	var actualResponseBody map[string]interface{}
-	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
-		return nil, fmt.Errorf("could not parse server results: %w, %s", err, responseRecorder.Body.Bytes())
-	}
-	return &actualResponseBody, nil
-}
-
-func performPutCorral(corralToPut map[string]interface{}) error {
-	responseRecorder, err := performRequest(http.MethodPut, fmt.Sprintf("/api/corral/%s", corralToPut["date"]), corralToPut)
-	if err != nil {
-		return err
-	}
-	return verifySuccessfulRequest(responseRecorder)
-}
-
 func TestGetPioneerById(t *testing.T) {
 	pioneerToPOST := map[string]string{"name": "Dewy Dooter", "id": uuid.New().String()}
 
@@ -103,36 +77,6 @@ func TestGetPioneerById(t *testing.T) {
 	if !reflect.DeepEqual(pioneerRecords, pioneerToPOST) {
 		t.Errorf("Slice %v\n did not contain: %v", pioneerRecords, pioneerToPOST)
 	}
-}
-
-func performPostPioneer(pioneerToPost map[string]string) error {
-	responseRecorder, err := performRequest(http.MethodPost, "/api/pioneer", pioneerToPost)
-	if err != nil {
-		return err
-	}
-	return verifySuccessfulRequest(responseRecorder)
-}
-
-func performGetPioneerRequest() ([]map[string]string, error) {
-	responseRecorder, err := performRequest(http.MethodGet, "/api/pioneer", nil)
-	if err != nil {
-		return nil, err
-	}
-	if err := verifySuccessfulRequest(responseRecorder); err != nil {
-		return nil, err
-	}
-	return parseBodyAsJsonArray(responseRecorder)
-}
-
-func performGetPioneerById(pioneerID string) (map[string]string, error) {
-	responseRecorder, err := performRequest(http.MethodGet, "/api/pioneer/"+pioneerID, nil)
-	if err != nil {
-		return nil, err
-	}
-	if err := verifySuccessfulRequest(responseRecorder); err != nil {
-		return nil, err
-	}
-	return parseBodyAsJson(responseRecorder)
 }
 
 func TestPostChore_WillWorkWithGetChore(t *testing.T) {
@@ -190,32 +134,4 @@ func TestRealPathsStillReturnContent(t *testing.T) {
 	if strings.Contains(bodyString, "<title>Chore Wheel</title>") {
 		t.Errorf("Result was the index page... and it shouldn 't be! %v", err)
 	}
-}
-
-func performGetChores() ([]map[string]string, error) {
-	responseRecorder, err := performRequest(http.MethodGet, "/api/chore", nil)
-	if err != nil {
-		return nil, err
-	}
-	if err := verifySuccessfulRequest(responseRecorder); err != nil {
-		return nil, err
-	}
-	return parseBodyAsJsonArray(responseRecorder)
-}
-
-func performPostChore(newChore map[string]string) error {
-	responseRecorder, err := performRequest(http.MethodPost, "/api/chore", newChore)
-	if err != nil {
-		return err
-	}
-	return verifySuccessfulRequest(responseRecorder)
-}
-
-func jsonArrayContains(s []map[string]string, e map[string]string) bool {
-	for _, a := range s {
-		if cmp.Equal(a, e) {
-			return true
-		}
-	}
-	return false
 }
