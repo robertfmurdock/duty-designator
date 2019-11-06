@@ -1,13 +1,13 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import ChoreHistory from "./ChoreHistory";
+import PioneerDutyHistory from "./PioneerDutyHistory";
 import FetchService from "../utilities/services/fetchService";
 import {waitUntil} from "../utilities/testUtils";
-import ChoreHistoryTable from "./ChoreHistoryTable";
+import DutyHistoryTable from "./DutyHistoryTable";
 
 const wrapInPromise = response => new Promise(resolve => resolve(response));
 
-describe('ChoreHistory', () => {
+describe('PioneerDutyHistory', () => {
     let fetchMock = FetchService.get = jest.fn()
 
     beforeEach(() => {
@@ -17,14 +17,14 @@ describe('ChoreHistory', () => {
     });
 
     it('renders without crashing', () => {
-        let choreHistory = shallow(<ChoreHistory id={'0'}/>);
-        expect(choreHistory.find('.history-header').length).toEqual(1);
+        let dutyHistory = shallow(<PioneerDutyHistory id={'0'}/>);
+        expect(dutyHistory.find('.history-header').length).toEqual(1);
     });
 
     it('will not try to render pioneer if no info is available', () => {
-        let choreHistory = shallow(<ChoreHistory id="7"/>);
-        expect(choreHistory.find('.pioneer-name').length).toEqual(0);
-        expect(choreHistory.find('.no-pioneer').length).toEqual(1);
+        let dutyHistory = shallow(<PioneerDutyHistory id="7"/>);
+        expect(dutyHistory.find('.pioneer-name').length).toEqual(0);
+        expect(dutyHistory.find('.no-pioneer').length).toEqual(1);
     });
 
     describe('fetching pioneers via server', () => {
@@ -34,28 +34,28 @@ describe('ChoreHistory', () => {
 
         it('can get a pioneers name from database through fetch', async () => {
             fetchMock.mockReturnValue(wrapInPromise(pioneer));
-            let choreHistory = shallow(<ChoreHistory id={id}/>);
-            await waitUntil(() => choreHistory.find(ChoreHistoryTable).length !== 0);
-            expect(choreHistory.find(ChoreHistoryTable).props().pioneer.name).toBe(name);
+            let dutyHistory = shallow(<PioneerDutyHistory id={id}/>);
+            await waitUntil(() => dutyHistory.find(DutyHistoryTable).length !== 0);
+            expect(dutyHistory.find(DutyHistoryTable).props().pioneer.name).toBe(name);
         });
 
         it('can get a different pioneers name from database through fetch', async () => {
             const differentPioneer = {'id': "Geoffry", 'name': "1"};
             fetchMock.mockReturnValue(wrapInPromise(differentPioneer));
-            let choreHistory = shallow(<ChoreHistory id={id}/>);
-            await waitUntil(() => choreHistory.find(ChoreHistoryTable).length !== 0);
+            let dutyHistory = shallow(<PioneerDutyHistory id={id}/>);
+            await waitUntil(() => dutyHistory.find(DutyHistoryTable).length !== 0);
 
-            expect(choreHistory.find(ChoreHistoryTable).props().pioneer.name)
+            expect(dutyHistory.find(DutyHistoryTable).props().pioneer.name)
                 .toBe(differentPioneer.name)
         });
 
         it('should not show chore rows if no chores are found', async () => {
             fetchMock.mockReturnValue(wrapInPromise(pioneer));
-            let choreHistory = shallow(<ChoreHistory id={id}/>);
-            await waitUntil(() => choreHistory.find(ChoreHistoryTable).length !== 0);
+            let dutyHistory = shallow(<PioneerDutyHistory id={id}/>);
+            await waitUntil(() => dutyHistory.find(DutyHistoryTable).length !== 0);
 
-            expect(choreHistory.find(ChoreHistoryTable).props().pioneer.name).toBe(name);
-            expect(choreHistory.find(ChoreHistoryTable).props().choreCounts.length).toEqual(0);
+            expect(dutyHistory.find(DutyHistoryTable).props().pioneer.name).toBe(name);
+            expect(dutyHistory.find(DutyHistoryTable).props().choreCounts.length).toEqual(0);
         });
     });
 
@@ -72,22 +72,22 @@ describe('ChoreHistory', () => {
             localStorage.setItem('11/01/2019', stringifyRoster(false));
             localStorage.setItem('11/02/2019', stringifyRoster([{pioneer, chore}]));
 
-            let choreHistory = shallow(<ChoreHistory id={pioneer.id}/>);
+            let dutyHistory = shallow(<PioneerDutyHistory id={pioneer.id}/>);
 
-            expect(choreHistory.find(ChoreHistoryTable).props().pioneer.name).toBe(pioneer.name)
+            expect(dutyHistory.find(DutyHistoryTable).props().pioneer.name).toBe(pioneer.name)
         });
 
-        it('will list users chore history ', async () => {
+        it('will list users duty history ', async () => {
             const chore2 = {name: "Saloon DJ", id: "8"};
             localStorage.setItem('10/29/2019', stringifyRoster(
                 [{pioneer, chore: chore}, {pioneer, chore: chore2}]
             ));
             localStorage.setItem('11/02/2019', stringifyRoster([{pioneer, chore: chore2}]));
 
-            let choreHistory = shallow(<ChoreHistory id={pioneer.id}/>);
-            await waitUntil(() => choreHistory.find(ChoreHistoryTable).length !== 0);
+            let dutyHistory = shallow(<PioneerDutyHistory id={pioneer.id}/>);
+            await waitUntil(() => dutyHistory.find(DutyHistoryTable).length !== 0);
 
-            const choreCounts = choreHistory.find(ChoreHistoryTable).props().choreCounts;
+            const choreCounts = dutyHistory.find(DutyHistoryTable).props().choreCounts;
             expect(choreCounts.length).toEqual(2);
             expect(choreCounts[0].name).toBe(chore.name);
             expect(choreCounts[0].count).toBe(1);

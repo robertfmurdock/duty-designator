@@ -2,9 +2,9 @@ import React, {useState} from 'react';
 import {Typography} from "@material-ui/core";
 import FetchService from "../utilities/services/fetchService";
 import {loadStuff} from "../utilities/services/localStorageService";
-import ChoreHistoryTable from "./ChoreHistoryTable";
+import DutyHistoryTable from "./DutyHistoryTable";
 
-export default function ChoreHistory(props) {
+export default function PioneerDutyHistory(props) {
     const [dataLoaded, setDataLoaded] = useState(false);
     const [pioneer, setPioneer] = useState(undefined);
     const [choreCounts, setChoreCounts] = useState([]);
@@ -23,7 +23,7 @@ export default function ChoreHistory(props) {
 
 const conditionalRender = (pioneer, choreCounts) => (
     pioneer
-        ? <ChoreHistoryTable pioneer={pioneer} choreCounts={choreCounts}/>
+        ? <DutyHistoryTable pioneer={pioneer} choreCounts={choreCounts}/>
         : <Typography
             variant="body1"
             color="textPrimary"
