@@ -1,7 +1,7 @@
 import {Box, Table, TableBody, TableCell, TableRow, Typography} from "@material-ui/core";
 import React from "react";
 
-export default function ChoreHistoryTable(props) {
+export default function DutyHistoryTable(props) {
     const {pioneer, choreCounts} = props;
 
     return <Box style={{padding: 16}} flex="0 0 400px">
