@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -97,5 +98,27 @@ func TestGetPioneers_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 
 	if pioneerRecords == nil || len(pioneerRecords) != 0 {
 		t.Error("There was unexpected pioneer content")
+	}
+}
+
+func TestGetPioneersById_RespondsWithSinglePioneerJson(t *testing.T) {
+	expectedPioneer, err := insertNewPioneer(t)
+	if err != nil {
+		t.Errorf("Setup failed. %v", err)
+		return
+	}
+
+	responseRecorder := httptest.NewRecorder()
+	hC := handlerContext{dbClient: client}
+	if err := getPioneerByIdHandler(responseRecorder, &http.Request{}, &hC); err != nil {
+		t.Errorf("handler error: %s", err)
+	}
+
+	var pioneerRecord pioneerRecord
+	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &pioneerRecord); err != nil {
+		t.Error("Could not parse server results.")
+	}
+	if !reflect.DeepEqual(pioneerRecord, expectedPioneer) {
+		t.Errorf("%v, %v", pioneerRecord, expectedPioneer)
 	}
 }
