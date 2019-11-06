@@ -57,6 +57,17 @@ func performGetPioneerById(pioneerID string) (map[string]string, error) {
 	return parseBodyAsJson(responseRecorder)
 }
 
+func performDeletePioneerById(pioneerID string) (int, error) {
+	responseRecorder, err := performRequest(http.MethodDelete, "/api/pioneer/"+pioneerID, nil)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	if err := verifySuccessfulRequest(responseRecorder); err != nil {
+		return http.StatusInternalServerError, err
+	}
+	return responseRecorder.Code, nil
+}
+
 func buildRequest(method string, url string, body interface{}) (*http.Request, *httptest.ResponseRecorder, error) {
 	rawPioneer, err := json.Marshal(body)
 	if err != nil {

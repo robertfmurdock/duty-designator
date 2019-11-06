@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
@@ -22,7 +21,13 @@ func pioneerHandler(request *http.Request) mongoHandler {
 }
 
 func pioneerByIdHandler(request *http.Request) mongoHandler {
-	return getPioneerByIdHandler
+	switch request.Method {
+	case http.MethodGet:
+		return getPioneerByIdHandler
+	case http.MethodDelete:
+		return removePioneerByIdHandler
+	}
+	return nil
 }
 
 func getPioneerHandler(writer http.ResponseWriter, _ *http.Request, handlerContext *handlerContext) error {
@@ -36,13 +41,23 @@ func getPioneerHandler(writer http.ResponseWriter, _ *http.Request, handlerConte
 
 func getPioneerByIdHandler(writer http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
 	id := path.Base(request.URL.Path)
-	fmt.Println(id)
 	record, err := loadSinglePioneerRecord(id, handlerContext, writer)
 	if err != nil {
 		return err
 	}
 
 	return writeAsJson(writer, record)
+}
+
+func removePioneerByIdHandler(writer http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
+	id := path.Base(request.URL.Path)
+	err := removeSinglePioneerRecord(id, handlerContext, writer)
+	if err != nil {
+		return err
+	}
+
+	writer.WriteHeader(http.StatusOK)
+	return nil
 }
 
 func loadSinglePioneerRecord(id string, handlerContext *handlerContext, writer http.ResponseWriter) (pioneerRecord, error) {
@@ -62,6 +77,22 @@ func loadSinglePioneerRecord(id string, handlerContext *handlerContext, writer h
 	}
 
 	return row, err
+}
+
+func removeSinglePioneerRecord(id string, handlerContext *handlerContext, writer http.ResponseWriter) error {
+	collection := getPioneerCollection(handlerContext)
+	deleteResult, err := collection.DeleteOne(context.Background(), bson.M{"id": id})
+
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+
+	if deleteResult.DeletedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	return err
 }
 
 type pioneerRecord struct {

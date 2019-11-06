@@ -116,6 +116,25 @@ func TestGetPioneerById(t *testing.T) {
 	}
 }
 
+func TestRemovePioneerById(t *testing.T) {
+	pioneerToPOST := map[string]string{"name": "Dewy Dooter", "id": uuid.New().String()}
+
+	if err := performPostPioneer(pioneerToPOST); err != nil {
+		t.Errorf("Post Pioneer Request failed. %v", err)
+		return
+	}
+
+	statusCode, err := performDeletePioneerById(pioneerToPOST["id"])
+	if err != nil {
+		t.Errorf("Get Pioneer Request failed. %v", err)
+		return
+	}
+
+	if statusCode != http.StatusOK {
+		t.Errorf("Resposne code %v\n was not%v", statusCode, http.StatusOK)
+	}
+}
+
 func TestPostChore_WillWorkWithGetChore(t *testing.T) {
 	chore := map[string]string{
 		"name":        "Compiled Cans",

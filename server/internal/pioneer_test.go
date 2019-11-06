@@ -111,7 +111,7 @@ func TestGetPioneersById_RespondsWithSinglePioneerJson(t *testing.T) {
 	}
 
 	responseRecorder := httptest.NewRecorder()
-	pioneerUrl := url.URL{Path: fmt.Sprintf("/pioneers/%s", expectedPioneer.Id)}
+	pioneerUrl := url.URL{Path: fmt.Sprintf("/pioneer/%s", expectedPioneer.Id)}
 	hC := handlerContext{dbClient: client}
 	if err := getPioneerByIdHandler(responseRecorder, &http.Request{URL: &pioneerUrl}, &hC); err != nil {
 		t.Errorf("handler error: %s", err)
@@ -123,5 +123,30 @@ func TestGetPioneersById_RespondsWithSinglePioneerJson(t *testing.T) {
 	}
 	if !reflect.DeepEqual(pioneerRecord, expectedPioneer) {
 		t.Errorf("%v, %v", pioneerRecord, expectedPioneer)
+	}
+}
+
+func TestDeletePioneerById_RespondsWith200Ok(t *testing.T) {
+	expectedPioneer, err := insertNewPioneer(t)
+	if err != nil {
+		t.Errorf("Setup failed. %v", err)
+		return
+	}
+
+	responseRecorder := httptest.NewRecorder()
+	pioneerUrl := url.URL{Path: fmt.Sprintf("/pioneer/%s", expectedPioneer.Id)}
+	hC := handlerContext{dbClient: client}
+	request := &http.Request{URL: &pioneerUrl}
+
+	if err := removePioneerByIdHandler(responseRecorder, request, &hC); err != nil {
+		t.Errorf("handler error: %s", err)
+	}
+
+	if err := getPioneerByIdHandler(responseRecorder, request, &hC); err != mongo.ErrNoDocuments {
+		t.Errorf("handler error: %s", err)
+	}
+
+	if status := responseRecorder.Code; status != http.StatusOK {
+		t.Errorf("%v, %v", status, http.StatusOK)
 	}
 }
