@@ -5,7 +5,7 @@ export default function DutyHistoryTable(props) {
     const {pioneer, choreCounts} = props;
 
     return <Box style={{padding: 16}} flex="0 0 400px">
-        <Typography className="pioneer-name" variant="h5" color='textPrimary' align="center" gutterBottom>
+        <Typography className="pioneer-name" variant="h5" color='textPrimary' gutterBottom>
             {pioneer.name}
         </Typography>
         <Box border={2} borderColor="text.secondary">

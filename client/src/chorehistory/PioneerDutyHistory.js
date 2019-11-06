@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Typography} from "@material-ui/core";
+import {Container, Typography} from "@material-ui/core";
 import FetchService from "../utilities/services/fetchService";
 import {loadStuff} from "../utilities/services/localStorageService";
 import DutyHistoryTable from "./DutyHistoryTable";
@@ -15,10 +15,10 @@ export default function PioneerDutyHistory(props) {
         setDataLoaded(true); // will need to be moved to take async fetch into account
     }
 
-    return <div>
-        <Typography variant="h1" className="history-header">Pioneer History</Typography>
+    return <Container>
+        <Typography variant="h4" className="history-header" align="center">Pioneer History</Typography>
         {conditionalRender(pioneer, choreCounts)}
-    </div>;
+    </Container>;
 }
 
 const conditionalRender = (pioneer, choreCounts) => (
@@ -73,8 +73,7 @@ function setPioneerFromLocalStorage(id, setPioneer, setChoreCounts) {
 
     if (dutyWithMatchedPioneerId) {
         let choresWithCounts = countChoreFrequency(duties);
-
-        choresWithCounts.sort((a,b) => a.count - b.count);
+        choresWithCounts.sort((a, b) => a.count - b.count);
         setPioneer(dutyWithMatchedPioneerId.pioneer);
         setChoreCounts(choresWithCounts);
     }
@@ -83,7 +82,7 @@ function setPioneerFromLocalStorage(id, setPioneer, setChoreCounts) {
 function setPioneerFromServer(id, currentPioneer, setPioneer) {
     FetchService.get(0, `/api/pioneer/${id}`, undefined)
         .then(pioneer => {
-            if(!currentPioneer) {
+            if (!currentPioneer) {
                 setPioneer(pioneer);
             }
         })
