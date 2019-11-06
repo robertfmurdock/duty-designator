@@ -27,7 +27,7 @@ describe('DutyRoster', function () {
         expect(dutyRoster.find(DutyTable).props()['duties']).toEqual([]);
     });
 
-    test('given associator that returns 7 get duties of 7', () => {
+    test('when given single pioneer and single chore will make single duty with them', () => {
         const pioneer = {name: "jack"};
         const chore = {name: "jest"};
         const dutyRoster = shallow(<DutyRoster pioneers={[pioneer]} chores={[chore]}/>);
@@ -39,13 +39,13 @@ describe('DutyRoster', function () {
         const pioneers = ["Pioneer Jeb"];
         const chores = ["codin"];
 
-        const results = shallow(<DutyRoster chores={chores} pioneers={pioneers}/>)
+        const results = shallow(<DutyRoster chores={chores} pioneers={pioneers}/>);
 
         expect(results.find(DutyTable).props().duties.length).toEqual(1);
     });
 
     test('given no duty roster is saved, show saved button', () => {
-        const dutyRoster = shallow(<DutyRoster chores={["codin"]} pioneers={["Pioneer Jeb"]}/>)
+        const dutyRoster = shallow(<DutyRoster chores={["codin"]} pioneers={["Pioneer Jeb"]}/>);
         expect(dutyRoster.find('#save').length).toEqual(1);
     });
 

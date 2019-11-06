@@ -2,13 +2,14 @@ import {Box, Button, Container} from "@material-ui/core";
 import React, {useState} from "react";
 import {AddChoreModal, ChoreTable, PioneerTable} from "../dashboard";
 import FetchService from "../utilities/services/fetchService";
-import {Link} from "react-router-dom";
+import {format} from "date-fns";
 
 export default function ChoreCorral(props) {
     const [pioneers, setPioneers] = useState(props.pioneers || []);
     const [chores, setChores] = useState(props.chores || []);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
+    const {history} = props;
 
     if (dataLoaded === false) {
         handleDataLoad(props, setDataLoaded, setPioneers, setChores);
@@ -23,7 +24,7 @@ export default function ChoreCorral(props) {
             </Box>
             <Box>
                 {resetButton(setPioneers, setChores, setDataLoaded)}
-                {saddleUpButton(pioneers, chores)}
+                {saddleUpButton(pioneers, chores, history)}
             </Box>
         </Container>
     </div>;
@@ -84,23 +85,29 @@ function resetButton(setPioneers, setChores, setDataLoaded) {
     return button("reset-button", "Reset", () => startDataLoad(setPioneers, setChores, setDataLoaded));
 }
 
-function saddleUpButton(pioneers, chores) {
-    return <Link
+async function putCorral(today, pioneers, chores, history) {
+    await fetch(`/api/corral/${today}`, {
+        method: "PUT",
+        body: JSON.stringify({pioneers, chores, date: today}),
+        signal: undefined
+    });
+    history.push('/roster')
+}
+
+function saddleUpButton(pioneers, chores, history) {
+    return <Button
         id="saddle-up"
-        to={{
-            pathname: "/roster",
-            state: {pioneers, chores}
+        color="primary"
+        size="large"
+        variant="contained"
+        onClick={() => {
+            const apiDateFormat = 'yyyy-MM-dd';
+            const today = format(new Date(), apiDateFormat);
+            putCorral(today, pioneers, chores, history).catch(err => console.error(err));
         }}
-        style={{textDecoration: "none"}}
     >
-        <Button
-            color="primary"
-            size="large"
-            variant="contained"
-        >
-            Saddle Up
-        </Button>
-    </Link>
+        Saddle Up
+    </Button>
 }
 
 const button = (id, text, onClick) => (

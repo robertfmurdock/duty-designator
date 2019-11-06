@@ -8,8 +8,8 @@ import {Link} from "react-router-dom";
 
 export default function DutyRoster(props) {
     const [canSave, setCanSave] = useState(true);
-    const [pioneers, setPioneers] = useState(props.pioneers);
-    const [chores, setChores] = useState(props.chores);
+    const [pioneers, setPioneers] = useState(props.pioneers || []);
+    const [chores, setChores] = useState(props.chores || []);
     const [dutyRoster, setDutyRoster] = useState(false);
     const history = props.history;
 

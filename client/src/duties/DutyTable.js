@@ -46,22 +46,22 @@ function headerRow() {
 
 function dutyRow(duty) {
     return <TableRow key={duty.chore.id}>
-        <TableCell className="duty-pioneer-title" data-duty-id={duty.chore.id} style={styles.cell}>
+        <TableCell className="duty-pioneer-title" data-chore-id={duty.chore.id} style={styles.cell}>
             <Typography variant="h6" color='textPrimary'>
                 {duty.chore.title}
             </Typography>
         </TableCell>
-        <TableCell className="duty-pioneer-name" data-duty-id={duty.chore.id} style={styles.cell}>
+        <TableCell className="duty-pioneer-name" data-pioneer-id={duty.pioneer.id} style={styles.cell}>
             <Typography variant="h6" color='textPrimary'>
                 {duty.pioneer.name}
             </Typography>
         </TableCell>
-        <TableCell className="duty-chore-name" data-duty-id={duty.chore.id} style={styles.cell}>
+        <TableCell className="duty-chore-name" data-chore-id={duty.chore.id} style={styles.cell}>
             <Typography variant="h6" color='textPrimary'>
                 {duty.chore.name}
             </Typography>
         </TableCell>
-        <TableCell className="duty-chore-description" data-duty-id={duty.chore.id} style={styles.cell}>
+        <TableCell className="duty-chore-description" data-chore-id={duty.chore.id} style={styles.cell}>
             <Typography variant="h6" color='textPrimary'>
                 {duty.chore.description}
             </Typography>

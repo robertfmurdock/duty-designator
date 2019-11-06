@@ -69,7 +69,7 @@ context('Actions', () => {
         });
 
         it('on the roster page the chore title', () => {
-            cy.get(`.duty-pioneer-title[data-duty-id=${chore.id}]`, {timeout: 2000})
+            cy.get(`.duty-pioneer-title[data-chore-id=${chore.id}]`, {timeout: 2000})
                 .should('have.text', chore.title);
         });
 
@@ -83,7 +83,7 @@ context('Actions', () => {
             });
 
             it('keeps a chore that has been added in the results list', () => {
-                cy.get(`.duty-chore-name[data-duty-id=${chore.id}]`, {timeout: 2000})
+                cy.get(`.duty-chore-name[data-chore-id=${chore.id}]`, {timeout: 2000})
                     .should('have.text', chore.name);
             });
 
@@ -130,7 +130,7 @@ context('Actions', () => {
             });
         });
     });
-    describe('remove pioneer from candidate list, save and respin', () => {
+    describe('remove pioneer from candidate list, saddle up, save and respin', () => {
         const candidate = {name: "Very Unique Name", id: uuid()};
 
         before(async function () {
