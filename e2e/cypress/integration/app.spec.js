@@ -1,5 +1,5 @@
 import {format, subDays} from 'date-fns';
-import {insertCandidate, insertChore} from "./integrationHelpers";
+import {insertPioneer, insertChore, removePioneer} from "../support/integrationHelpers";
 
 const uuid = require('uuid/v4');
 
@@ -7,18 +7,22 @@ context('Actions', () => {
 
 
     describe('when a new candidate is posted', function () {
-        const candidate = {name: "Jimmy Cypress", id: uuid()};
+        const pioneer = {name: "Jimmy Cypress", id: uuid()};
 
-        beforeEach(async function () {
-            await insertCandidate(candidate);
+        before(async () => {
+            await insertPioneer(pioneer);
         });
 
         beforeEach(() => cy.wait(40));
 
         it('it shows up on the page', () => {
             cy.visit('http://localhost:8080');
-            cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
-                .should('have.text', candidate.name);
+            cy.get(`.candidate[data-candidate-id=${pioneer.id}]`, {timeout: 2000})
+                .should('have.text', pioneer.name);
+        });
+
+        after(async () => {
+            await removePioneer(pioneer)
         });
     });
 
@@ -118,29 +122,33 @@ context('Actions', () => {
         });
     });
     describe('remove pioneer from candidate list, save and respin', () => {
-        const candidate = {name: "Very Unique Name", id: uuid()};
+        const pioneer = {name: "Very Unique Name", id: uuid()};
 
         before(async function () {
-            await insertCandidate(candidate);
+            await insertPioneer(pioneer);
         });
 
         beforeEach(function () {
             cy.visit('http://localhost:8080');
-            cy.get(`.delete[data-candidate-id=${candidate.id}]`).click();
+            cy.get(`.delete[data-candidate-id=${pioneer.id}]`).click();
             cy.get("#saddle-up").click();
             cy.get("#save").click();
             cy.get("#respin").click();
         });
 
         it('the removed pioneer does not appear on the chore corral', function () {
-            cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
+            cy.get(`.candidate[data-candidate-id=${pioneer.id}]`, {timeout: 2000})
                 .should('not.to.exist');
         });
 
         it('reset will return pioneer to list', () => {
             cy.get("#reset-button").click();
-            cy.get(`.candidate[data-candidate-id=${candidate.id}]`, {timeout: 2000})
-                .should('have.text', candidate.name);
+            cy.get(`.candidate[data-candidate-id=${pioneer.id}]`, {timeout: 2000})
+                .should('have.text', pioneer.name);
+        });
+
+        after(async () => {
+            await removePioneer(pioneer)
         });
     });
 

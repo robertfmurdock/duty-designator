@@ -5,6 +5,12 @@ export async function insertPioneer(pioneer) {
     });
 }
 
+export async function removePioneer(pioneer) {
+    await fetch(`http://localhost:8080/api/pioneer/${pioneer.id}`, {
+        method: "DELETE"
+    });
+}
+
 export async function insertChore(chore) {
     await fetch("http://localhost:8080/api/chore", {
         method: "POST",
@@ -12,8 +18,6 @@ export async function insertChore(chore) {
     });
 }
 
-export async function removePioneer(pioneer) {
-    await fetch(`http://localhost:8080/api/pioneer/${pioneer.id}`, {
-        method: "DELETE"
-    });
+export function setLocalStorageDutyRoster(date, dutyRoster) {
+    localStorage.setItem(date, JSON.stringify({dutyRoster}));
 }

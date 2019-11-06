@@ -33,8 +33,8 @@ const something = choreCounts => (
 );
 
 function choreRow(choreCount) {
-    return <TableRow key={choreCount.id} className="chore-count-row">
-        <TableCell className="chore" data-chore-id={choreCount.id}>
+    return <TableRow key={choreCount.id} className="chore-count-row" data-chore-id={choreCount.id}>
+        <TableCell>
             <Typography variant="h6" color='textPrimary' className="chore-name">
                 {choreCount.name}
             </Typography>

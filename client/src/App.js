@@ -10,6 +10,7 @@ import DutyRoster from "./duties/DutyRoster";
 import HistoricalRoster from "./duties/HistoricalRoster";
 import ChoreCorral from "./corral/ChoreCorral";
 import {useHistory} from "react-router-dom";
+import PioneerDutyHistory from "./chorehistory/PioneerDutyHistory";
 
 const theme = createMuiTheme({
     palette: {
@@ -34,6 +35,7 @@ export default function App() {
                         <Route exact path="/corral" component={ChoreCorralPage}/>
                         <Route exact path="/roster" component={DutyRosterPage}/>
                         <Route path="/roster/:date" children={<WithDate/>}/>
+                        <Route path="/pioneer/:id/history" children={<PioneerHistory/>}/>
                     </Switch>
                 </Router>
 
@@ -75,3 +77,8 @@ const WithDate = () => {
             <HistoricalRoster date={parsedDate}/>
         </div>
 };
+
+const PioneerHistory = () => {
+    const {id} = useParams();
+    return <PioneerDutyHistory id={id}/>
+}
