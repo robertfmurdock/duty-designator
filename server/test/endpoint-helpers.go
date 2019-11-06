@@ -37,8 +37,16 @@ func sendToEndpoint(recorder *httptest.ResponseRecorder, request *http.Request) 
 	endpointMux.ServeHTTP(recorder, request)
 }
 
-func parseBodyAsJson(recorder *httptest.ResponseRecorder) ([]map[string]string, error) {
+func parseBodyAsJsonArray(recorder *httptest.ResponseRecorder) ([]map[string]string, error) {
 	var actualResponseBody []map[string]string
+	if err := json.Unmarshal(recorder.Body.Bytes(), &actualResponseBody); err != nil {
+		return nil, fmt.Errorf("could not parse server results: %w", err)
+	}
+	return actualResponseBody, nil
+}
+
+func parseBodyAsJson(recorder *httptest.ResponseRecorder) (map[string]string, error) {
+	var actualResponseBody map[string]string
 	if err := json.Unmarshal(recorder.Body.Bytes(), &actualResponseBody); err != nil {
 		return nil, fmt.Errorf("could not parse server results: %w", err)
 	}

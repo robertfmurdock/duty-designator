@@ -3,10 +3,12 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"net/http"
+	"path"
 )
 
 func pioneerHandler(request *http.Request) mongoHandler {
@@ -19,6 +21,10 @@ func pioneerHandler(request *http.Request) mongoHandler {
 	return nil
 }
 
+func pioneerByIdHandler(request *http.Request) mongoHandler {
+	return getPioneerByIdHandler
+}
+
 func getPioneerHandler(writer http.ResponseWriter, _ *http.Request, handlerContext *handlerContext) error {
 	records, err := loadPioneerRecords(handlerContext, writer)
 	if err != nil {
@@ -26,6 +32,36 @@ func getPioneerHandler(writer http.ResponseWriter, _ *http.Request, handlerConte
 	}
 
 	return writeAsJson(writer, records)
+}
+
+func getPioneerByIdHandler(writer http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
+	id := path.Base(request.URL.Path)
+	fmt.Println(id)
+	record, err := loadSinglePioneerRecord(id, handlerContext, writer)
+	if err != nil {
+		return err
+	}
+
+	return writeAsJson(writer, record)
+}
+
+func loadSinglePioneerRecord(id string, handlerContext *handlerContext, writer http.ResponseWriter) (pioneerRecord, error) {
+	collection := getPioneerCollection(handlerContext)
+	singleResult := collection.FindOne(context.Background(), bson.M{"id": id})
+
+	var row pioneerRecord
+
+	err := singleResult.Decode(&row)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			row = pioneerRecord{}
+		} else {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			log.Fatal(err)
+		}
+	}
+
+	return row, err
 }
 
 type pioneerRecord struct {

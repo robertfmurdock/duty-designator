@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,6 +11,8 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -97,5 +100,28 @@ func TestGetPioneers_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 
 	if pioneerRecords == nil || len(pioneerRecords) != 0 {
 		t.Error("There was unexpected pioneer content")
+	}
+}
+
+func TestGetPioneersById_RespondsWithSinglePioneerJson(t *testing.T) {
+	expectedPioneer, err := insertNewPioneer(t)
+	if err != nil {
+		t.Errorf("Setup failed. %v", err)
+		return
+	}
+
+	responseRecorder := httptest.NewRecorder()
+	pioneerUrl := url.URL{Path: fmt.Sprintf("/pioneers/%s", expectedPioneer.Id)}
+	hC := handlerContext{dbClient: client}
+	if err := getPioneerByIdHandler(responseRecorder, &http.Request{URL: &pioneerUrl}, &hC); err != nil {
+		t.Errorf("handler error: %s", err)
+	}
+
+	var pioneerRecord pioneerRecord
+	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &pioneerRecord); err != nil {
+		t.Error("Could not parse server results.")
+	}
+	if !reflect.DeepEqual(pioneerRecord, expectedPioneer) {
+		t.Errorf("%v, %v", pioneerRecord, expectedPioneer)
 	}
 }
