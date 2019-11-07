@@ -1,15 +1,22 @@
 import {format, subDays} from 'date-fns';
+import {deleteCorral} from "../support/apiHelpers";
+import {apiDateFormat} from "../support/stubs";
 import {insertPioneer, insertChore, removePioneer} from "../support/integrationHelpers";
 
 const uuid = require('uuid/v4');
 
-context('Actions', () => {
+async function deleteToday() {
+    const today = format(new Date(), apiDateFormat);
+    await deleteCorral(today);
+}
 
+context('Actions', () => {
 
     describe('when a new candidate is posted', function () {
         const pioneer = {name: "Jimmy Cypress", id: uuid()};
 
-        before(async () => {
+        beforeEach(async function () {
+            await deleteToday();
             await insertPioneer(pioneer);
         });
 
@@ -17,11 +24,11 @@ context('Actions', () => {
 
         it('it shows up on the page', () => {
             cy.visit('http://localhost:8080');
-            cy.get(`.candidate[data-candidate-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
                 .should('have.text', pioneer.name);
         });
 
-        after(async () => {
+        afterEach(async () => {
             await removePioneer(pioneer)
         });
     });
@@ -30,6 +37,7 @@ context('Actions', () => {
         const chore = {name: "Dastardly Dishes", id: uuid()};
 
         beforeEach(async () => {
+            await deleteToday();
             await insertChore(chore);
         });
 
@@ -37,21 +45,24 @@ context('Actions', () => {
 
         it('it shows up on the page', () => {
             cy.visit('http://localhost:8080');
-            cy.get(`.chore[data-chore-id=${chore.id}]`, {timeout: 2000})
+            cy.get(`.chore-name[data-chore-id=${chore.id}]`, {timeout: 2000})
                 .should('have.text', chore.name);
         });
     });
 
-    describe('When we save the spin results', () => {
-        const chore = {id: uuid(), name: "Cow tipper", description: "Give some tips to cows", title: 'Tipper'};
+    describe('When a chore is added, spin happens, and is saved', () => {
+        let chore, yesterday;
 
-        before(async function () {
+        beforeEach(async function () {
+            yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            await deleteToday();
+            await deleteCorral(format(yesterday, apiDateFormat));
+            chore = {id: uuid(), name: "Cow tipper", description: "Give some tips to cows", title: 'Tipper'};
             await insertChore(chore);
         });
 
         beforeEach(function () {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
             cy.clock(yesterday.getTime());
 
             cy.visit('http://localhost:8080');
@@ -59,7 +70,7 @@ context('Actions', () => {
             cy.get("#save").click();
         });
 
-        it('on the roster page the chore title', () => {
+        it('on the roster page the chore title is shown', () => {
             cy.get(`.duty-pioneer-title[data-chore-id=${chore.id}]`, {timeout: 2000})
                 .should('have.text', chore.title);
         });
@@ -122,33 +133,35 @@ context('Actions', () => {
         });
     });
     describe('remove pioneer from candidate list, saddle up, save and respin', () => {
-        const pioneer = {name: "Very Unique Name", id: uuid()};
+        let pioneer;
 
-        before(async function () {
+        beforeEach(async function () {
+            pioneer = {name: "Very Unique Name", id: uuid()};
+            await deleteToday();
             await insertPioneer(pioneer);
         });
 
         beforeEach(function () {
             cy.visit('http://localhost:8080');
-            cy.get(`.delete[data-candidate-id=${pioneer.id}]`).click();
+            cy.get(`.delete[data-pioneer-id=${pioneer.id}]`).click();
             cy.get("#saddle-up").click();
             cy.get("#save").click();
             cy.get("#respin").click();
         });
 
+        afterEach(async () => {
+            await removePioneer(pioneer)
+        });
+
         it('the removed pioneer does not appear on the chore corral', function () {
-            cy.get(`.candidate[data-candidate-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
                 .should('not.to.exist');
         });
 
         it('reset will return pioneer to list', () => {
             cy.get("#reset-button").click();
-            cy.get(`.candidate[data-candidate-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
                 .should('have.text', pioneer.name);
-        });
-
-        after(async () => {
-            await removePioneer(pioneer)
         });
     });
 

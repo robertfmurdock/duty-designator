@@ -1,6 +1,5 @@
-import {format} from 'date-fns';
-
-const apiDateFormat = 'yyyy-MM-dd';
+import {stubCorral} from "../support/stubs";
+import {insertCorral} from "../support/apiHelpers";
 
 context('On the Duty Roster Page', () => {
 
@@ -8,16 +7,7 @@ context('On the Duty Roster Page', () => {
 
         let corral;
         beforeEach(async () => {
-            const pioneers = [
-                {name: "Dewy Dooter", id: "10"},
-                {name: "Rosy Rosee", id: "11"}
-            ];
-            const chores = [
-                {name: "Burrito builder", description: "Build burritos", id: "101"},
-                {name: "Horseshoer", description: "shoe horses", id: "102"}
-            ];
-            const today = format(new Date(), apiDateFormat);
-            corral = {date:  today, pioneers, chores};
+            corral = stubCorral();
             await insertCorral(corral)
         });
 
@@ -35,13 +25,5 @@ context('On the Duty Roster Page', () => {
         });
 
     });
-
-    async function insertCorral(corral) {
-        await fetch(`http://localhost:8080/api/corral/${corral.date}`, {
-            method: "PUT",
-            body: JSON.stringify(corral),
-            signal: undefined
-        });
-    }
 
 });

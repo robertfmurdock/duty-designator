@@ -12,3 +12,11 @@ func (fn mongoHandler) handle(w http.ResponseWriter, r *http.Request, handlerCon
 		log.Println(err)
 	}
 }
+
+type recordType int
+
+//noinspection GoUnusedConst
+const (
+	active  recordType = iota
+	removed recordType = iota
+)

@@ -28,7 +28,7 @@ export default function (props) {
 
 function choreRow(chore, onRemove) {
     return <TableRow key={chore.id}>
-        <TableCell className="chore" data-chore-id={chore.id} style={styles.cell}>
+        <TableCell className="chore-name" data-chore-id={chore.id} style={styles.cell}>
             <Typography variant="h6" color='textPrimary'>
                 {chore.name}
             </Typography>

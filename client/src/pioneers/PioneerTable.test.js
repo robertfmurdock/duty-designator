@@ -20,7 +20,7 @@ describe('Pioneer Table', () => {
         });
 
         test('shows a list of candidates', () => {
-            expect(table.find('.candidate').length)
+            expect(table.find('.pioneer-name').length)
                 .toBe(rows.length);
         });
 

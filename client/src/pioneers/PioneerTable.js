@@ -11,13 +11,13 @@ const styles = {
 
 function pioneerRow(pioneer, onRemove) {
     return <TableRow key={pioneer.id}>
-        <TableCell className="candidate" data-candidate-id={pioneer.id} style={styles.cell}>
+        <TableCell className="pioneer-name" data-pioneer-id={pioneer.id} style={styles.cell}>
             <Typography variant="h6" color='textPrimary'>
                 {pioneer.name}
             </Typography>
         </TableCell>
         <TableCell align="right">
-            <Icon data-candidate-id={pioneer.id} className={'delete'} path={mdiClose} size={1} onClick={() => onRemove(pioneer)}/>
+            <Icon data-pioneer-id={pioneer.id} className={'delete'} path={mdiClose} size={1} onClick={() => onRemove(pioneer)}/>
         </TableCell>
     </TableRow>;
 }
