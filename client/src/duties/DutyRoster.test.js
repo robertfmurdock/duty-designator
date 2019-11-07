@@ -61,15 +61,16 @@ describe('DutyRoster', function () {
         expect(dutyRoster.find('#saved-confirmation').length).toEqual(1);
     });
 
-    test('given a duty roster is saved, pioneers and chores are available for a respin', () => {
+    test('respin will redirect to the corral', () => {
         const pioneer = {name: "jack"};
         const chore = {name: "jest"};
         const date = format(new Date(), "MM/dd/yyyy");
         localStorage.setItem(date, JSON.stringify({dutyRoster: [{pioneer, chore}]}));
 
-        const dutyRoster = shallow(<DutyRoster/>);
+        const pushSpy = jest.fn();
+        const dutyRoster = shallow(<DutyRoster history={{push: pushSpy}}/>);
         dutyRoster.find("#respin").simulate("click");
-
-        expect(dutyRoster.find(DutyTable).props().duties).toEqual([{pioneer, chore}]);
+        expect(pushSpy.mock.calls.length).toBe(1);
+        expect(pushSpy.mock.calls[0][0]).toEqual('/corral');
     });
 });

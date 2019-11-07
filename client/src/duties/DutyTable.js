@@ -1,20 +1,18 @@
 import React from "react";
-import {Box, Container, Table, TableBody, TableCell, TableRow, Typography} from "@material-ui/core";
+import {Box, Table, TableBody, TableCell, TableRow, Typography} from "@material-ui/core";
 
 export default function DutyTable(props) {
     const duties = props.duties;
-    return <Container className="results">
-        <Box style={{padding: 16}} flex="0 0 400px">
-            <Box border={2} borderColor="text.secondary">
-                <Table>
-                    <TableBody>
-                        {headerRow()}
-                        {duties.map(duty => dutyRow(duty))}
-                    </TableBody>
-                </Table>
-            </Box>
+    return <Box style={{padding: 16}}>
+        <Box border={2} borderColor="text.secondary">
+            <Table className="results">
+                <TableBody>
+                    {headerRow()}
+                    {duties.map(duty => dutyRow(duty))}
+                </TableBody>
+            </Table>
         </Box>
-    </Container>
+    </Box>
 }
 
 const styles = {cell: {padding: "8px 16px",}};
