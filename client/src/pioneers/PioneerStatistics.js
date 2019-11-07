@@ -19,7 +19,7 @@ export default function PioneerStatistics() {
 
     return <Container>
         <Typography variant="h4" color="textPrimary" gutterBottom>Pioneers</Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} wrap="wrap">
             {pioneers.map(pioneerCard)}
         </Grid>
     </Container>
@@ -28,15 +28,17 @@ export default function PioneerStatistics() {
 const alphabetize = pioneers =>
     pioneers.sort((a, b) => a.name > b.name ? 1 : -1);
 
+const linkStyle = {textDecoration: "none", display: "block", height: "100%"};
+
 const pioneerCard = pioneer => {
-    return <Grid item xs={3} key={pioneer.id}>
+    return <Grid item xs={6} sm={3} height="" key={pioneer.id}>
         <Link
             to={`/pioneer/${pioneer.id}/history`}
             className="pioneer-link"
-            style={{textDecoration: "none", display: "block"}}
+            style={linkStyle}
             data-pioneer-id={pioneer.id}
         >
-            <Card>
+            <Card style={{height: "100%"}}>
                 <CardContent>
                     <Typography
                         variant="body1"
