@@ -80,6 +80,7 @@ describe('PioneerDutyHistory', () => {
             localStorage.setItem('10/29/2019', stringifyRoster(
                 [{pioneer, chore: chore}, {pioneer, chore: chore2}]
             ));
+            localStorage.setItem('11/01/2019', stringifyRoster([{pioneer: {name: "Different", id: "1"}, chore: chore2}]));
             localStorage.setItem('11/02/2019', stringifyRoster([{pioneer, chore: chore2}]));
 
             let dutyHistory = shallow(<PioneerDutyHistory id={pioneer.id}/>);

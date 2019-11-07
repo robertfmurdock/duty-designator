@@ -54,10 +54,12 @@ function accumulateChoreCount(acc, chore) {
     }
 }
 
-function countChoreFrequency(duties) {
+function countChoreFrequency(duties, pioneer) {
     return duties.reduce((acc, duty) => {
-        const chore = duty.chore;
-        accumulateChoreCount(acc, chore);
+        if (duty.pioneer.id === pioneer.id) {
+            const chore = duty.chore;
+            accumulateChoreCount(acc, chore);
+        }
         return acc;
     }, []);
 }
@@ -72,9 +74,10 @@ function setPioneerFromLocalStorage(id, setPioneer, setChoreCounts) {
     const dutyWithMatchedPioneerId = duties.find(duty => duty.pioneer.id === id);
 
     if (dutyWithMatchedPioneerId) {
-        let choresWithCounts = countChoreFrequency(duties);
+        const pioneer = dutyWithMatchedPioneerId.pioneer;
+        let choresWithCounts = countChoreFrequency(duties, pioneer);
         choresWithCounts.sort((a, b) => a.count - b.count);
-        setPioneer(dutyWithMatchedPioneerId.pioneer);
+        setPioneer(pioneer);
         setChoreCounts(choresWithCounts);
     }
 }
