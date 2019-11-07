@@ -26,13 +26,6 @@ func getChoresHandler(writer http.ResponseWriter, _ *http.Request, handlerContex
 	return writeAsJson(writer, chores)
 }
 
-type choreRecord struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Id          string `json:"id"`
-	Title       string `json:"title"`
-}
-
 func loadChoreRecords(handlerContext *handlerContext) ([]choreRecord, error) {
 	choreCollection := handlerContext.dutyDb().Collection("chores")
 	cursor, err := choreCollection.Find(context.Background(), bson.D{})

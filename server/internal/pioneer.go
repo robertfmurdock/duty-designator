@@ -95,11 +95,6 @@ func removeSinglePioneerRecord(id string, handlerContext *handlerContext, writer
 	return err
 }
 
-type pioneerRecord struct {
-	Name string `json:"name"`
-	Id   string `json:"id"`
-}
-
 func loadPioneerRecords(handlerContext *handlerContext, writer http.ResponseWriter) ([]pioneerRecord, error) {
 	collection := getPioneerCollection(handlerContext)
 	cursor, err := collection.Find(context.Background(), bson.D{})

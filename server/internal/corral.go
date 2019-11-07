@@ -25,21 +25,7 @@ func corralHandler(request *http.Request) mongoHandler {
 }
 
 func unsupportedVerb(_ http.ResponseWriter, _ *http.Request, _ *handlerContext) error {
-	return errors.New("nah")
-}
-
-type corralRecord struct {
-	Date       string          `json:"date"`
-	Pioneers   []pioneerRecord `json:"pioneers"`
-	Chores     []choreRecord   `json:"chores"`
-	Timestamp  time.Time
-	RecordType recordType
-}
-
-type presentationCorral struct {
-	Date     string          `json:"date"`
-	Pioneers []pioneerRecord `json:"pioneers"`
-	Chores   []choreRecord   `json:"chores"`
+	return errors.New("unsupported request method")
 }
 
 func getCorralHandler(writer http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
@@ -49,13 +35,20 @@ func getCorralHandler(writer http.ResponseWriter, request *http.Request, handler
 		return err
 	}
 
-	if record == nil || record.RecordType == removed {
+	if record.isRemoved() {
 		writer.WriteHeader(http.StatusNotFound)
 		return nil
 	}
 
 	jsonStruct := toPresentationCorral(record)
 	return writeAsJson(writer, jsonStruct)
+}
+
+func (c *corralRecord) isRemoved() bool {
+	if c == nil {
+		return true
+	}
+	return c.RecordType == removed
 }
 
 func deleteCorralHandler(writer http.ResponseWriter, request *http.Request, hc *handlerContext) error {
@@ -100,7 +93,7 @@ func putCorralHandler(writer http.ResponseWriter, request *http.Request, hc *han
 	var corral corralRecord
 
 	if err := decoder.Decode(&corral); err != nil {
-		writer.WriteHeader(400)
+		writer.WriteHeader(http.StatusBadRequest)
 		return err
 	}
 
