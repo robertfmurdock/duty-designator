@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 )
 
@@ -131,5 +133,32 @@ func TestGetChore_WhenDatabaseDoesNotExistWillReturnEmptyList(t *testing.T) {
 
 	if choreList == nil || len(choreList) != 0 {
 		t.Error("There was unexpected chore content", responseRecorder.Body.String())
+	}
+}
+
+func TestDeleteChoreById_RespondsWith200Ok(t *testing.T) {
+	expectedChore := choreRecord{Name: "Wash them dishes", Id: uuid.New().String()}
+	err := insertChore(expectedChore)
+
+	if err != nil {
+		t.Errorf("Setup failed. %v", err)
+		return
+	}
+
+	responseRecorder := httptest.NewRecorder()
+	choreUrl := url.URL{Path: fmt.Sprintf("/chore/%s", expectedChore.Id)}
+	hC := handlerContext{dbClient: client}
+	request := &http.Request{URL: &choreUrl}
+
+	if err := removeChoreByIdHandler(responseRecorder, request, &hC); err != nil {
+		t.Errorf("handler error: %s", err)
+	}
+
+	if choreRecords := loadChoresFromDb(t); containsChore(choreRecords, expectedChore) {
+		t.Errorf("List %v, contained %v", choreRecords, expectedChore)
+	}
+
+	if status := responseRecorder.Code; status != http.StatusOK {
+		t.Errorf("%v, %v", status, http.StatusOK)
 	}
 }

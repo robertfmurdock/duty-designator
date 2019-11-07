@@ -153,3 +153,13 @@ func performGetCorralRequest(date string) (*map[string]interface{}, error) {
 	}
 	return &actualResponseBody, nil
 }
+
+func performDeleteChoreById(choreID string) (int, error) {
+	if responseRecorder, err := performRequest(http.MethodDelete, "/api/chore/"+choreID, nil); err != nil {
+		return http.StatusInternalServerError, err
+	} else if err := verifySuccessfulRequest(responseRecorder); err != nil {
+		return http.StatusInternalServerError, err
+	} else {
+		return responseRecorder.Code, nil
+	}
+}
