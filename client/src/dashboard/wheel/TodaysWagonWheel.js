@@ -25,9 +25,8 @@ export default function (props) {
     return <Box>
         <Container fixed className={containerClasses.root}>
             <WheelSvg width="100px" height="100px" style={{maxWidth: "100%"}}/>
-            <Typography variant="h4" color='textPrimary' gutterBottom>Chore Wagon Wheel</Typography>
-
-            <Typography variant="h4" color='textPrimary' gutterBottom>
+            <Typography variant="h5" color='textPrimary' gutterBottom>Chore Wagon Wheel</Typography>
+            <Typography variant="h5" color='textPrimary' gutterBottom>
                 <Link to={`/roster/${(minusOneDay(props.date))}`} className="back-btn">
                     <ChevronLeftIcon/>
                 </Link>
