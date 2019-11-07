@@ -1,7 +1,7 @@
 import {format} from "date-fns";
 import {apiDateFormat, stubCorral} from "../support/stubs";
 import {deleteCorral, insertCorral} from "../support/apiHelpers";
-import {insertPioneer, insertChore} from "../support/integrationHelpers";
+import {insertPioneer, insertChore, removeChore, removePioneer} from "../support/integrationHelpers";
 
 const uuid = require('uuid/v4');
 
@@ -75,6 +75,11 @@ context('On the Chore Corral Page', () => {
                 .should('to.exist');
             cy.get(`.chore-name[data-chore-id=${newChore.id}]`)
                 .should('to.exist');
+        });
+
+        afterEach(async () => {
+            await removePioneer(newPioneer);
+            await removeChore(newChore);
         });
     })
 });

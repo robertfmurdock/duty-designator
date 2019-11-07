@@ -23,7 +23,5 @@ context('On the Duty Roster Page', () => {
                     .should('to.exist');
             })
         });
-
     });
-
 });

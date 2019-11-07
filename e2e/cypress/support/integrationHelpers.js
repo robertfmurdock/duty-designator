@@ -18,6 +18,12 @@ export async function insertChore(chore) {
     });
 }
 
+export async function removeChore(chore) {
+    await fetch(`http://localhost:8080/api/chore/${chore.id}`, {
+        method: "DELETE"
+    });
+}
+
 export function setLocalStorageDutyRoster(date, dutyRoster) {
     localStorage.setItem(date, JSON.stringify({dutyRoster}));
 }

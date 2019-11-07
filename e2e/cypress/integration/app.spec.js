@@ -1,7 +1,7 @@
 import {format, subDays} from 'date-fns';
 import {deleteCorral} from "../support/apiHelpers";
 import {apiDateFormat} from "../support/stubs";
-import {insertPioneer, insertChore, removePioneer} from "../support/integrationHelpers";
+import {insertPioneer, insertChore, removePioneer, removeChore} from "../support/integrationHelpers";
 
 const uuid = require('uuid/v4');
 
@@ -12,7 +12,7 @@ async function deleteToday() {
 
 context('Actions', () => {
 
-    describe('when a new candidate is posted', function () {
+    describe('when a new pioneer is posted', function () {
         const pioneer = {name: "Jimmy Cypress", id: uuid()};
 
         beforeEach(async function () {
@@ -29,7 +29,7 @@ context('Actions', () => {
         });
 
         afterEach(async () => {
-            await removePioneer(pioneer)
+            await removePioneer(pioneer);
         });
     });
 
@@ -47,6 +47,10 @@ context('Actions', () => {
             cy.visit('http://localhost:8080');
             cy.get(`.chore-name[data-chore-id=${chore.id}]`, {timeout: 2000})
                 .should('have.text', chore.name);
+        });
+
+        afterEach(async () => {
+           await removeChore(chore);
         });
     });
 
@@ -130,6 +134,10 @@ context('Actions', () => {
                 cy.get(".back-btn").click();
                 cy.get("#saddle-up").should('have.length', 0);
             });
+        });
+
+        afterEach(async () => {
+            await removeChore(chore);
         });
     });
     describe('remove pioneer from candidate list, saddle up, save and respin', () => {
