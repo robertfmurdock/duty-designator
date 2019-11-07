@@ -1,7 +1,50 @@
 import {insertPioneer, removePioneer, setLocalStorageDutyRoster} from "../support/integrationHelpers";
 import uuid from 'uuid/v4';
 
-context('on pioneer duty history page', () => {
+context('on statistics page', () => {
+    describe('given user is on the homepage', () => {
+        it('there is a button that can be clicked to take you to the statistics page', () => {
+            cy.visit("http://localhost:8080/");
+            cy.get('.statistics-link').click();
+            cy.url().should('eq', 'http://localhost:8080/pioneer/statistics');
+        });
+    });
+
+    describe('given that there are pioneers', () => {
+        const john = {name: "John", id: uuid()};
+        const jacob = {name: "Jacob", id: uuid()};
+        const jingleheimer = {name: "Jingleheimer", id: uuid()};
+
+        beforeEach(async () => {
+            await insertPioneer(john);
+            await insertPioneer(jacob);
+            await insertPioneer(jingleheimer);
+        });
+
+        beforeEach(() => {
+            cy.visit('http://localhost:8080/pioneer/statistics');
+        });
+
+        it('displays pioneers in alphabetical order', () => {
+            cy.get('.pioneer-name').then(nameElements => {
+                const names = [...nameElements].map(el => el.textContent.trim())
+                expect(names).to.deep.eq(names.sort());
+            });
+        });
+
+        it('does things', () => {
+            cy.get(`.pioneer-link[data-pioneer-id=${jacob.id}]`).click();
+            const expectedUrl = `http://localhost:8080/pioneer/${jacob.id}/history`;
+            cy.url().should('eq', expectedUrl);
+        });
+
+        afterEach(async () => {
+            await removePioneer(john);
+            await removePioneer(jacob);
+            await removePioneer(jingleheimer);
+        });
+    });
+
     describe('relying on database to fetch pioneer', () => {
         const pioneer = {name: "Very Purple Name", id: uuid()};
 

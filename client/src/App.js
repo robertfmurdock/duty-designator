@@ -12,6 +12,7 @@ import ChoreCorral from "./corral/ChoreCorral";
 import {useHistory} from "react-router-dom";
 import PioneerDutyHistory from "./chorehistory/PioneerDutyHistory";
 import FetchService from "./utilities/services/fetchService";
+import PioneerStatistics from "./pioneers/PioneerStatistics";
 
 const theme = createMuiTheme({
     palette: {
@@ -37,6 +38,7 @@ export default function App() {
                         <Route exact path="/roster" component={DutyRosterPage}/>
                         <Route path="/roster/:date" children={<WithDate/>}/>
                         <Route path="/pioneer/:id/history" children={<PioneerHistory/>}/>
+                        <Route path="/pioneer/statistics" component={PioneerStatistics}/>
                     </Switch>
                 </Router>
                 <Tumbleweed/>

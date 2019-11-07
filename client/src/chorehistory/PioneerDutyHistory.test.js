@@ -2,13 +2,11 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import PioneerDutyHistory from "./PioneerDutyHistory";
 import FetchService from "../utilities/services/fetchService";
-import {waitUntil} from "../utilities/testUtils";
+import {waitUntil, wrapInPromise} from "../utilities/testUtils";
 import DutyHistoryTable from "./DutyHistoryTable";
 
-const wrapInPromise = response => new Promise(resolve => resolve(response));
-
 describe('PioneerDutyHistory', () => {
-    let fetchMock = FetchService.get = jest.fn()
+    const fetchMock = FetchService.get = jest.fn();
 
     beforeEach(() => {
         jest.clearAllMocks();
