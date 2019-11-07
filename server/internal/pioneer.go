@@ -51,8 +51,7 @@ func getPioneerByIdHandler(writer http.ResponseWriter, request *http.Request, ha
 
 func removePioneerByIdHandler(writer http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
 	id := path.Base(request.URL.Path)
-	err := removeSinglePioneerRecord(id, handlerContext, writer)
-	if err != nil {
+	if err := removeSinglePioneerRecord(id, handlerContext, writer); err != nil {
 		return err
 	}
 

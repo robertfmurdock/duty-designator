@@ -4,7 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"net/http"
+	"path"
 )
 
 func choreHandler(request *http.Request) mongoHandler {
@@ -13,6 +16,14 @@ func choreHandler(request *http.Request) mongoHandler {
 		return getChoresHandler
 	case http.MethodPost:
 		return postChoreHandler
+	}
+	return nil
+}
+
+func choreByIdHandler(request *http.Request) mongoHandler {
+	switch request.Method {
+	case http.MethodDelete:
+		return removeChoreByIdHandler
 	}
 	return nil
 }
@@ -54,4 +65,34 @@ func postChoreHandler(writer http.ResponseWriter, request *http.Request, handler
 	collection := handlerContext.dutyDb().Collection("chores")
 	_, err := collection.InsertOne(context.Background(), choreRecord)
 	return err
+}
+
+func removeChoreByIdHandler(writer http.ResponseWriter, request *http.Request, handlerContext *handlerContext) error {
+	id := path.Base(request.URL.Path)
+	if err := removeSingleChoreRecord(id, handlerContext, writer); err != nil {
+		return err
+	}
+
+	writer.WriteHeader(http.StatusOK)
+	return nil
+}
+
+func removeSingleChoreRecord(id string, handlerContext *handlerContext, writer http.ResponseWriter) error {
+	collection := getChoreCollection(handlerContext)
+	deleteResult, err := collection.DeleteOne(context.Background(), bson.M{"id": id})
+
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+
+	if deleteResult.DeletedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	return err
+}
+
+func getChoreCollection(handlerContext *handlerContext) *mongo.Collection {
+	return handlerContext.dutyDb().Collection("chores")
 }

@@ -47,6 +47,7 @@ func apiMux(hc handlerContext) *http.ServeMux {
 	apiMux.Handle("/pioneer", hc.methodRoute(pioneerHandler))
 	apiMux.Handle("/pioneer/", hc.methodRoute(pioneerByIdHandler))
 	apiMux.Handle("/chore", hc.methodRoute(choreHandler))
+	apiMux.Handle("/chore/", hc.methodRoute(choreByIdHandler))
 	apiMux.Handle("/corral/", hc.methodRoute(corralHandler))
 	return apiMux
 }

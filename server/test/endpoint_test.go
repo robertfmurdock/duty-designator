@@ -232,3 +232,22 @@ func TestRealPathsStillReturnContent(t *testing.T) {
 		t.Errorf("Result was the index page... and it shouldn 't be! %v", err)
 	}
 }
+
+func TestRemoveChoreById(t *testing.T) {
+	choreToPOST := map[string]string{"name": "Dewy Dooter", "id": uuid.New().String()}
+
+	if err := performPostChore(choreToPOST); err != nil {
+		t.Errorf("Post Chore Request failed. %v", err)
+		return
+	}
+
+	statusCode, err := performDeleteChoreById(choreToPOST["id"])
+	if err != nil {
+		t.Errorf("Get Chore Request failed. %v", err)
+		return
+	}
+
+	if statusCode != http.StatusOK {
+		t.Errorf("Resposne code %v\n was not%v", statusCode, http.StatusOK)
+	}
+}
