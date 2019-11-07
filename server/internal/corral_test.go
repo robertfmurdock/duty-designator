@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/google/go-cmp/cmp"
 	"go.mongodb.org/mongo-driver/bson"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -77,6 +79,61 @@ func Test_getCorralWhenMultipleRecordsWithDateExistWillPresentTheLatestTimestamp
 		t.Errorf("loaded corral was not the latest:\n%v", cmp.Diff(corralLater, *loadedCorral))
 		return
 	}
+}
+
+func Test_getCorralWhenNoRecordsExistWillPresentNil(t *testing.T) {
+	choreCollection := client.Database("dutyDb").Collection("corrals")
+	if err := choreCollection.Drop(context.Background()); err != nil {
+		t.Errorf("Drop problems %v", err)
+	}
+
+	hc := &handlerContext{dbClient: client}
+	loadedCorral, err := loadCorralRecord("Whenever", hc)
+	if err != nil {
+		t.Errorf("Could not load corral\n %v", err)
+	}
+
+	if loadedCorral != nil {
+		t.Error("Somehow, against all odds, found a corral.")
+	}
+}
+
+func Test_handleGetCorralWillReturn404WhenNoRecordsExist(t *testing.T) {
+	choreCollection := client.Database("dutyDb").Collection("corrals")
+	if err := choreCollection.Drop(context.Background()); err != nil {
+		t.Errorf("Drop problems %v", err)
+	}
+
+	hc := &handlerContext{dbClient: client}
+
+	recorder := httptest.NewRecorder()
+	if err := getCorralHandler(recorder, httptest.NewRequest("Meh", "/wherever", nil), hc); err != nil {
+		t.Errorf("Could not load corral\n %v", err)
+	}
+
+	if recorder.Code != http.StatusNotFound {
+		t.Errorf("Status code should have been not found but was %v", recorder.Code)
+	}
+
+}
+
+func Test_removeCorralShouldInsertRemoveRecord(t *testing.T) {
+	now := time.Now().Round(time.Millisecond)
+	hc := &handlerContext{dbClient: client}
+
+	recordDate := "Today"
+	if err := insertRemoveRecord(recordDate, now, hc); err != nil {
+		t.Errorf("Could not insert Remove Record %v", err)
+		return
+	}
+
+	loadedCorrals := loadCorralsFromDb(t)
+	expectedRemoveRecord := corralRecord{
+		Date:       recordDate,
+		Timestamp:  now,
+		RecordType: removed,
+	}
+	assertCorralListContains(loadedCorrals, expectedRemoveRecord, t)
 }
 
 func assertCorralListContains(corrals []corralRecord, record corralRecord, t *testing.T) {

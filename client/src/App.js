@@ -3,7 +3,7 @@ import './App.css';
 import Dashboard from './dashboard/Dashboard.js';
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
 import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
-import {BrowserRouter as Router, Switch, Route, useParams, useLocation, Redirect} from "react-router-dom";
+import {BrowserRouter as Router, Switch, Route, useParams, Redirect} from "react-router-dom";
 import {parse, isToday, format} from 'date-fns';
 import Tumbleweed from "./tumbleweed/Tumbleweed";
 import DutyRoster from "./duties/DutyRoster";
@@ -39,7 +39,6 @@ export default function App() {
                         <Route path="/pioneer/:id/history" children={<PioneerHistory/>}/>
                     </Switch>
                 </Router>
-
                 <Tumbleweed/>
             </MuiThemeProvider>
         </div>
@@ -47,8 +46,18 @@ export default function App() {
 }
 
 async function loadCorral(date, setCorral) {
-    const results = await FetchService.get(0, `/api/corral/${date}`, undefined);
-    setCorral(results);
+    try {
+        const results = await FetchService.get(0, `/api/corral/${date}`, undefined);
+        setCorral(results);
+    } catch (err) {
+        if (err === 404) {
+            const [pioneers, chores] = await Promise.all([
+                FetchService.get(0, `/api/pioneer`, undefined),
+                FetchService.get(0, `/api/chore`, undefined)
+            ]);
+            setCorral({pioneers, chores, date: date});
+        }
+    }
 }
 
 const apiDateFormat = 'yyyy-MM-dd';
@@ -77,9 +86,23 @@ const DutyRosterPage = () => {
 
 const ChoreCorralPage = () => {
     const history = useHistory();
+    const [dataLoading, setDataLoading] = useState(false);
+    const [corral, setCorral] = useState(null);
+
+    if (!dataLoading) {
+        const today = format(new Date(), apiDateFormat);
+        loadCorral(today, setCorral, setDataLoading)
+            .catch(err => console.error(err));
+
+        setDataLoading(true);
+    }
+
+    if (corral == null) {
+        return <div/>
+    }
     return <div>
         <TodaysWagonWheel date={new Date()}/>
-        <ChoreCorral {...useLocation().state} history={history}/>
+        <ChoreCorral {...corral} history={history}/>
     </div>
 };
 

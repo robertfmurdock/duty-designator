@@ -51,7 +51,7 @@ describe("ChoreTable", () => {
         });
 
         test('shows a list of chores', () => {
-            expect(choreTable.find('.chore').length).toBe(chores.length);
+            expect(choreTable.find('.chore-name').length).toBe(chores.length);
         });
 
         test('Has header of Today\'s Chores', () => {

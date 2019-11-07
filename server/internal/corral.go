@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"net/http"
 	"path"
@@ -17,6 +18,8 @@ func corralHandler(request *http.Request) mongoHandler {
 		return getCorralHandler
 	case http.MethodPut:
 		return putCorralHandler
+	case http.MethodDelete:
+		return deleteCorralHandler
 	}
 	return unsupportedVerb
 }
@@ -26,10 +29,11 @@ func unsupportedVerb(_ http.ResponseWriter, _ *http.Request, _ *handlerContext) 
 }
 
 type corralRecord struct {
-	Date      string          `json:"date"`
-	Pioneers  []pioneerRecord `json:"pioneers"`
-	Chores    []choreRecord   `json:"chores"`
-	Timestamp time.Time
+	Date       string          `json:"date"`
+	Pioneers   []pioneerRecord `json:"pioneers"`
+	Chores     []choreRecord   `json:"chores"`
+	Timestamp  time.Time
+	RecordType recordType
 }
 
 type presentationCorral struct {
@@ -45,8 +49,22 @@ func getCorralHandler(writer http.ResponseWriter, request *http.Request, handler
 		return err
 	}
 
+	if record == nil || record.RecordType == removed {
+		writer.WriteHeader(http.StatusNotFound)
+		return nil
+	}
+
 	jsonStruct := toPresentationCorral(record)
 	return writeAsJson(writer, jsonStruct)
+}
+
+func deleteCorralHandler(writer http.ResponseWriter, request *http.Request, hc *handlerContext) error {
+	date := path.Base(request.URL.Path)
+	if err := insertRemoveRecord(date, time.Now(), hc); err != nil {
+		return err
+	}
+	writer.WriteHeader(http.StatusOK)
+	return nil
 }
 
 func toPresentationCorral(record *corralRecord) presentationCorral {
@@ -61,6 +79,10 @@ func loadCorralRecord(date string, handlerContext *handlerContext) (*corralRecor
 	choreCollection := handlerContext.dutyDb().Collection("corrals")
 	result := choreCollection.FindOne(context.Background(), bson.M{"date": date},
 		&options.FindOneOptions{Sort: bson.M{"timestamp": -1}})
+
+	if result.Err() == mongo.ErrNoDocuments {
+		return nil, nil
+	}
 
 	if err := result.Err(); err != nil {
 		return nil, err
@@ -90,4 +112,13 @@ func saveCorral(record corralRecord, hc *handlerContext) error {
 	choreCollection := hc.dutyDb().Collection("corrals")
 	_, err := choreCollection.InsertOne(context.Background(), record)
 	return err
+}
+
+func insertRemoveRecord(recordDate string, timestamp time.Time, hc *handlerContext) error {
+	removeRecord := corralRecord{
+		Date:       recordDate,
+		Timestamp:  timestamp,
+		RecordType: removed,
+	}
+	return saveCorral(removeRecord, hc)
 }

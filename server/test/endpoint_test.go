@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"net/http"
@@ -71,14 +72,15 @@ func TestPutCorralMultipleTimes_GetWillReturnTheLatest(t *testing.T) {
 		return
 	}
 
-	time.Sleep(1 * time.Millisecond)
+	ensureMeaningfulTimeHasPassed()
+
 	updatedCorral := map[string]interface{}{
 		"date":     date,
 		"pioneers": []interface{}{map[string]interface{}{"name": "Rose", "id": uuid.New().String()}},
 		"chores":   []interface{}{},
 	}
 	if err := performPutCorral(updatedCorral); err != nil {
-		t.Errorf("Post Corral Request failed. %v", err)
+		t.Errorf("Put Corral Request failed. %v", err)
 		return
 	}
 
@@ -89,6 +91,45 @@ func TestPutCorralMultipleTimes_GetWillReturnTheLatest(t *testing.T) {
 	}
 
 	assertCorralsEqual(updatedCorral, *resultCorral, t)
+}
+
+func TestDeleteCorralWillRenderSubsequentGetsWith404(t *testing.T) {
+	pioneer := map[string]interface{}{"name": "Alice", "id": uuid.New().String()}
+	chore := map[string]interface{}{
+		"name":        "Compiled Cans",
+		"id":          uuid.New().String(),
+		"description": "Bruce knows how to can can",
+		"title":       "Canner",
+	}
+	date := "11-11-11"
+
+	corral := map[string]interface{}{
+		"date":     date,
+		"pioneers": []interface{}{pioneer},
+		"chores":   []interface{}{chore},
+	}
+
+	if err := performPutCorral(corral); err != nil {
+		t.Errorf("Put Corral Request failed. %v", err)
+		return
+	}
+	ensureMeaningfulTimeHasPassed()
+
+	if err := performDeleteCorral(fmt.Sprintf("%v", corral["date"])); err != nil {
+		t.Errorf("Delete Corral Request failed. %v", err)
+		return
+	}
+	responseRecorder, err := performRequest(http.MethodGet, fmt.Sprintf("/api/corral/%s", date), nil)
+	if err != nil {
+		t.Errorf("Get request failed. %v", err)
+	}
+	if err := verifyNotFound(responseRecorder); err != nil {
+		t.Errorf("%v", err)
+	}
+}
+
+func ensureMeaningfulTimeHasPassed() {
+	time.Sleep(1 * time.Millisecond)
 }
 
 func assertCorralsEqual(expected map[string]interface{}, actual map[string]interface{}, t *testing.T) {

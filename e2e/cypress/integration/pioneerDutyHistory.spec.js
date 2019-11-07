@@ -1,4 +1,4 @@
-import {insertChore, insertPioneer, removePioneer, setLocalStorageDutyRoster} from "../support/integrationHelpers";
+import {insertPioneer, removePioneer, setLocalStorageDutyRoster} from "../support/integrationHelpers";
 import uuid from 'uuid/v4';
 
 context('on pioneer duty history page', () => {

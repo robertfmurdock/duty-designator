@@ -27,6 +27,14 @@ func performPutCorral(corralToPut map[string]interface{}) error {
 	return verifySuccessfulRequest(responseRecorder)
 }
 
+func performDeleteCorral(date string) error {
+	responseRecorder, err := performRequest(http.MethodDelete, fmt.Sprintf("/api/corral/%s", date), nil)
+	if err != nil {
+		return err
+	}
+	return verifySuccessfulRequest(responseRecorder)
+}
+
 func performPostPioneer(pioneerToPost map[string]string) error {
 	responseRecorder, err := performRequest(http.MethodPost, "/api/pioneer", pioneerToPost)
 	if err != nil {
@@ -106,6 +114,13 @@ func parseBodyAsJson(recorder *httptest.ResponseRecorder) (map[string]string, er
 func verifySuccessfulRequest(recorder *httptest.ResponseRecorder) error {
 	if recorder.Code != 200 {
 		return fmt.Errorf("request was not successful: %v %v", recorder.Code, recorder.Body.String())
+	}
+	return nil
+}
+
+func verifyNotFound(recorder *httptest.ResponseRecorder) error {
+	if recorder.Code != 404 {
+		return fmt.Errorf("request should have been 404 but was: %v %v", recorder.Code, recorder.Body.String())
 	}
 	return nil
 }
