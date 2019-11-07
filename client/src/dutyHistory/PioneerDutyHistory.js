@@ -3,6 +3,7 @@ import {Container, Typography} from "@material-ui/core";
 import FetchService from "../utilities/services/fetchService";
 import {loadStuff} from "../utilities/services/localStorageService";
 import DutyHistoryTable from "./DutyHistoryTable";
+import {parse, closestTo, format} from "date-fns";
 
 export default function PioneerDutyHistory(props) {
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -37,40 +38,61 @@ function flattenList(rosters) {
     return [].concat.apply([], rosters);
 }
 
-function generateInitialChoreCount(chore) {
-    return Object.assign(chore, {count: 1});
+function generateInitialChoreCount(chore, date) {
+    return Object.assign(chore, {count: 1, date});
 }
 
-function matchChoreById(choreId) {
-    return choreCount => choreCount.id === choreId;
+const matchChoreById = choreId => choreCount => choreCount.id === choreId
+
+const parseDate = date => parse(date, "MM/dd/yyyy", new Date())
+
+const formattedMostRecentDate = (parsedChoreDate, parsedDutyDate) => {
+    const mostRecentDate = closestTo(new Date(), [
+        parsedChoreDate,
+        parsedDutyDate
+    ]);
+
+    return format(mostRecentDate, "MM/dd/yyyy");
 }
 
-function accumulateChoreCount(acc, chore) {
+function mostRecentlyDone(countedChoreDate, dutyDate) {
+    const parsedChoreDate = parseDate(countedChoreDate);
+    const parsedDutyDate = parseDate(dutyDate);
+    return formattedMostRecentDate(parsedChoreDate, parsedDutyDate);
+}
+
+function accumulateChoreCount(acc, duty) {
+    const chore = duty.chore;
+    const date = duty.date;
+
     const countedChore = acc.find(matchChoreById(chore.id));
     if (countedChore) {
         countedChore.count++;
+        countedChore.date = mostRecentlyDone(countedChore.date, date);
     } else {
-        acc.push(generateInitialChoreCount(chore));
+        acc.push(generateInitialChoreCount(chore, date));
     }
 }
 
 function countChoreFrequency(duties, pioneer) {
     return duties.reduce((acc, duty) => {
         if (duty.pioneer.id === pioneer.id) {
-            const chore = duty.chore;
-            accumulateChoreCount(acc, chore);
+            accumulateChoreCount(acc, duty);
         }
         return acc;
     }, []);
 }
 
+const datedDuty = datedRoster => datedRoster.dutyRoster.map(duty =>
+    Object.assign(duty, {date: datedRoster.date}));
+
 function setPioneerFromLocalStorage(id, setPioneer, setChoreCounts) {
     let rosters = Object.keys(localStorage)
-        .map(date => loadStuff(date).dutyRoster)
-        .filter(roster => roster !== false);
+        .map(date => ({date, dutyRoster: loadStuff(date).dutyRoster}))
+        .filter(datedRoster => datedRoster.dutyRoster !== false)
+        .map(datedDuty);
 
     let duties = flattenList(rosters);
-
     const dutyWithMatchedPioneerId = duties.find(duty => duty.pioneer.id === id);
 
     if (dutyWithMatchedPioneerId) {

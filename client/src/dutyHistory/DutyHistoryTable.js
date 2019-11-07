@@ -11,14 +11,15 @@ export default function DutyHistoryTable(props) {
         <Box border={2} borderColor="text.secondary">
             <Table>
                 <TableBody>
-                    {something(choreCounts)}
+                    {headerRow()}
+                    {renderChoreCounts(choreCounts)}
                 </TableBody>
             </Table>
         </Box>
     </Box>
 }
 
-const something = choreCounts => (
+const renderChoreCounts = choreCounts => (
     choreCounts.length > 0
         ? choreCounts.map(chore => choreRow(chore))
         : <Typography
@@ -32,6 +33,28 @@ const something = choreCounts => (
         </Typography>
 );
 
+const styles = {cell: {padding: "8px 16px",}};
+
+function headerRow() {
+    return <TableRow>
+        <TableCell style={styles.cell}>
+            <Typography variant="h6" color='textPrimary'>
+                <strong>CHORE</strong>
+            </Typography>
+        </TableCell>
+        <TableCell style={styles.cell}>
+            <Typography variant="h6" color='textPrimary'>
+                <strong>LAST DONE</strong>
+            </Typography>
+        </TableCell>
+        <TableCell style={styles.cell}>
+            <Typography variant="h6" color='textPrimary'>
+                <strong>TIMES COMPLETED</strong>
+            </Typography>
+        </TableCell>
+    </TableRow>;
+}
+
 function choreRow(choreCount) {
     return <TableRow key={choreCount.id} className="chore-count-row" data-chore-id={choreCount.id}>
         <TableCell>
@@ -39,7 +62,12 @@ function choreRow(choreCount) {
                 {choreCount.name}
             </Typography>
         </TableCell>
-        <TableCell align="right">
+        <TableCell>
+            <Typography variant="h6" color='textPrimary' className="chore-date">
+                {choreCount.date}
+            </Typography>
+        </TableCell>
+        <TableCell>
             <Typography variant="h6" color='textPrimary' className="chore-count">
                 {choreCount.count}
             </Typography>

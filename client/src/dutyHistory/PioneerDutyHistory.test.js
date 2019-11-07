@@ -89,9 +89,11 @@ describe('PioneerDutyHistory', () => {
             const choreCounts = dutyHistory.find(DutyHistoryTable).props().choreCounts;
             expect(choreCounts.length).toEqual(2);
             expect(choreCounts[0].name).toBe(chore.name);
-            expect(choreCounts[0].count).toBe(1);
+            expect(choreCounts[0].count).toEqual(1);
+            expect(choreCounts[0].date).toBe('10/29/2019');
             expect(choreCounts[1].name).toBe(chore2.name);
-            expect(choreCounts[1].count).toBe(2);
+            expect(choreCounts[1].count).toEqual(2);
+            expect(choreCounts[1].date).toBe('11/02/2019');
         });
     });
 });

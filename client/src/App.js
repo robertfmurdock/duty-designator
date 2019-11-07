@@ -10,7 +10,7 @@ import DutyRoster from "./duties/DutyRoster";
 import HistoricalRoster from "./duties/HistoricalRoster";
 import ChoreCorral from "./corral/ChoreCorral";
 import {useHistory} from "react-router-dom";
-import PioneerDutyHistory from "./chorehistory/PioneerDutyHistory";
+import PioneerDutyHistory from "./dutyHistory/PioneerDutyHistory";
 import FetchService from "./utilities/services/fetchService";
 import PioneerStatistics from "./pioneers/PioneerStatistics";
 
