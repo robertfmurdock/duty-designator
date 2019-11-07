@@ -4,7 +4,6 @@ import DutyTable from "./DutyTable";
 import {associateWithOffset} from "./Associator";
 import {loadStuff, saveStuff} from "../utilities/services/localStorageService";
 import {format} from "date-fns";
-import {Link} from "react-router-dom";
 
 export default function DutyRoster(props) {
     const [canSave, setCanSave] = useState(true);
@@ -17,9 +16,9 @@ export default function DutyRoster(props) {
         loadState(setCanSave, setDutyRoster, pioneers, chores, setPioneers, setChores, props);
     }
 
-    return <Container>
+    return <Container maxWidth={"xl"}>
         <DutyTable duties={dutyRoster}/>
-        {respinButton(pioneers, chores)}
+        {respinButton(history)}
         {conditionalButtons(canSave, setCanSave, dutyRoster, history)}
     </Container>;
 }
@@ -36,20 +35,16 @@ function conditionalButtons(canSave, setCanSave, dutyRoster, history) {
         </Typography>;
 }
 
-function respinButton(pioneers, chores) {
-    return <Link
-        to={{
-            pathname: "/corral",
-            state: {pioneers, chores}
-        }}
-    ><Button
+function respinButton(history) {
+    return <Button
         color="secondary"
         size="large"
         variant="contained"
         id="respin"
+        onClick={()=> history.push('/corral')}
     >
         Respin this Wagon Wheel
-    </Button></Link>;
+    </Button>
 }
 
 function saveButton(setCanSave, dutyRoster, history) {
