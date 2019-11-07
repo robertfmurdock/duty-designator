@@ -80,7 +80,7 @@ function setPioneerFromLocalStorage(id, setPioneer, setChoreCounts) {
 }
 
 function setPioneerFromServer(id, currentPioneer, setPioneer) {
-    FetchService.get(0, `/api/pioneer/${id}`, undefined)
+    FetchService.get(0, `/api/pioneer/${id}`)
         .then(pioneer => {
             if (!currentPioneer) {
                 setPioneer(pioneer);

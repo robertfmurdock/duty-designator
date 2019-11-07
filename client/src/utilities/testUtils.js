@@ -1,3 +1,5 @@
+export const wrapInPromise = response => new Promise(resolve => resolve(response));
+
 export async function waitUntil(untilFunction) {
     const start = new Date();
     while (!untilFunction() && (new Date() - start) < 300) {

@@ -3,7 +3,7 @@ import {AddChoreModal, ChoreTable, PioneerTable} from "../dashboard";
 import React from "react";
 import ChoreCorral from "./ChoreCorral";
 import FetchService from "../utilities/services/fetchService";
-import {waitUntil} from "../utilities/testUtils";
+import {waitUntil, wrapInPromise} from "../utilities/testUtils";
 
 describe('ChoreCorral', function () {
     it('handles null chore and pioneer lists', async function () {
@@ -47,7 +47,7 @@ describe('ChoreCorral', function () {
             ];
 
             let fetchMock = FetchService.get = jest.fn();
-            fetchMock.mockReturnValue(new Promise(resolve => resolve(pioneers)));
+            fetchMock.mockReturnValue(wrapInPromise(pioneers));
 
             choreCorral = shallow(<ChoreCorral/>);
         });
@@ -102,7 +102,7 @@ describe('ChoreCorral', function () {
             ];
 
             let fetchMock = FetchService.get = jest.fn();
-            fetchMock.mockReturnValue(new Promise(resolve => resolve(chores)));
+            fetchMock.mockReturnValue(wrapInPromise(chores));
             choreCorral = shallow(<ChoreCorral/>);
         });
 

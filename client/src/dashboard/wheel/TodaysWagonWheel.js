@@ -1,5 +1,5 @@
 import React from "react";
-import {Container, Typography} from "@material-ui/core";
+import {Button, Container, Typography} from "@material-ui/core";
 import {format, subDays, addDays, isToday} from 'date-fns';
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -35,11 +35,25 @@ export default function (props) {
                 {format(props.date, 'MM/dd/yyyy')}
 
                 {!isToday(props.date) &&
-                    <Link to={`/roster/${(plusOneDay(props.date))}`} className="forward-btn">
-                        <ChevronRightIcon/>
-                    </Link>
+                <Link to={`/roster/${(plusOneDay(props.date))}`} className="forward-btn">
+                    <ChevronRightIcon/>
+                </Link>
                 }
             </Typography>
+
+            <Link
+                to="/pioneer/statistics"
+                className="statistics-link"
+                style={{textDecoration: "none"}}
+            >
+                <Button
+                    color="primary"
+                    size="large"
+                    variant="contained"
+                >
+                    Statistics
+                </Button>
+            </Link>
         </Container>
     </Box>
 }
