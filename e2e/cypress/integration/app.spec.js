@@ -157,10 +157,6 @@ context('Actions', () => {
             cy.get("#respin").click();
         });
 
-        afterEach(async () => {
-            await removePioneer(pioneer)
-        });
-
         it('the removed pioneer does not appear on the chore corral', function () {
             cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
                 .should('not.to.exist');
@@ -170,6 +166,10 @@ context('Actions', () => {
             cy.get("#reset-button").click();
             cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
                 .should('have.text', pioneer.name);
+        });
+
+        afterEach(async () => {
+            await removePioneer(pioneer)
         });
     });
 

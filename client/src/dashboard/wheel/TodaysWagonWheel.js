@@ -13,6 +13,15 @@ const useStyles = makeStyles({
         padding: 16,
         textAlign: 'center'
     },
+    chevronLink: {
+        width: 28,
+        height: 28,
+        display: "block",
+    },
+    chevron: {
+        width: "100%",
+        height: "100%"
+    }
 });
 
 const minusOneDay = date => formatDate(subDays(date, 1));
@@ -20,25 +29,42 @@ const plusOneDay = date => formatDate(addDays(date, 1));
 const formatDate = date => format(date, 'MMddyyyy');
 
 export default function (props) {
-    const containerClasses = useStyles();
+    const classes = useStyles();
 
     return <Box>
-        <Container fixed className={containerClasses.root}>
+        <Container fixed className={classes.root}>
             <WheelSvg width="100px" height="100px" style={{maxWidth: "100%"}}/>
             <Typography variant="h5" color='textPrimary' gutterBottom>Chore Wagon Wheel</Typography>
-            <Typography variant="h5" color='textPrimary' gutterBottom>
-                <Link to={`/roster/${(minusOneDay(props.date))}`} className="back-btn">
-                    <ChevronLeftIcon/>
+
+            <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+                style={{marginBottom: "0.35em"}}
+            >
+                <Link
+                    to={`/roster/${(minusOneDay(props.date))}`}
+                    className={`back-btn ${classes.chevronLink}`}
+                >
+                    <ChevronLeftIcon className={classes.chevron}/>
                 </Link>
 
-                {format(props.date, 'MM/dd/yyyy')}
+                <Typography variant="h5" color='textPrimary'>
+
+                    {format(props.date, 'MM/dd/yyyy')}
+
+                </Typography>
 
                 {!isToday(props.date) &&
-                <Link to={`/roster/${(plusOneDay(props.date))}`} className="forward-btn">
-                    <ChevronRightIcon/>
+                <Link
+                    to={`/roster/${(plusOneDay(props.date))}`}
+                    className={`forward-btn ${classes.chevronLink}`}
+                >
+                    <ChevronRightIcon className={classes.chevron}/>
                 </Link>
                 }
-            </Typography>
+            </Box>
 
             <Link
                 to="/pioneer/statistics"
