@@ -3,6 +3,7 @@ import FetchService from "../utilities/services/fetchService";
 import {waitUntil, wrapInPromise} from "../utilities/testUtils";
 import {shallow} from "enzyme";
 import PioneerStatistics from "./PioneerStatistics";
+import PioneerCard from "./PioneerCard";
 
 describe('pioneer statistics', () => {
     const fetchMock = FetchService.get = jest.fn();
@@ -24,8 +25,8 @@ describe('pioneer statistics', () => {
         await waitUntil(() => statistics.find('.pioneer-link').length !== 0);
 
         expect(statistics.find('.pioneer-link').length).toEqual(pioneers.length);
-        expect(statistics.find('.pioneer-name').at(0).text()).toBe(natalie.name);
-        expect(statistics.find('.pioneer-name').at(1).text()).toBe(jeb.name);
-        expect(statistics.find('.pioneer-name').at(2).text()).toBe(rob.name);
+
+        expect(statistics.find(PioneerCard).map(card => card.props().pioneer))
+            .toEqual(pioneers)
     });
 });

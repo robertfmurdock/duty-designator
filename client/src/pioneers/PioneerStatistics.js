@@ -1,7 +1,8 @@
 import React, {useState} from "react";
 import FetchService from "../utilities/services/fetchService";
-import {Container, Typography, Grid, Card, CardContent} from "@material-ui/core";
+import {Container, Grid, Typography} from "@material-ui/core";
 import {Link} from "react-router-dom";
+import PioneerCard from "./PioneerCard";
 
 export default function PioneerStatistics() {
     const [pioneers, setPioneers] = useState([]);
@@ -38,17 +39,7 @@ const pioneerCard = pioneer => {
             style={linkStyle}
             data-pioneer-id={pioneer.id}
         >
-            <Card style={{height: "100%"}}>
-                <CardContent>
-                    <Typography
-                        variant="body1"
-                        color="textPrimary"
-                        className="pioneer-name"
-                    >
-                        {pioneer.name}
-                    </Typography>
-                </CardContent>
-            </Card>
+            <PioneerCard pioneer={pioneer}/>
         </Link>
     </Grid>
 };
