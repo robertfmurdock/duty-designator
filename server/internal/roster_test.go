@@ -10,13 +10,13 @@ import (
 )
 
 func Test_saveDutyRosterWillInsertRecordsInCollection(t *testing.T) {
-	duty := presentationDuty{
+	duty := dutyRecord{
 		Completed: false,
 		Pioneer:   pioneerRecord{Id: stringUuid()},
 		Chore:     choreRecord{Id: stringUuid()},
 	}
 
-	duty2 := presentationDuty{
+	duty2 := dutyRecord{
 		Completed: false,
 		Pioneer:   pioneerRecord{Id: stringUuid()},
 		Chore:     choreRecord{Id: stringUuid()},
@@ -24,7 +24,7 @@ func Test_saveDutyRosterWillInsertRecordsInCollection(t *testing.T) {
 
 	dutyRoster := dutyRosterRecord{
 		Date:      "10/11/10",
-		Duties:    []presentationDuty{duty, duty2},
+		Duties:    []dutyRecord{duty, duty2},
 		Timestamp: time.Now().Round(time.Millisecond),
 	}
 
@@ -54,24 +54,24 @@ func Test_saveRosterWithSameDateMultipleTimesWillNotRemovePriorRecords(t *testin
 
 func generateRosterWithSameDateDifferentData(date string) (dutyRosterRecord, dutyRosterRecord) {
 	nowish := time.Now().Round(time.Millisecond)
-	duty := presentationDuty{
+	duty := dutyRecord{
 		Completed: false,
 		Pioneer:   pioneerRecord{Id: stringUuid()},
 		Chore:     choreRecord{Id: stringUuid()},
 	}
-	duty2 := presentationDuty{
+	duty2 := dutyRecord{
 		Completed: false,
 		Pioneer:   pioneerRecord{Id: stringUuid()},
 		Chore:     choreRecord{Id: stringUuid()},
 	}
 	dutyRosterEarlier := dutyRosterRecord{
 		Date:      date,
-		Duties:    []presentationDuty{duty, duty2},
+		Duties:    []dutyRecord{duty, duty2},
 		Timestamp: nowish,
 	}
 	dutyRosterLater := dutyRosterRecord{
 		Date:      date,
-		Duties:    []presentationDuty{duty},
+		Duties:    []dutyRecord{duty},
 		Timestamp: nowish.Add(time.Millisecond),
 	}
 	return dutyRosterEarlier, dutyRosterLater

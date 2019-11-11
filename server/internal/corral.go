@@ -60,14 +60,6 @@ func deleteCorralHandler(writer http.ResponseWriter, request *http.Request, hc *
 	return nil
 }
 
-func toPresentationCorral(record *corralRecord) presentationCorral {
-	return presentationCorral{
-		Date:     record.Date,
-		Pioneers: record.Pioneers,
-		Chores:   record.Chores,
-	}
-}
-
 func loadCorralRecord(date string, handlerContext *handlerContext) (*corralRecord, error) {
 	choreCollection := handlerContext.dutyDb().Collection("corrals")
 	result := choreCollection.FindOne(context.Background(), bson.M{"date": date},

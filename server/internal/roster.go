@@ -2,22 +2,41 @@ package internal
 
 import (
 	"context"
+	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
+	"net/http"
+	"path"
 )
 
-type presentationDuty struct {
-	Pioneer   pioneerRecord `json:"pioneer"`
-	Chore     choreRecord   `json:"chores"`
-	Completed bool          `json:"completed"`
+func rosterHandler(request *http.Request) mongoHandler {
+	switch request.Method {
+	case http.MethodGet:
+		return getRosterHandler
+	case http.MethodPut:
+		return putRosterHandler
+	}
+	return unsupportedVerb
 }
 
-type dutyRosterRecord struct {
-	Date      string             `json:"date"`
-	Duties    []presentationDuty `json:"duties"`
-	Timestamp time.Time
-	RecordType recordType
+func getRosterHandler(writer http.ResponseWriter, request *http.Request, hc *handlerContext) error {
+	date := path.Base(request.URL.Path)
+	record, err := loadRosterRecord(date, hc)
+	if err != nil {
+		return err
+	}
+	return writeAsJson(writer, record.toPresentation())
+}
+
+func putRosterHandler(_ http.ResponseWriter, request *http.Request, hc *handlerContext) error {
+	decoder := json.NewDecoder(request.Body)
+
+	var roster presentationDutyRoster
+	if err := decoder.Decode(&roster); err != nil {
+		return err
+	}
+
+	return saveRoster(roster.toRecord(), hc)
 }
 
 func saveRoster(dutyRoster dutyRosterRecord, hc *handlerContext) error {
@@ -26,7 +45,7 @@ func saveRoster(dutyRoster dutyRosterRecord, hc *handlerContext) error {
 	return err
 }
 
-func loadRosterRecord(date string, hc *handlerContext) (*dutyRosterRecord, error)  {
+func loadRosterRecord(date string, hc *handlerContext) (*dutyRosterRecord, error) {
 	dutyCollection := hc.dutyDb().Collection("rosters")
 	result := dutyCollection.FindOne(context.Background(), bson.M{"date": date},
 		&options.FindOneOptions{Sort: bson.M{"timestamp": -1}})
