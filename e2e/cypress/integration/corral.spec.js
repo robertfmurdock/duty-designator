@@ -81,5 +81,12 @@ context('On the Chore Corral Page', () => {
             await removePioneer(newPioneer);
             await removeChore(newChore);
         });
-    })
+    });
+
+    describe('For the Add Chore Button', () => {
+        it('exists on the corral page', () => {
+            cy.visit("http://localhost:8080/corral")
+            cy.get(`.open-add-chore-modal-button`).should('to.exist');
+        })
+    });
 });
