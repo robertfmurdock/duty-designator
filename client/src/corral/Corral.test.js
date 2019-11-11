@@ -6,6 +6,7 @@ import FetchService from "../utilities/services/fetchService";
 import {waitUntil, wrapInPromise} from "../utilities/testUtils";
 import PioneerCorral from "../pioneers/PioneerCorral";
 import ChoreCorral from "../chores/ChoreCorral";
+import GridSelector from "../pioneers/GridSelector";
 
 describe('Corral', function () {
     it('handles null chore and pioneer lists', async function () {
@@ -113,7 +114,7 @@ describe('Corral', function () {
             expect(chores).toEqual(chores);
         });
 
-        it('When ChoreTable remove a chore, the chore entry is removed', () => {
+        it('When ChoreCorral removes a chore, the chore entry is removed', () => {
             const choreToRemove = chores[1];
             const expectedRemaining = [chores[0], chores[2], chores[3]];
             simulateRemoveChore(choreToRemove);
@@ -130,9 +131,9 @@ describe('Corral', function () {
             expect(corral.find(ChoreCorral).props()["chores"]).toEqual(expectedChores)
         });
 
-        function simulateRemoveChore(pioneerToRemove) {
-            let removeFunction = corral.find(ChoreCorral).props()["onRemove"];
-            removeFunction(pioneerToRemove)
+        function simulateRemoveChore(choreToRemove) {
+            const removeFunction = corral.find(ChoreCorral).dive().find(GridSelector).props()['onRemove']
+            removeFunction(choreToRemove)
         }
     });
 });

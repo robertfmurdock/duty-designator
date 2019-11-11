@@ -89,4 +89,5 @@ context('On the Chore Corral Page', () => {
             cy.get(`.open-add-chore-modal-button`).should('to.exist');
         })
     });
+
 });
