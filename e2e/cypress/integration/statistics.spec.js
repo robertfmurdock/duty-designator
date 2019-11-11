@@ -26,7 +26,7 @@ context('On statistics page', () => {
         });
 
         it('displays pioneers in alphabetical order', () => {
-            cy.get('.pioneer-card').then(nameElements => {
+            cy.get('.corral-card').then(nameElements => {
                 const names = [...nameElements].map(el => el.textContent.trim())
                 expect(names).to.deep.eq(names.sort());
             });

@@ -1,7 +1,7 @@
 import PioneerCorral from "./PioneerCorral";
 import React from "react";
 import {shallow} from "enzyme";
-import PioneerGridSelector from "./GridSelector";
+import GridSelector from "../gridSelector/GridSelector";
 
 describe('PioneerCorral', () => {
    it('has a PioneerGrid selector with passed pioneers', ()=>{
@@ -10,6 +10,6 @@ describe('PioneerCorral', () => {
        ];
        const corral = shallow(<PioneerCorral {...{pioneers}}/>);
 
-       expect(corral.find(PioneerGridSelector).props().pioneers).toEqual(pioneers)
+       expect(corral.find(GridSelector).props().items).toEqual(pioneers)
    })
 });

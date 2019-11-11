@@ -44,11 +44,11 @@ context('On the Chore Corral Page', () => {
             cy.visit("http://localhost:8080/corral");
 
             corral.pioneers.forEach(pioneer => {
-                cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`)
+                cy.get(`.corral-card[data-corral-id=${pioneer.id}]`)
                     .should('to.exist');
             });
             corral.chores.forEach(chore => {
-                cy.get(`.pioneer-card[data-pioneer-id=${chore.id}]`)
+                cy.get(`.corral-card[data-corral-id=${chore.id}]`)
                     .should('to.exist');
             })
         });
@@ -71,9 +71,9 @@ context('On the Chore Corral Page', () => {
         it('standard pioneers and chores show up', () => {
             cy.visit("http://localhost:8080/corral");
 
-            cy.get(`.pioneer-card[data-pioneer-id=${newPioneer.id}]`)
+            cy.get(`.corral-card[data-corral-id=${newPioneer.id}]`)
                 .should('to.exist');
-            cy.get(`.pioneer-card[data-pioneer-id=${newChore.id}]`)
+            cy.get(`.corral-card[data-corral-id=${newChore.id}]`)
                 .should('to.exist');
         });
 

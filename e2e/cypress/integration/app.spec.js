@@ -24,7 +24,7 @@ context('Actions', () => {
 
         it('it shows up on the page', () => {
             cy.visit('http://localhost:8080');
-            cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.corral-card[data-corral-id=${pioneer.id}]`, {timeout: 2000})
                 .should('have.text', pioneer.name);
         });
 
@@ -45,7 +45,7 @@ context('Actions', () => {
 
         it('it shows up on the page', () => {
             cy.visit('http://localhost:8080');
-            cy.get(`.pioneer-card[data-pioneer-id=${chore.id}]`, {timeout: 2000})
+            cy.get(`.corral-card[data-corral-id=${chore.id}]`, {timeout: 2000})
                 .should('have.text', chore.name);
         });
 
@@ -151,7 +151,7 @@ context('Actions', () => {
 
         beforeEach(function () {
             cy.visit('http://localhost:8080');
-            cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`)
+            cy.get(`.corral-card[data-corral-id=${pioneer.id}]`)
                 .find(`.delete`).click();
             cy.get("#saddle-up").click();
             cy.get("#save").click();
@@ -159,13 +159,13 @@ context('Actions', () => {
         });
 
         it('the removed pioneer does not appear on the chore corral', function () {
-            cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.pioneer-name[data-corral-id=${pioneer.id}]`, {timeout: 2000})
                 .should('not.to.exist');
         });
 
         it('reset will return pioneer to list', () => {
             cy.get("#reset-button").click();
-            cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.corral-card[data-corral-id=${pioneer.id}]`, {timeout: 2000})
                 .should('have.text', pioneer.name);
         });
 

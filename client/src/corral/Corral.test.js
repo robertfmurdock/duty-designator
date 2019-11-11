@@ -6,7 +6,7 @@ import FetchService from "../utilities/services/fetchService";
 import {waitUntil, wrapInPromise} from "../utilities/testUtils";
 import PioneerCorral from "../pioneers/PioneerCorral";
 import ChoreCorral from "../chores/ChoreCorral";
-import GridSelector from "../pioneers/GridSelector";
+import GridSelector from "../gridSelector/GridSelector";
 
 describe('Corral', function () {
     it('handles null chore and pioneer lists', async function () {

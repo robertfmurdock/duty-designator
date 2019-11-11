@@ -4,15 +4,15 @@ import Icon from "@mdi/react";
 import {mdiClose} from "@mdi/js";
 import CardActions from "@material-ui/core/CardActions";
 
-export default function PioneerCard({pioneer, removable, onRemove}) {
-    return <Card style={{height: "100%"}} className="pioneer-card" data-pioneer-id={pioneer.id}>
+export default function CorralCard({item, removable, onRemove}) {
+    return <Card style={{height: "100%"}} className="corral-card" data-corral-id={item.id}>
         <CardActions style={{textAlign: "right", display: "block"}}>{whenRemovableIncludeRemoveButton(removable, onRemove)}</CardActions>
         <CardContent>
             <Typography
                 variant="body1"
                 color="textPrimary"
             >
-                {pioneer.name}
+                {item.name}
             </Typography>
         </CardContent>
     </Card>;

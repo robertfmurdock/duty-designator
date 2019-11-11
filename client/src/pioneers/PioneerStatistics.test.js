@@ -3,7 +3,7 @@ import FetchService from "../utilities/services/fetchService";
 import {waitUntil, wrapInPromise} from "../utilities/testUtils";
 import {shallow} from "enzyme";
 import PioneerStatistics from "./PioneerStatistics";
-import PioneerCard from "./PioneerCard";
+import CorralCard from "../gridSelector/CorralCard";
 
 describe('pioneer statistics', () => {
     const fetchMock = FetchService.get = jest.fn();
@@ -26,7 +26,7 @@ describe('pioneer statistics', () => {
 
         expect(statistics.find('.pioneer-link').length).toEqual(pioneers.length);
 
-        expect(statistics.find(PioneerCard).map(card => card.props().pioneer))
+        expect(statistics.find(CorralCard).map(card => card.props().item))
             .toEqual(pioneers)
     });
 });

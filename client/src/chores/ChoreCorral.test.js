@@ -1,7 +1,7 @@
 import {shallow} from "enzyme";
 import React from "react";
 import ChoreCorral from "./ChoreCorral";
-import GridSelector from "../pioneers/GridSelector";
+import GridSelector from "../gridSelector/GridSelector";
 import OnClickCard from "../gridSelector/OnClickCard";
 
 describe('ChoreCorral', () => {
@@ -9,15 +9,11 @@ describe('ChoreCorral', () => {
         {name: "Corraling Kevin", id: "4", description: "Kevin needs to be corralled"}
     ];
 
-    it('renders without crashing', () =>{
-        const choreCorral = shallow(<ChoreCorral/>);
-    });
-
     it('has a ChoreGrid selector with passed chores', ()=>{
 
         const corral = shallow(<ChoreCorral {...{chores: sampleChores}}/>);
 
-        expect(corral.find(GridSelector).props().chores).toEqual(sampleChores)
+        expect(corral.find(GridSelector).props().items).toEqual(sampleChores)
     });
 
     it('when OnClickCard is clicked setModalOpen prop is called', () => {

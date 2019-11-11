@@ -1,7 +1,7 @@
 import React from "react";
 import {shallow} from "enzyme";
 import GridSelector from "./GridSelector";
-import PioneerCard from "./PioneerCard";
+import CorralCard from "./CorralCard";
 import Icon from "@mdi/react";
 
 describe('GridSelector', () => {
@@ -10,10 +10,10 @@ describe('GridSelector', () => {
             {name: "Goofus", id: "0"},
             {name: "Gallant", id: "1"},
         ];
-        const gridSelector = shallow(<GridSelector pioneers={pioneers}/>);
+        const gridSelector = shallow(<GridSelector items={pioneers}/>);
 
-        const cards = gridSelector.find(PioneerCard);
-        const cardPioneers = cards.map(card => card.props().pioneer);
+        const cards = gridSelector.find(CorralCard);
+        const cardPioneers = cards.map(card => card.props().item);
         expect(cardPioneers).toEqual(pioneers);
     });
 
@@ -25,9 +25,9 @@ describe('GridSelector', () => {
         let actualRemovedPioneer = null;
         const removeSpy = (removed) => actualRemovedPioneer = removed;
         const table = shallow(<GridSelector
-            pioneers={[expectedPioneerToRemove]} onRemove={removeSpy}/>);
+            items={[expectedPioneerToRemove]} onRemove={removeSpy}/>);
 
-        const pioneerCard = table.find(PioneerCard)
+        const pioneerCard = table.find(CorralCard)
             .findWhere(card => card.key() === expectedPioneerToRemove.id);
 
         pioneerCard.last().dive().find(Icon).simulate("click");

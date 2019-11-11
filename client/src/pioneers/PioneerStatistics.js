@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import FetchService from "../utilities/services/fetchService";
 import {Container, Grid, Typography} from "@material-ui/core";
 import {Link} from "react-router-dom";
-import PioneerCard from "./PioneerCard";
+import CorralCard from "../gridSelector/CorralCard";
 
 export default function PioneerStatistics() {
     const [pioneers, setPioneers] = useState([]);
@@ -39,7 +39,7 @@ const pioneerCard = pioneer => {
             style={linkStyle}
             data-pioneer-id={pioneer.id}
         >
-            <PioneerCard pioneer={pioneer}/>
+            <CorralCard item={pioneer}/>
         </Link>
     </Grid>
 };
