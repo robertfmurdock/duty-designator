@@ -19,7 +19,7 @@ export default function Corral(props) {
 
     return <div>
         <Container>
-            <Box display="flex" flexDirection="row" justifyContent="center">
+            <Box display="flex" flexDirection="column" justifyContent="center">
                 {pioneerCorral(pioneers, setPioneers)}
                 {choreCorral(chores, setChores, setModalOpen)}
                 {addChoreModal(modalOpen, setModalOpen, chores, setChores)}
