@@ -1,7 +1,7 @@
 import {insertPioneer, removePioneer, setLocalStorageDutyRoster} from "../support/integrationHelpers";
 import uuid from 'uuid/v4';
 
-context('on statistics page', () => {
+context('On statistics page', () => {
     describe('given user is on the homepage', () => {
         it('there is a button that can be clicked to take you to the statistics page', () => {
             cy.visit("http://localhost:8080/");
@@ -26,7 +26,7 @@ context('on statistics page', () => {
         });
 
         it('displays pioneers in alphabetical order', () => {
-            cy.get('.pioneer-name').then(nameElements => {
+            cy.get('.pioneer-card').then(nameElements => {
                 const names = [...nameElements].map(el => el.textContent.trim())
                 expect(names).to.deep.eq(names.sort());
             });

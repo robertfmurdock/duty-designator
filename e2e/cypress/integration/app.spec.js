@@ -24,7 +24,7 @@ context('Actions', () => {
 
         it('it shows up on the page', () => {
             cy.visit('http://localhost:8080');
-            cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
                 .should('have.text', pioneer.name);
         });
 
@@ -164,7 +164,7 @@ context('Actions', () => {
 
         it('reset will return pioneer to list', () => {
             cy.get("#reset-button").click();
-            cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
                 .should('have.text', pioneer.name);
         });
 

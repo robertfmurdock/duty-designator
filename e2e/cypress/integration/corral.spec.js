@@ -44,7 +44,7 @@ context('On the Chore Corral Page', () => {
             cy.visit("http://localhost:8080/corral");
 
             corral.pioneers.forEach(pioneer => {
-                cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`)
+                cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`)
                     .should('to.exist');
             });
             corral.chores.forEach(chore => {
@@ -71,7 +71,7 @@ context('On the Chore Corral Page', () => {
         it('standard pioneers and chores show up', () => {
             cy.visit("http://localhost:8080/corral");
 
-            cy.get(`.pioneer-name[data-pioneer-id=${newPioneer.id}]`)
+            cy.get(`.pioneer-card[data-pioneer-id=${newPioneer.id}]`)
                 .should('to.exist');
             cy.get(`.chore-name[data-chore-id=${newChore.id}]`)
                 .should('to.exist');

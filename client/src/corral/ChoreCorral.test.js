@@ -4,12 +4,13 @@ import React from "react";
 import ChoreCorral from "./ChoreCorral";
 import FetchService from "../utilities/services/fetchService";
 import {waitUntil, wrapInPromise} from "../utilities/testUtils";
+import PioneerCorral from "./PioneerCorral";
 
 describe('ChoreCorral', function () {
     it('handles null chore and pioneer lists', async function () {
         const choreCorral = shallow(<ChoreCorral/>);
 
-        expect(choreCorral.find(PioneerTable).props()["pioneers"].length).toEqual(0);
+        expect(choreCorral.find(PioneerCorral).props()["pioneers"].length).toEqual(0);
         expect(choreCorral.find(ChoreTable).props()["chores"].length).toEqual(0);
     });
 
@@ -32,7 +33,7 @@ describe('ChoreCorral', function () {
         const wrapper = shallow(<ChoreCorral pioneers={pioneers} chores={chores}/>);
 
         expect(fetchMock.mock.calls.length).toBe(0);
-        expect(wrapper.find(PioneerTable).props()["pioneers"]).toEqual(pioneers);
+        expect(wrapper.find(PioneerCorral).props()["pioneers"]).toEqual(pioneers);
         expect(wrapper.find(ChoreTable).props()["chores"]).toEqual(chores);
     });
 
@@ -53,15 +54,15 @@ describe('ChoreCorral', function () {
         });
 
         it('shows a list of pioneers', () => {
-            const pioneerTable = choreCorral.find(PioneerTable);
-            expect(pioneerTable.props()["pioneers"]).toBe(pioneers);
+            const pioneerCorral = choreCorral.find(PioneerCorral);
+            expect(pioneerCorral.props()["pioneers"]).toBe(pioneers);
         });
 
         it('When PioneerTable remove last Pioneer, last Pioneer row is removed', () => {
             let pioneerToRemove = pioneers[2];
             simulateRemovePioneer(pioneerToRemove);
 
-            expect(choreCorral.find(PioneerTable).props()["pioneers"]).toEqual(pioneers.slice(0, 2))
+            expect(choreCorral.find(PioneerCorral).props()["pioneers"]).toEqual(pioneers.slice(0, 2))
         });
 
         it('When PioneerTable remove middle Pioneer, middle Pioneer row is removed', () => {
@@ -69,7 +70,7 @@ describe('ChoreCorral', function () {
             simulateRemovePioneer(pioneerToRemove);
 
             const expectedRemaining = [pioneers[0], pioneers[2]];
-            expect(choreCorral.find(PioneerTable).props()["pioneers"]).toEqual(expectedRemaining)
+            expect(choreCorral.find(PioneerCorral).props()["pioneers"]).toEqual(expectedRemaining)
         });
 
         it('Reset button presents default page', async () => {
@@ -79,13 +80,13 @@ describe('ChoreCorral', function () {
             choreCorral.find('#reset-button').simulate('click');
 
             await waitUntil(() =>
-                choreCorral.find(PioneerTable).props()["pioneers"].length === pioneers.length);
+                choreCorral.find(PioneerCorral).props()["pioneers"].length === pioneers.length);
 
-            expect(choreCorral.find(PioneerTable).props()["pioneers"]).toEqual(pioneers)
+            expect(choreCorral.find(PioneerCorral).props()["pioneers"]).toEqual(pioneers)
         });
 
         function simulateRemovePioneer(pioneerToRemove) {
-            let removeFunction = choreCorral.find(PioneerTable).props()["onRemove"];
+            let removeFunction = choreCorral.find(PioneerCorral).props()["onRemove"];
             removeFunction(pioneerToRemove)
         }
     });

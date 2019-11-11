@@ -2,9 +2,9 @@ import React from "react";
 import PioneerGridSelector from "../pioneers/PioneerGridSelector";
 
 export default function PioneerCorral (props) {
-    const {pioneers} = props;
+    const {pioneers, onRemove} = props;
 
-    return <div>
-        <PioneerGridSelector {...{pioneers}}/>
+    return <div> <div> TODAY'S PIONEERS </div>
+        <PioneerGridSelector {...{pioneers, onRemove}}/>
     </div>
 }
