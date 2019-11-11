@@ -14,9 +14,9 @@ type presentationDuty struct {
 }
 
 type dutyRosterRecord struct {
-	Date      string             `json:"date"`
-	Duties    []presentationDuty `json:"duties"`
-	Timestamp time.Time
+	Date       string             `json:"date"`
+	Duties     []presentationDuty `json:"duties"`
+	Timestamp  time.Time
 	RecordType recordType
 }
 
@@ -26,7 +26,7 @@ func saveRoster(dutyRoster dutyRosterRecord, hc *handlerContext) error {
 	return err
 }
 
-func loadRosterRecord(date string, hc *handlerContext) (*dutyRosterRecord, error)  {
+func loadRosterRecord(date string, hc *handlerContext) (*dutyRosterRecord, error) {
 	dutyCollection := hc.dutyDb().Collection("rosters")
 	result := dutyCollection.FindOne(context.Background(), bson.M{"date": date},
 		&options.FindOneOptions{Sort: bson.M{"timestamp": -1}})

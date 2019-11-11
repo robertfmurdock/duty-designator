@@ -9,17 +9,16 @@ export default function PioneerCard({pioneer, removable, onRemove}) {
             <Typography
                 variant="body1"
                 color="textPrimary"
-
             >
                 {pioneer.name}
             </Typography>
-            {whenRemovableIncludeRemoveButton(removable, onRemove, pioneer.id)}
+            {whenRemovableIncludeRemoveButton(removable, onRemove)}
         </CardContent>
     </Card>;
 };
 
-function whenRemovableIncludeRemoveButton(removable, onRemove, dataPioneerId) {
+function whenRemovableIncludeRemoveButton(removable, onRemove) {
     return removable ?
-        <Icon path={mdiClose} data-pioneer-id={dataPioneerId} className={'delete'} onClick={() => onRemove()}/>
+        <Icon path={mdiClose} className={'delete'} onClick={() => onRemove()}/>
         : undefined;
 }
