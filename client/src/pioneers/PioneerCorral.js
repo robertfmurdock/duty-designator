@@ -1,5 +1,5 @@
 import React from "react";
-import PioneerGridSelector from "../pioneers/PioneerGridSelector";
+import PioneerGridSelector from "./GridSelector";
 
 export default function PioneerCorral (props) {
     const {pioneers, onRemove} = props;

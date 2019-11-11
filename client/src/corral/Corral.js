@@ -1,11 +1,12 @@
 import {Box, Button, Container} from "@material-ui/core";
 import React, {useState} from "react";
-import {AddChoreModal, ChoreTable} from "../dashboard";
+import {AddChoreModal} from "../dashboard";
 import FetchService from "../utilities/services/fetchService";
 import {format} from "date-fns";
-import PioneerCorral from "./PioneerCorral";
+import PioneerCorral from "../pioneers/PioneerCorral";
+import ChoreCorral from "../chores/ChoreCorral";
 
-export default function ChoreCorral(props) {
+export default function Corral(props) {
     const [pioneers, setPioneers] = useState(props.pioneers || []);
     const [chores, setChores] = useState(props.chores || []);
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -20,7 +21,7 @@ export default function ChoreCorral(props) {
         <Container>
             <Box display="flex" flexDirection="row" justifyContent="center">
                 {pioneerCorral(pioneers, setPioneers)}
-                {choreTable(chores, setChores, setModalOpen)}
+                {choreCorral(chores, setChores, setModalOpen)}
                 {addChoreModal(modalOpen, setModalOpen, chores, setChores)}
             </Box>
             <Box>
@@ -71,8 +72,8 @@ function pioneerCorral(pioneers, setPioneers) {
     />;
 }
 
-const choreTable = (chores, setChores, setModalOpen) => (
-    <ChoreTable
+const choreCorral = (chores, setChores, setModalOpen) => (
+    <ChoreCorral
         chores={chores}
         addChoreHandler={() => setModalOpen(true)}
         onRemove={removedChore =>

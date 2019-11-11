@@ -1,7 +1,7 @@
 import PioneerCorral from "./PioneerCorral";
 import React from "react";
 import {shallow} from "enzyme";
-import PioneerGridSelector from "../pioneers/PioneerGridSelector";
+import PioneerGridSelector from "./GridSelector";
 
 describe('PioneerCorral', () => {
    it('has a PioneerGrid selector with passed pioneers', ()=>{

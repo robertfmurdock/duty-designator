@@ -48,7 +48,7 @@ context('On the Chore Corral Page', () => {
                     .should('to.exist');
             });
             corral.chores.forEach(chore => {
-                cy.get(`.chore-name[data-chore-id=${chore.id}]`)
+                cy.get(`.pioneer-card[data-pioneer-id=${chore.id}]`)
                     .should('to.exist');
             })
         });
@@ -73,7 +73,7 @@ context('On the Chore Corral Page', () => {
 
             cy.get(`.pioneer-card[data-pioneer-id=${newPioneer.id}]`)
                 .should('to.exist');
-            cy.get(`.chore-name[data-chore-id=${newChore.id}]`)
+            cy.get(`.pioneer-card[data-pioneer-id=${newChore.id}]`)
                 .should('to.exist');
         });
 

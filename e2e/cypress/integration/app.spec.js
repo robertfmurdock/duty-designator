@@ -45,7 +45,7 @@ context('Actions', () => {
 
         it('it shows up on the page', () => {
             cy.visit('http://localhost:8080');
-            cy.get(`.chore-name[data-chore-id=${chore.id}]`, {timeout: 2000})
+            cy.get(`.pioneer-card[data-pioneer-id=${chore.id}]`, {timeout: 2000})
                 .should('have.text', chore.name);
         });
 

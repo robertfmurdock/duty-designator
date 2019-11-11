@@ -1,16 +1,16 @@
 import React from "react";
 import {shallow} from "enzyme";
-import PioneerGridSelector from "./PioneerGridSelector";
+import GridSelector from "./GridSelector";
 import PioneerCard from "./PioneerCard";
 import Icon from "@mdi/react";
 
-describe('PioneerGridSelector', () => {
+describe('GridSelector', () => {
     it('given a set of pioneers renders for each pioneer', () => {
         const pioneers = [
             {name: "Goofus", id: "0"},
             {name: "Gallant", id: "1"},
         ];
-        const gridSelector = shallow(<PioneerGridSelector pioneers={pioneers}/>);
+        const gridSelector = shallow(<GridSelector pioneers={pioneers}/>);
 
         const cards = gridSelector.find(PioneerCard);
         const cardPioneers = cards.map(card => card.props().pioneer);
@@ -24,7 +24,7 @@ describe('PioneerGridSelector', () => {
 
         let actualRemovedPioneer = null;
         const removeSpy = (removed) => actualRemovedPioneer = removed;
-        const table = shallow(<PioneerGridSelector
+        const table = shallow(<GridSelector
             pioneers={[expectedPioneerToRemove]} onRemove={removeSpy}/>);
 
         const pioneerCard = table.find(PioneerCard)

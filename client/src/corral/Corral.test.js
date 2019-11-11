@@ -1,27 +1,28 @@
 import {shallow} from "enzyme";
 import {AddChoreModal, ChoreTable, PioneerTable} from "../dashboard";
 import React from "react";
-import ChoreCorral from "./ChoreCorral";
+import Corral from "./Corral";
 import FetchService from "../utilities/services/fetchService";
 import {waitUntil, wrapInPromise} from "../utilities/testUtils";
-import PioneerCorral from "./PioneerCorral";
+import PioneerCorral from "../pioneers/PioneerCorral";
+import ChoreCorral from "../chores/ChoreCorral";
 
-describe('ChoreCorral', function () {
+describe('Corral', function () {
     it('handles null chore and pioneer lists', async function () {
-        const choreCorral = shallow(<ChoreCorral/>);
+        const corral = shallow(<Corral/>);
 
-        expect(choreCorral.find(PioneerCorral).props()["pioneers"].length).toEqual(0);
-        expect(choreCorral.find(ChoreTable).props()["chores"].length).toEqual(0);
+        expect(corral.find(PioneerCorral).props()["pioneers"].length).toEqual(0);
+        expect(corral.find(ChoreCorral).props()["chores"].length).toEqual(0);
     });
 
     it('ChoreTable can open modal', async () => {
-        const choreCorral = shallow(<ChoreCorral/>);
+        const corral = shallow(<Corral/>);
 
-        choreCorral.find(ChoreTable)
+        corral.find(ChoreCorral)
             .props()
             ["addChoreHandler"]();
 
-        expect(choreCorral.find(AddChoreModal).prop('open')).toEqual(true);
+        expect(corral.find(AddChoreModal).prop('open')).toEqual(true);
     });
 
     it('when given chore and pioneer lists, no fetches will occur', () => {
@@ -30,15 +31,15 @@ describe('ChoreCorral', function () {
 
         const fetchMock = FetchService.get = jest.fn();
 
-        const wrapper = shallow(<ChoreCorral pioneers={pioneers} chores={chores}/>);
+        const wrapper = shallow(<Corral pioneers={pioneers} chores={chores}/>);
 
         expect(fetchMock.mock.calls.length).toBe(0);
         expect(wrapper.find(PioneerCorral).props()["pioneers"]).toEqual(pioneers);
-        expect(wrapper.find(ChoreTable).props()["chores"]).toEqual(chores);
+        expect(wrapper.find(ChoreCorral).props()["chores"]).toEqual(chores);
     });
 
     describe('with pioneer data', () => {
-        let choreCorral, pioneers;
+        let corral, pioneers;
 
         beforeEach(() => {
             pioneers = [
@@ -50,11 +51,11 @@ describe('ChoreCorral', function () {
             let fetchMock = FetchService.get = jest.fn();
             fetchMock.mockReturnValue(wrapInPromise(pioneers));
 
-            choreCorral = shallow(<ChoreCorral/>);
+            corral = shallow(<Corral/>);
         });
 
         it('shows a list of pioneers', () => {
-            const pioneerCorral = choreCorral.find(PioneerCorral);
+            const pioneerCorral = corral.find(PioneerCorral);
             expect(pioneerCorral.props()["pioneers"]).toBe(pioneers);
         });
 
@@ -62,7 +63,7 @@ describe('ChoreCorral', function () {
             let pioneerToRemove = pioneers[2];
             simulateRemovePioneer(pioneerToRemove);
 
-            expect(choreCorral.find(PioneerCorral).props()["pioneers"]).toEqual(pioneers.slice(0, 2))
+            expect(corral.find(PioneerCorral).props()["pioneers"]).toEqual(pioneers.slice(0, 2))
         });
 
         it('When PioneerTable remove middle Pioneer, middle Pioneer row is removed', () => {
@@ -70,29 +71,29 @@ describe('ChoreCorral', function () {
             simulateRemovePioneer(pioneerToRemove);
 
             const expectedRemaining = [pioneers[0], pioneers[2]];
-            expect(choreCorral.find(PioneerCorral).props()["pioneers"]).toEqual(expectedRemaining)
+            expect(corral.find(PioneerCorral).props()["pioneers"]).toEqual(expectedRemaining)
         });
 
         it('Reset button presents default page', async () => {
             let pioneerToRemove = pioneers[0];
             simulateRemovePioneer(pioneerToRemove);
 
-            choreCorral.find('#reset-button').simulate('click');
+            corral.find('#reset-button').simulate('click');
 
             await waitUntil(() =>
-                choreCorral.find(PioneerCorral).props()["pioneers"].length === pioneers.length);
+                corral.find(PioneerCorral).props()["pioneers"].length === pioneers.length);
 
-            expect(choreCorral.find(PioneerCorral).props()["pioneers"]).toEqual(pioneers)
+            expect(corral.find(PioneerCorral).props()["pioneers"]).toEqual(pioneers)
         });
 
         function simulateRemovePioneer(pioneerToRemove) {
-            let removeFunction = choreCorral.find(PioneerCorral).props()["onRemove"];
+            let removeFunction = corral.find(PioneerCorral).props()["onRemove"];
             removeFunction(pioneerToRemove)
         }
     });
 
     describe('with chore data', () => {
-        let choreCorral, chores;
+        let corral, chores;
 
         beforeEach(() => {
             chores = [
@@ -104,11 +105,11 @@ describe('ChoreCorral', function () {
 
             let fetchMock = FetchService.get = jest.fn();
             fetchMock.mockReturnValue(wrapInPromise(chores));
-            choreCorral = shallow(<ChoreCorral/>);
+            corral = shallow(<Corral/>);
         });
 
         it('will send chores to chore table', () => {
-            const chores = choreCorral.find(ChoreTable).props()["chores"];
+            const chores = corral.find(ChoreCorral).props()["chores"];
             expect(chores).toEqual(chores);
         });
 
@@ -117,20 +118,20 @@ describe('ChoreCorral', function () {
             const expectedRemaining = [chores[0], chores[2], chores[3]];
             simulateRemoveChore(choreToRemove);
 
-            expect(choreCorral.find(ChoreTable).props()["chores"]).toEqual(expectedRemaining)
+            expect(corral.find(ChoreCorral).props()["chores"]).toEqual(expectedRemaining)
         });
 
         it('When AddChoreModal adds a chore, the chore entry is added to the list', () => {
             const newChore = {id: '5', name: 'Super Easy Chore', description: 'Its so easy', title: 'Mouse'};
             const expectedChores = [...chores, newChore];
-            choreCorral.find(AddChoreModal)
+            corral.find(AddChoreModal)
                 .props()["onChoreAdd"](newChore);
 
-            expect(choreCorral.find(ChoreTable).props()["chores"]).toEqual(expectedChores)
+            expect(corral.find(ChoreCorral).props()["chores"]).toEqual(expectedChores)
         });
 
         function simulateRemoveChore(pioneerToRemove) {
-            let removeFunction = choreCorral.find(ChoreTable).props()["onRemove"];
+            let removeFunction = corral.find(ChoreCorral).props()["onRemove"];
             removeFunction(pioneerToRemove)
         }
     });

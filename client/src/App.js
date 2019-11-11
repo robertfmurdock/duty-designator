@@ -8,7 +8,7 @@ import {parse, isToday, format} from 'date-fns';
 import Tumbleweed from "./tumbleweed/Tumbleweed";
 import DutyRoster from "./duties/DutyRoster";
 import HistoricalRoster from "./duties/HistoricalRoster";
-import ChoreCorral from "./corral/ChoreCorral";
+import Corral from "./corral/Corral";
 import {useHistory} from "react-router-dom";
 import PioneerDutyHistory from "./dutyHistory/PioneerDutyHistory";
 import FetchService from "./utilities/services/fetchService";
@@ -104,7 +104,7 @@ const ChoreCorralPage = () => {
     }
     return <div>
         <TodaysWagonWheel date={new Date()}/>
-        <ChoreCorral {...corral} history={history}/>
+        <Corral {...corral} history={history}/>
     </div>
 };
 

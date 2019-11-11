@@ -1,7 +1,7 @@
 import React from "react";
 import PioneerCard from "./PioneerCard";
 
-export default function PioneerGridSelector(props) {
+export default function GridSelector(props) {
     const {pioneers, onRemove} = props;
 
     return <div>
