@@ -18,7 +18,7 @@ type dutyRosterRecord struct {
 	RecordType recordType
 }
 
-func saveDuties(dutyRoster dutyRosterRecord, hc *handlerContext) error {
+func saveRoster(dutyRoster dutyRosterRecord, hc *handlerContext) error {
 	dutyCollection := hc.dutyDb().Collection("rosters")
 	_, err := dutyCollection.InsertOne(context.Background(), dutyRoster)
 	return err
