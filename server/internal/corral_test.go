@@ -25,7 +25,7 @@ func Test_saveCorralWillInsertRecordInCollection(t *testing.T) {
 }
 
 func Test_saveCorralWithSameDateMultipleTimesWillNotRemovePriorRecords(t *testing.T) {
-	corralEarlier, corralLater := generateCorralWithSameDateDifferentData()
+	corralEarlier, corralLater := generateCorralWithSameDateDifferentData("sometime")
 	hc := &handlerContext{dbClient: client}
 	if err := saveCorral(corralEarlier, hc); err != nil {
 		t.Errorf("Could not save corral %v", err)
@@ -39,16 +39,16 @@ func Test_saveCorralWithSameDateMultipleTimesWillNotRemovePriorRecords(t *testin
 	assertCorralListContains(loadedCorrals, corralLater, t)
 }
 
-func generateCorralWithSameDateDifferentData() (corralRecord, corralRecord) {
+func generateCorralWithSameDateDifferentData(date string) (corralRecord, corralRecord) {
 	nowish := time.Date(2019, time.November, 6, 10, 36, 21, 4000000, time.UTC)
 	corralEarlier := corralRecord{
-		Date:      "whenever",
+		Date:      date,
 		Pioneers:  []pioneerRecord{},
 		Chores:    []choreRecord{},
 		Timestamp: nowish,
 	}
 	corralLater := corralRecord{
-		Date: corralEarlier.Date,
+		Date: date,
 		Pioneers: []pioneerRecord{{
 			Name: "Bill",
 			Id:   "ill",
@@ -59,8 +59,8 @@ func generateCorralWithSameDateDifferentData() (corralRecord, corralRecord) {
 	return corralEarlier, corralLater
 }
 
-func Test_getCorralWhenMultipleRecordsWithDateExistWillPresentTheLatestTimestampOne(t *testing.T) {
-	corralEarlier, corralLater := generateCorralWithSameDateDifferentData()
+func Test_loadCorralWhenMultipleRecordsWithDateExistWillPresentTheLatestTimestampOne(t *testing.T) {
+	corralEarlier, corralLater := generateCorralWithSameDateDifferentData("whenever")
 	hc := &handlerContext{dbClient: client}
 	if err := saveCorral(corralEarlier, hc); err != nil {
 		t.Errorf("Could not save corral %v", err)
