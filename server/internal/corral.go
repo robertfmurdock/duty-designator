@@ -40,15 +40,15 @@ func getCorralHandler(writer http.ResponseWriter, request *http.Request, handler
 		return nil
 	}
 
-	jsonStruct := toPresentationCorral(record)
+	jsonStruct := record.toPresentation()
 	return writeAsJson(writer, jsonStruct)
 }
 
-func (c *corralRecord) isRemoved() bool {
-	if c == nil {
+func (corralRecord *corralRecord) isRemoved() bool {
+	if corralRecord == nil {
 		return true
 	}
-	return c.RecordType == removed
+	return corralRecord.RecordType == removed
 }
 
 func deleteCorralHandler(writer http.ResponseWriter, request *http.Request, hc *handlerContext) error {

@@ -20,18 +20,18 @@ type presentationDutyRoster struct {
 	Duties []dutyRecord `json:"duties"`
 }
 
-func (presentation presentationDutyRoster) toRecord() dutyRosterRecord {
+func (presentationRoster presentationDutyRoster) toRecord() dutyRosterRecord {
 	return dutyRosterRecord{
-		Date:       presentation.Date,
-		Duties:     presentation.Duties,
+		Date:       presentationRoster.Date,
+		Duties:     presentationRoster.Duties,
 		Timestamp:  time.Now(),
 		RecordType: 0,
 	}
 }
 
-func (record *dutyRosterRecord) toPresentation() presentationDutyRoster {
+func (rosterRecord *dutyRosterRecord) toPresentation() presentationDutyRoster {
 	return presentationDutyRoster{
-		Date:   record.Date,
-		Duties: record.Duties,
+		Date:   rosterRecord.Date,
+		Duties: rosterRecord.Duties,
 	}
 }

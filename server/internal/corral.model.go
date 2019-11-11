@@ -24,10 +24,10 @@ type presentationCorral struct {
 	Chores   []choreRecord   `json:"chores"`
 }
 
-func toPresentationCorral(record *corralRecord) presentationCorral {
+func (corralRecord *corralRecord) toPresentation() presentationCorral {
 	return presentationCorral{
-		Date:     record.Date,
-		Pioneers: record.Pioneers,
-		Chores:   record.Chores,
+		Date:     corralRecord.Date,
+		Pioneers: corralRecord.Pioneers,
+		Chores:   corralRecord.Chores,
 	}
 }
