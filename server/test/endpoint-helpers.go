@@ -178,3 +178,35 @@ func performDeleteChoreById(choreID string) (int, error) {
 		return responseRecorder.Code, nil
 	}
 }
+
+func performPutRoster(roster map[string]interface{}) error {
+	responseRecorder, err := performRequest(http.MethodPut, fmt.Sprintf("/api/roster/%s", roster["date"]), roster)
+	if err != nil {
+		return err
+	}
+	return verifySuccessfulRequest(responseRecorder)
+}
+
+func performGetRoster(date string) (map[string]interface{}, error) {
+	responseRecorder, err := performRequest(http.MethodGet, fmt.Sprintf("/api/roster/%s", date), nil)
+	if err != nil {
+		return nil, err
+	}
+	if err := verifySuccessfulRequest(responseRecorder); err != nil {
+		return nil, err
+	}
+
+	var actualResponseBody map[string]interface{}
+	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
+		return nil, fmt.Errorf("could not parse server results: %w, %s", err, responseRecorder.Body.Bytes())
+	}
+	return actualResponseBody, nil
+}
+
+func performDeleteRoster(date string) error {
+	responseRecorder, err := performRequest(http.MethodDelete, fmt.Sprintf("/api/roster/%s", date), nil)
+	if err != nil {
+		return err
+	}
+	return verifySuccessfulRequest(responseRecorder)
+}

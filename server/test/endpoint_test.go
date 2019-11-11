@@ -57,7 +57,7 @@ func TestPutCorral_AfterPutCanGetCorral(t *testing.T) {
 		return
 	}
 
-	assertCorralsEqual(corral, *resultCorral, t)
+	assertJsonObjectEqual(corral, *resultCorral, t)
 }
 
 func TestPutCorralMultipleTimes_GetWillReturnTheLatest(t *testing.T) {
@@ -90,7 +90,7 @@ func TestPutCorralMultipleTimes_GetWillReturnTheLatest(t *testing.T) {
 		return
 	}
 
-	assertCorralsEqual(updatedCorral, *resultCorral, t)
+	assertJsonObjectEqual(updatedCorral, *resultCorral, t)
 }
 
 func TestDeleteCorralWillRenderSubsequentGetsWith404(t *testing.T) {
@@ -132,7 +132,7 @@ func ensureMeaningfulTimeHasPassed() {
 	time.Sleep(1 * time.Millisecond)
 }
 
-func assertCorralsEqual(expected map[string]interface{}, actual map[string]interface{}, t *testing.T) {
+func assertJsonObjectEqual(expected map[string]interface{}, actual map[string]interface{}, t *testing.T) {
 	if !cmp.Equal(expected, actual) {
 		t.Errorf("Returned expected was not equal:\n%v", cmp.Diff(expected, actual))
 	}
@@ -249,5 +249,77 @@ func TestRemoveChoreById(t *testing.T) {
 
 	if statusCode != http.StatusOK {
 		t.Errorf("Resposne code %v\n was not%v", statusCode, http.StatusOK)
+	}
+}
+
+func Test_CanPutAndGetDutyRosters(t *testing.T) {
+	pioneer := map[string]interface{}{"name": "Fuel-synergy", "id": uuid.New().String()}
+	chore := map[string]interface{}{
+		"name":        "Rustle the cattle",
+		"id":          uuid.New().String(),
+		"description": "Steal all them cattle",
+		"title":       "Rustler",
+	}
+
+	duties := []interface{}{
+		map[string]interface{}{"pioneer": pioneer, "chore": chore, "completed": true},
+	}
+
+	date := "11-11-11"
+
+	roster := map[string]interface{}{
+		"date":   date,
+		"duties": duties,
+	}
+
+	if err := performPutRoster(roster); err != nil {
+		t.Errorf("Cannot put roster. %v", err)
+		return
+	}
+
+	loadedRoster, err := performGetRoster(date)
+	if err != nil {
+		t.Errorf("Cannot get roster %v", err)
+	}
+
+	assertJsonObjectEqual(loadedRoster, roster, t)
+}
+
+func TestDeleteRosterWillRenderSubsequentGetsWith404(t *testing.T) {
+	pioneer := map[string]interface{}{"name": "Fuel-synergy", "id": uuid.New().String()}
+	chore := map[string]interface{}{
+		"name":        "Rustle the cattle",
+		"id":          uuid.New().String(),
+		"description": "Steal all them cattle",
+		"title":       "Rustler",
+	}
+
+	duties := []interface{}{
+		map[string]interface{}{"pioneer": pioneer, "chore": chore, "completed": true},
+	}
+
+	date := "11-11-11"
+
+	roster := map[string]interface{}{
+		"date":   date,
+		"duties": duties,
+	}
+
+	if err := performPutRoster(roster); err != nil {
+		t.Errorf("Cannot put roster. %v", err)
+		return
+	}
+	ensureMeaningfulTimeHasPassed()
+
+	if err := performDeleteRoster(fmt.Sprintf("%v", roster["date"])); err != nil {
+		t.Errorf("Delete Roster Request failed. %v", err)
+		return
+	}
+	responseRecorder, err := performRequest(http.MethodGet, fmt.Sprintf("/api/roster/%s", date), nil)
+	if err != nil {
+		t.Errorf("Get request failed. %v", err)
+	}
+	if err := verifyNotFound(responseRecorder); err != nil {
+		t.Errorf("%v", err)
 	}
 }

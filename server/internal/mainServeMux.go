@@ -49,6 +49,7 @@ func apiMux(hc handlerContext) *http.ServeMux {
 	apiMux.Handle("/chore", hc.methodRoute(choreHandler))
 	apiMux.Handle("/chore/", hc.methodRoute(choreByIdHandler))
 	apiMux.Handle("/corral/", hc.methodRoute(corralHandler))
+	apiMux.Handle("/roster/", hc.methodRoute(rosterHandler))
 	return apiMux
 }
 

@@ -40,32 +40,24 @@ func getCorralHandler(writer http.ResponseWriter, request *http.Request, handler
 		return nil
 	}
 
-	jsonStruct := toPresentationCorral(record)
+	jsonStruct := record.toPresentation()
 	return writeAsJson(writer, jsonStruct)
 }
 
-func (c *corralRecord) isRemoved() bool {
-	if c == nil {
+func (corralRecord *corralRecord) isRemoved() bool {
+	if corralRecord == nil {
 		return true
 	}
-	return c.RecordType == removed
+	return corralRecord.RecordType == removed
 }
 
 func deleteCorralHandler(writer http.ResponseWriter, request *http.Request, hc *handlerContext) error {
 	date := path.Base(request.URL.Path)
-	if err := insertRemoveRecord(date, time.Now(), hc); err != nil {
+	if err := insertRemoveCorralRecord(date, time.Now(), hc); err != nil {
 		return err
 	}
 	writer.WriteHeader(http.StatusOK)
 	return nil
-}
-
-func toPresentationCorral(record *corralRecord) presentationCorral {
-	return presentationCorral{
-		Date:     record.Date,
-		Pioneers: record.Pioneers,
-		Chores:   record.Chores,
-	}
 }
 
 func loadCorralRecord(date string, handlerContext *handlerContext) (*corralRecord, error) {
@@ -107,7 +99,7 @@ func saveCorral(record corralRecord, hc *handlerContext) error {
 	return err
 }
 
-func insertRemoveRecord(recordDate string, timestamp time.Time, hc *handlerContext) error {
+func insertRemoveCorralRecord(recordDate string, timestamp time.Time, hc *handlerContext) error {
 	removeRecord := corralRecord{
 		Date:       recordDate,
 		Timestamp:  timestamp,
