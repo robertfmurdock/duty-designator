@@ -4,8 +4,8 @@ import {insertCorral} from "../support/apiHelpers";
 context('On the Duty Roster Page', () => {
 
     describe("Given a chore corral has been prepared for today", () => {
-
         let corral;
+
         beforeEach(async () => {
             corral = stubCorral();
             await insertCorral(corral)

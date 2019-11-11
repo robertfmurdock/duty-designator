@@ -5,6 +5,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -96,6 +98,45 @@ func Test_loadRosterWhenMultipleRecordsWithDateExist_WillPresentTheRecordWithLat
 	if !cmp.Equal(dutyRosterLater, *loadedRoster) {
 		t.Errorf("Did not load correct roster:\n %v", cmp.Diff(dutyRosterLater, *loadedRoster))
 	}
+}
+
+func Test_removeRosterShouldInsertRemoveRecord(t *testing.T) {
+	now := time.Now().Round(time.Millisecond)
+	hc := &handlerContext{dbClient: client}
+
+	recordDate := "Today"
+	if err := insertRemoveRosterRecord(recordDate, now, hc); err != nil {
+		t.Errorf("Could not insert Remove Record %v", err)
+		return
+	}
+
+	loadedRosters := loadRosterFromDb(t, recordDate)
+	expectedRemoveRecord := dutyRosterRecord{
+		Date:       recordDate,
+		Timestamp:  now,
+		RecordType: removed,
+	}
+
+	assertRosterContains(loadedRosters, expectedRemoveRecord, t)
+}
+
+func Test_handleGetRosterWillReturn404WhenNoRecordsExist(t *testing.T) {
+	dutyCollection := client.Database("dutyDb").Collection("roster")
+	if err := dutyCollection.Drop(context.Background()); err != nil {
+		t.Errorf("Drop problems %v", err)
+	}
+
+	hc := &handlerContext{dbClient: client}
+
+	recorder := httptest.NewRecorder()
+	if err := getRosterHandler(recorder, httptest.NewRequest("Meh", "/wherever", nil), hc); err != nil {
+		t.Errorf("Could not load corral\n %v", err)
+	}
+
+	if recorder.Code != http.StatusNotFound {
+		t.Errorf("Status code should have been not found but was %v", recorder.Code)
+	}
+
 }
 
 func stringUuid() string {

@@ -272,15 +272,54 @@ func Test_CanPutAndGetDutyRosters(t *testing.T) {
 		"duties": duties,
 	}
 
-	if err := performRosterPut(roster); err != nil {
+	if err := performPutRoster(roster); err != nil {
 		t.Errorf("Cannot put roster. %v", err)
 		return
 	}
 
-	loadedRoster, err := performRosterGet(date)
+	loadedRoster, err := performGetRoster(date)
 	if err != nil {
 		t.Errorf("Cannot get roster %v", err)
 	}
 
 	assertJsonObjectEqual(loadedRoster, roster, t)
+}
+
+func TestDeleteRosterWillRenderSubsequentGetsWith404(t *testing.T) {
+	pioneer := map[string]interface{}{"name": "Fuel-synergy", "id": uuid.New().String()}
+	chore := map[string]interface{}{
+		"name":        "Rustle the cattle",
+		"id":          uuid.New().String(),
+		"description": "Steal all them cattle",
+		"title":       "Rustler",
+	}
+
+	duties := []interface{}{
+		map[string]interface{}{"pioneer": pioneer, "chore": chore, "completed": true},
+	}
+
+	date := "11-11-11"
+
+	roster := map[string]interface{}{
+		"date":   date,
+		"duties": duties,
+	}
+
+	if err := performPutRoster(roster); err != nil {
+		t.Errorf("Cannot put roster. %v", err)
+		return
+	}
+	ensureMeaningfulTimeHasPassed()
+
+	if err := performDeleteRoster(fmt.Sprintf("%v", roster["date"])); err != nil {
+		t.Errorf("Delete Roster Request failed. %v", err)
+		return
+	}
+	responseRecorder, err := performRequest(http.MethodGet, fmt.Sprintf("/api/roster/%s", date), nil)
+	if err != nil {
+		t.Errorf("Get request failed. %v", err)
+	}
+	if err := verifyNotFound(responseRecorder); err != nil {
+		t.Errorf("%v", err)
+	}
 }

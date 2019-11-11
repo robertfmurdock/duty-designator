@@ -122,7 +122,7 @@ func Test_removeCorralShouldInsertRemoveRecord(t *testing.T) {
 	hc := &handlerContext{dbClient: client}
 
 	recordDate := "Today"
-	if err := insertRemoveRecord(recordDate, now, hc); err != nil {
+	if err := insertRemoveCorralRecord(recordDate, now, hc); err != nil {
 		t.Errorf("Could not insert Remove Record %v", err)
 		return
 	}

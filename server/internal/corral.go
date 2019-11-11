@@ -53,7 +53,7 @@ func (corralRecord *corralRecord) isRemoved() bool {
 
 func deleteCorralHandler(writer http.ResponseWriter, request *http.Request, hc *handlerContext) error {
 	date := path.Base(request.URL.Path)
-	if err := insertRemoveRecord(date, time.Now(), hc); err != nil {
+	if err := insertRemoveCorralRecord(date, time.Now(), hc); err != nil {
 		return err
 	}
 	writer.WriteHeader(http.StatusOK)
@@ -99,7 +99,7 @@ func saveCorral(record corralRecord, hc *handlerContext) error {
 	return err
 }
 
-func insertRemoveRecord(recordDate string, timestamp time.Time, hc *handlerContext) error {
+func insertRemoveCorralRecord(recordDate string, timestamp time.Time, hc *handlerContext) error {
 	removeRecord := corralRecord{
 		Date:       recordDate,
 		Timestamp:  timestamp,
