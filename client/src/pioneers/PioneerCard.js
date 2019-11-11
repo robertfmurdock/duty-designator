@@ -4,12 +4,11 @@ import Icon from "@mdi/react";
 import {mdiClose} from "@mdi/js";
 
 export default function PioneerCard({pioneer, removable, onRemove}) {
-    return <Card style={{height: "100%"}}>
+    return <Card style={{height: "100%"}} className="pioneer-card" data-pioneer-id={pioneer.id} >
         <CardContent>
             <Typography
                 variant="body1"
                 color="textPrimary"
-                className="pioneer-name"
             >
                 {pioneer.name}
             </Typography>

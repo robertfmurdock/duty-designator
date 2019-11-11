@@ -24,7 +24,6 @@ type presentationCorral struct {
 	Chores   []choreRecord   `json:"chores"`
 }
 
-
 func toPresentationCorral(record *corralRecord) presentationCorral {
 	return presentationCorral{
 		Date:     record.Date,

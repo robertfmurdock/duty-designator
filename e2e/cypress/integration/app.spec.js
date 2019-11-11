@@ -24,7 +24,7 @@ context('Actions', () => {
 
         it('it shows up on the page', () => {
             cy.visit('http://localhost:8080');
-            cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
                 .should('have.text', pioneer.name);
         });
 
@@ -151,7 +151,8 @@ context('Actions', () => {
 
         beforeEach(function () {
             cy.visit('http://localhost:8080');
-            cy.get(`.delete[data-pioneer-id=${pioneer.id}]`).click();
+            cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`)
+                .find(`.delete`).click();
             cy.get("#saddle-up").click();
             cy.get("#save").click();
             cy.get("#respin").click();
@@ -164,7 +165,7 @@ context('Actions', () => {
 
         it('reset will return pioneer to list', () => {
             cy.get("#reset-button").click();
-            cy.get(`.pioneer-name[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
+            cy.get(`.pioneer-card[data-pioneer-id=${pioneer.id}]`, {timeout: 2000})
                 .should('have.text', pioneer.name);
         });
 
