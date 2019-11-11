@@ -43,7 +43,7 @@ describe('Pioneer Table', () => {
         );
     });
 
-    test('On click remove, wll use remove callback', () => {
+    test('On click remove, will use remove callback', () => {
         const expectedPioneerToRemove = {id: "uniqueId", name: 'WhereIsRiley'};
 
         let actualRemovedPioneer = null;

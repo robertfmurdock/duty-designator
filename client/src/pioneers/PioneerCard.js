@@ -16,7 +16,7 @@ export default function PioneerCard({pioneer, removable, onRemove}) {
             {whenRemovableIncludeRemoveButton(removable, onRemove)}
         </CardContent>
     </Card>;
-}
+};
 
 function whenRemovableIncludeRemoveButton(removable, onRemove) {
     return removable ?
