@@ -26,22 +26,22 @@ func Test_saveDutiesWillInsertRecordsInCollection(t *testing.T) {
 		Duties: []presentationDuty{duty, duty2},
 	}
 
-	if err := saveDuties(dutyRoster, &handlerContext{dbClient: client}); err != nil {
+	if err := saveRoster(dutyRoster, &handlerContext{dbClient: client}); err != nil {
 		t.Errorf("Could not save roster %v", err)
 	}
 
-	loadedDuties := loadRosterFromDb(t)
-	assertDutyListContains(loadedDuties, duty, t)
-	assertDutyListContains(loadedDuties, duty2, t)
+	loadedRoster := loadRosterFromDb(t, dutyRoster.Date)
+	assertDutyListContains(loadedRoster.Duties, duty, t)
+	assertDutyListContains(loadedRoster.Duties, duty2, t)
 }
 
 func stringUuid() string {
 	return uuid.New().String()
 }
 
-func loadRosterFromDb(t *testing.T) dutyRosterRecord {
+func loadRosterFromDb(t *testing.T, date string) dutyRosterRecord {
 	collection := client.Database("dutyDB").Collection("rosters")
-	result := collection.FindOne(context.Background(), bson.M{"Date": "10/11/10"})
+	result := collection.FindOne(context.Background(), bson.M{"date": date})
 
 	var row dutyRosterRecord
 	err := result.Decode(&row)
