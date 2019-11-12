@@ -51,9 +51,7 @@ export default function (props) {
                 </Link>
 
                 <Typography variant="h5" color='textPrimary'>
-
                     {format(props.date, 'MM/dd/yyyy')}
-
                 </Typography>
 
                 {!isToday(props.date) &&

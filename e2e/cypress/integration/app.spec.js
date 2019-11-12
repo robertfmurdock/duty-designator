@@ -196,7 +196,6 @@ context('Actions', () => {
     });
 
     describe('visiting historical duty rosters', () => {
-
         beforeEach(async function () {
             await deleteToday();
         });

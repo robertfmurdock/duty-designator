@@ -36,7 +36,9 @@ export default function App() {
                         <Route exact path="/" component={Root}/>
                         <Route exact path="/corral" component={ChoreCorralPage}/>
                         <Route exact path="/roster" component={DutyRosterPage}/>
-                        <Route path="/roster/:date" component={HistoricalRosterPage}/>
+                        <Route path="/roster/:date" render={props =>
+                            <HistoricalRosterPage/>
+                        }/>
                         <Route path="/pioneer/:id/history" component={PioneerHistory}/>
                         <Route path="/pioneer/statistics" component={PioneerStatistics}/>
                     </Switch>
@@ -94,7 +96,7 @@ const DutyRosterPage = () => {
         const today = format(new Date(), apiDateFormat);
         getDutyRosterData(today)
             .then(setData)
-            .catch(err => console.error(err));
+            .catch(console.error);
         setDataLoading(true);
     }
 
@@ -123,7 +125,7 @@ const ChoreCorralPage = () => {
         const today = formatAsApiDate(new Date());
         loadCorral(today)
             .then(setCorral)
-            .catch(err => console.error(err));
+            .catch(console.error);
 
         setDataLoading(true);
     }
@@ -142,7 +144,8 @@ const Root = () => {
 
     if (!dataLoading) {
         loadDutyRoster(formatAsApiDate(new Date()))
-            .then(roster => setData({roster}));
+            .then(roster => setData({roster}))
+            .catch(console.error);
         setDataLoading(true);
     }
 
