@@ -3,6 +3,7 @@ import {shallow} from "enzyme";
 import GridSelector from "./GridSelector";
 import CorralCard from "./CorralCard";
 import Icon from "@mdi/react";
+import OnClickCard from "./OnClickCard";
 
 describe('GridSelector', () => {
     it('given a set of pioneers renders for each pioneer', () => {
@@ -33,5 +34,11 @@ describe('GridSelector', () => {
         pioneerCard.last().dive().find(Icon).simulate("click");
 
         expect(actualRemovedPioneer).toBe(expectedPioneerToRemove)
+    });
+
+    it('has no OnClickCard when showGridAddItem is false', () => {
+       const gridSelector = shallow(<GridSelector items={[]} showGridAddItem={false}/>)
+
+       expect(gridSelector.find(OnClickCard).length).toBe(0)
     })
 });

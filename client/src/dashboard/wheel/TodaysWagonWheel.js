@@ -47,7 +47,7 @@ export default function (props) {
                     to={`/roster/${(minusOneDay(props.date))}`}
                     className={`back-btn ${classes.chevronLink}`}
                 >
-                    <ChevronLeftIcon className={classes.chevron}/>
+                    <ChevronLeftIcon className={classes.chevron} style={{width: 32}}/>
                 </Link>
 
                 <Typography variant="h5" color='textPrimary'>
@@ -61,7 +61,7 @@ export default function (props) {
                     to={`/roster/${(plusOneDay(props.date))}`}
                     className={`forward-btn ${classes.chevronLink}`}
                 >
-                    <ChevronRightIcon className={classes.chevron}/>
+                    <ChevronRightIcon className={classes.chevron} style={{width: 32}}/>
                 </Link>
                 }
             </Box>

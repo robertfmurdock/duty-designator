@@ -103,7 +103,6 @@ const ChoreCorralPage = () => {
         return <div/>
     }
     return <div>
-        <TodaysWagonWheel date={new Date()}/>
         <Corral {...corral} history={history}/>
     </div>
 };

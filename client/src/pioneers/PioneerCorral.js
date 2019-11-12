@@ -4,7 +4,7 @@ import PioneerGridSelector from "../gridSelector/GridSelector";
 export default function PioneerCorral (props) {
     const {pioneers: items, onRemove} = props;
 
-    return <div> <div> TODAY'S PIONEERS </div>
+    return <div> <h3> TODAY'S PIONEERS </h3>
         <PioneerGridSelector {...{items, onRemove}}/>
     </div>
 }
