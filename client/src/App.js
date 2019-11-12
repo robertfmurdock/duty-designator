@@ -110,13 +110,17 @@ const DutyRosterPage = () => {
     </div>
 };
 
+function formatAsApiDate(date) {
+    return format(date, apiDateFormat);
+}
+
 const ChoreCorralPage = () => {
     const history = useHistory();
     const [dataLoading, setDataLoading] = useState(false);
     const [corral, setCorral] = useState(null);
 
     if (!dataLoading) {
-        const today = format(new Date(), apiDateFormat);
+        const today = formatAsApiDate(new Date());
         loadCorral(today)
             .then(setCorral)
             .catch(err => console.error(err));
@@ -143,12 +147,30 @@ const WithoutDate = () => {
 const WithDate = () => {
     let {date} = useParams();
     const parsedDate = parse(date, "MMddyyyy", new Date());
-    return isToday(parsedDate)
-        ? <Redirect to="/"/>
-        : <div>
-            <TodaysWagonWheel date={parsedDate}/>
-            <HistoricalRoster date={parsedDate}/>
-        </div>
+
+    const [dataLoading, setDataLoading] = useState(null);
+    const [data, setData] = useState(null);
+
+    if (isToday(parsedDate)) {
+        return <Redirect to="/"/>
+    }
+
+    if (!dataLoading) {
+        loadDutyRoster(formatAsApiDate(parsedDate))
+            .then(roster => {
+                setData({roster})
+            });
+        setDataLoading(true);
+    }
+
+    if (!data) {
+        return <Loading/>
+    }
+
+    return <div>
+        <TodaysWagonWheel date={parsedDate}/>
+        <HistoricalRoster dutyRoster={data.roster}/>
+    </div>
 };
 
 const PioneerHistory = () => {
