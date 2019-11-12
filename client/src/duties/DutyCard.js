@@ -4,12 +4,12 @@ import {CardContent, CardHeader, Typography} from "@material-ui/core";
 
 export default function DutyCard (props) {
     const {duty} = props;
-    return <Card>
-        <CardHeader title={duty.pioneer.name}/>
-        <CardContent>
-            <Typography className={"chore-title"} style={"h5"}>{duty.chore.title}</Typography>
-            <Typography className={"chore-name"} style={"h6"}>{duty.chore.name}</Typography>
-            <Typography className={"chore-description"} style={"body"}>{duty.chore.description}</Typography>
+    return <Card className="duty" style={{height: "100%"}}>
+        <CardHeader className="duty-pioneer-name" data-pioneer-id={duty.pioneer.id} title={duty.pioneer.name}/>
+        <CardContent style={{paddingTop: 0}}>
+            <Typography className={"duty-pioneer-title chore-title"}data-chore-id={duty.chore.id} variant={"h5"}>{duty.chore.title}</Typography>
+            <Typography className={"chore-name duty-chore-name"} data-chore-id={duty.chore.id} variant={"h6"}>{duty.chore.name}</Typography>
+            <Typography className={"chore-description"} variant={"body"}>{duty.chore.description}</Typography>
         </CardContent>
     </Card>;
 }

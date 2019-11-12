@@ -1,9 +1,9 @@
 import {Button, Container, Typography} from "@material-ui/core";
 import React, {useState} from "react";
-import DutyTable from "./DutyTable";
 import {associateWithOffset} from "./Associator";
 import {format} from "date-fns";
 import FetchService from "../utilities/services/fetchService";
+import DutyGrid from "./DutyGrid";
 
 export default function DutyRoster(props) {
     const [canSave, setCanSave] = useState(props.dutyRoster === null);
@@ -12,8 +12,9 @@ export default function DutyRoster(props) {
     const dutyRoster = props.dutyRoster || associator(pioneers, chores);
     const history = props.history;
 
-    return <Container maxWidth={"xl"}>
-        <DutyTable duties={dutyRoster["duties"]}/>
+    return <Container className="results" maxWidth={"xl"}>
+        <DutyGrid duties={dutyRoster["duties"]}/>
+        <br/>
         {respinButton(history)}
         {conditionalButtons(canSave, setCanSave, dutyRoster, history)}
     </Container>;
