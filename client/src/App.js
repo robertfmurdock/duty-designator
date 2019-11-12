@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-import {BrowserRouter as Router, Switch, Route, useParams, Redirect, useHistory, useLocation} from "react-router-dom";
-import {parse, isToday, format} from 'date-fns';
+import {BrowserRouter as Router, Redirect, Route, Switch, useHistory, useLocation, useParams} from "react-router-dom";
+import {format, isToday, parse} from 'date-fns';
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
-import Dashboard from './dashboard/Dashboard.js';
+import RootRoute from './dashboard/RootRoute.js';
 import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
 import Tumbleweed from "./tumbleweed/Tumbleweed";
 import DutyRoster from "./duties/DutyRoster";
@@ -33,11 +33,11 @@ export default function App() {
             <MuiThemeProvider theme={theme}>
                 <Router>
                     <Switch>
-                        <Route exact path="/" children={<WithoutDate/>}/>
+                        <Route exact path="/" component={Root}/>
                         <Route exact path="/corral" component={ChoreCorralPage}/>
                         <Route exact path="/roster" component={DutyRosterPage}/>
-                        <Route path="/roster/:date" children={<WithDate/>}/>
-                        <Route path="/pioneer/:id/history" children={<PioneerHistory/>}/>
+                        <Route path="/roster/:date" component={HistoricalRosterPage}/>
+                        <Route path="/pioneer/:id/history" component={PioneerHistory}/>
                         <Route path="/pioneer/statistics" component={PioneerStatistics}/>
                     </Switch>
                 </Router>
@@ -137,14 +137,22 @@ const ChoreCorralPage = () => {
     </div>
 };
 
-const WithoutDate = () => {
-    const date = new Date();
-    return <div>
-        <Dashboard date={date}/>
-    </div>
+const Root = () => {
+    const [data, setData] = useState(null);
+    const [dataLoading, setDataLoading] = useState(false);
+
+    if (!dataLoading) {
+        loadDutyRoster(formatAsApiDate(new Date()))
+            .then(roster => setData({roster}));
+        setDataLoading(true);
+    }
+
+    return data
+        ? <RootRoute dutyRoster={data.roster}/>
+        : <Loading/>;
 };
 
-const WithDate = () => {
+const HistoricalRosterPage = () => {
     let {date} = useParams();
     const parsedDate = parse(date, "MMddyyyy", new Date());
 

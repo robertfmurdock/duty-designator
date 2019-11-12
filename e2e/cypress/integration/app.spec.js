@@ -196,6 +196,11 @@ context('Actions', () => {
     });
 
     describe('visiting historical duty rosters', () => {
+
+        beforeEach(async function () {
+            await deleteToday();
+        });
+
         it('there will be no respin or save buttons', () => {
             cy.visit("http://localhost:8080/roster/10102010");
             cy.get("#respin").should('have.length', 0);
