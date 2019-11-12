@@ -1,4 +1,5 @@
 import {format} from "date-fns";
+const uuid = require('uuid/v4');
 
 export const apiDateFormat = 'yyyy-MM-dd';
 
@@ -13,4 +14,19 @@ export function stubCorral() {
     ];
     const today = format(new Date(), apiDateFormat);
     return {date: today, pioneers, chores};
+}
+
+export function stubRoster() {
+    const duties = [{
+        pioneer: {name: "Dewy Dooter", id: uuid()},
+        chore: {name: "Horseshoer", description: "shoe horses", id: uuid()},
+        completed: false
+    }, {
+        pioneer: {name: "Rosy Rosee", id: uuid()},
+        chore: {name: "Burrito builder", description: "Build burritos", id: uuid()},
+        completed: true
+    }];
+
+    const today = format(new Date(), apiDateFormat);
+    return {date: today, duties};
 }

@@ -12,3 +12,47 @@ export async function deleteCorral(date) {
         signal: undefined
     });
 }
+
+export async function insertPioneer(pioneer) {
+    await fetch("http://localhost:8080/api/pioneer", {
+        method: "POST",
+        body: JSON.stringify(pioneer)
+    });
+}
+
+export async function removePioneer(pioneer) {
+    await fetch(`http://localhost:8080/api/pioneer/${pioneer.id}`, {
+        method: "DELETE"
+    });
+}
+
+export async function insertChore(chore) {
+    await fetch("http://localhost:8080/api/chore", {
+        method: "POST",
+        body: JSON.stringify(chore)
+    });
+}
+
+export async function removeChore(chore) {
+    await fetch(`http://localhost:8080/api/chore/${chore.id}`, {
+        method: "DELETE"
+    });
+}
+
+
+export async function insertRoster(roster) {
+    await fetch(`http://localhost:8080/api/roster/${roster.date}`, {
+        method: "PUT",
+        body: JSON.stringify(roster)
+    });
+}
+
+export async function deleteRoster(date) {
+    await fetch(`http://localhost:8080/api/roster/${date}`, {
+        method: "DELETE"
+    });
+}
+
+export function setLocalStorageDutyRoster(date, dutyRoster) {
+    localStorage.setItem(date, JSON.stringify({dutyRoster}));
+}

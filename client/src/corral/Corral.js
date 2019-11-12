@@ -93,7 +93,7 @@ async function putCorral(today, pioneers, chores, history) {
         body: JSON.stringify({pioneers, chores, date: today}),
         signal: undefined
     });
-    history.push('/roster')
+    history.push('/roster?spin=true')
 }
 
 function saddleUpButton(pioneers, chores, history) {

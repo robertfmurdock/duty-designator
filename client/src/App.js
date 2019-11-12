@@ -1,18 +1,18 @@
 import React, {useState} from 'react';
-import './App.css';
-import Dashboard from './dashboard/Dashboard.js';
-import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
-import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
-import {BrowserRouter as Router, Switch, Route, useParams, Redirect} from "react-router-dom";
+import {BrowserRouter as Router, Switch, Route, useParams, Redirect, useHistory, useLocation} from "react-router-dom";
 import {parse, isToday, format} from 'date-fns';
+import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
+import Dashboard from './dashboard/Dashboard.js';
+import TodaysWagonWheel from "./dashboard/wheel/TodaysWagonWheel";
 import Tumbleweed from "./tumbleweed/Tumbleweed";
 import DutyRoster from "./duties/DutyRoster";
 import HistoricalRoster from "./duties/HistoricalRoster";
 import Corral from "./corral/Corral";
-import {useHistory} from "react-router-dom";
 import PioneerDutyHistory from "./dutyHistory/PioneerDutyHistory";
 import FetchService from "./utilities/services/fetchService";
 import PioneerStatistics from "./pioneers/PioneerStatistics";
+import './App.css';
+import {Loading} from "./dashboard/Loading";
 
 const theme = createMuiTheme({
     palette: {
@@ -47,42 +47,66 @@ export default function App() {
     );
 }
 
-async function loadCorral(date, setCorral) {
+async function loadCorral(date) {
     try {
-        const results = await FetchService.get(0, `/api/corral/${date}`, undefined);
-        setCorral(results);
+        return await FetchService.get(0, `/api/corral/${date}`, undefined);
     } catch (err) {
         if (err === 404) {
             const [pioneers, chores] = await Promise.all([
                 FetchService.get(0, `/api/pioneer`, undefined),
                 FetchService.get(0, `/api/chore`, undefined)
             ]);
-            setCorral({pioneers, chores, date: date});
+
+            return {pioneers, chores, date: date};
         }
     }
 }
 
 const apiDateFormat = 'yyyy-MM-dd';
 
+async function getDutyRosterData(today) {
+    const [dutyRoster, corral] = await Promise.all([
+        loadDutyRoster(today),
+        loadCorral(today)
+    ]);
+
+    return {dutyRoster, corral};
+}
+
+async function loadDutyRoster(date) {
+    try {
+        return await FetchService.get(0, `/api/roster/${date}`, undefined);
+    } catch (err) {
+        return null;
+    }
+}
+
 const DutyRosterPage = () => {
     const history = useHistory();
+    const location = useLocation();
+    const urlSearchParams = new URLSearchParams(location.search);
+    const shouldSpin = urlSearchParams.get('spin');
+
     const [dataLoading, setDataLoading] = useState(false);
-    const [corral, setCorral] = useState(null);
+    const [data, setData] = useState(null);
 
     if (!dataLoading) {
         const today = format(new Date(), apiDateFormat);
-        loadCorral(today, setCorral, setDataLoading)
+        getDutyRosterData(today)
+            .then(setData)
             .catch(err => console.error(err));
         setDataLoading(true);
     }
 
-    if (corral == null) {
-        return <div/>
+    if (data == null) {
+        return <Loading/>
     }
+
+    const roster = shouldSpin ? null : data.dutyRoster;
 
     return <div>
         <TodaysWagonWheel date={new Date()}/>
-        <DutyRoster {...corral} history={history}/>
+        <DutyRoster dutyRoster={roster} {...data.corral} history={history}/>
     </div>
 };
 
@@ -93,7 +117,8 @@ const ChoreCorralPage = () => {
 
     if (!dataLoading) {
         const today = format(new Date(), apiDateFormat);
-        loadCorral(today, setCorral, setDataLoading)
+        loadCorral(today)
+            .then(setCorral)
             .catch(err => console.error(err));
 
         setDataLoading(true);

@@ -43,7 +43,7 @@ function headerRow() {
 }
 
 function dutyRow(duty) {
-    return <TableRow key={duty.chore.id}>
+    return <TableRow key={duty.chore.id} className="duty">
         <TableCell className="duty-pioneer-title" data-chore-id={duty.chore.id} style={styles.cell}>
             <Typography variant="body1" color='textPrimary'>
                 {duty.chore.title}
