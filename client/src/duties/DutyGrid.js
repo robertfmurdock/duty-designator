@@ -1,18 +1,14 @@
-
-import React, {useState} from "react";
-import {Card, CardHeader} from "@material-ui/core";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
-import CorralCard from "../gridSelector/CorralCard";
 import DutyCard from "./DutyCard";
 
 
 export default function DutyGrid(props) {
-    let duties = props.duties;
-    return <div>
-        {duties.map(item => <Grid item height="" key={item.chore.id}>
+    const {duties} = props;
+    return <Grid container spacing={2}>
+        {duties.map(item => <Grid xs={2} item height="" key={item.chore.id}>
                 <DutyCard duty={item}/>
             </Grid>
         )}
-
-    </div>
+    </Grid>
 }

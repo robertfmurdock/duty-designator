@@ -1,7 +1,7 @@
 import React from "react";
 import {shallow} from 'enzyme';
 import DutyRoster from "./DutyRoster";
-import DutyTable from "./DutyTable";
+import DutyGrid from "./DutyGrid";
 import {format} from 'date-fns';
 import FetchService from "../utilities/services/fetchService";
 import {wrapInPromise} from "../utilities/testUtils";
@@ -28,7 +28,7 @@ describe('DutyRoster', function () {
 
     test('given no chores returns nothing', () => {
         const dutyRoster = shallow(<DutyRoster chores={[]} pioneers={[]}/>);
-        expect(dutyRoster.find(DutyTable).props()['duties']).toEqual([]);
+        expect(dutyRoster.find(DutyGrid).props()['duties']).toEqual([]);
     });
 
     test('when given single pioneer and single chore will make single duty with them', () => {
@@ -36,7 +36,7 @@ describe('DutyRoster', function () {
         const chore = {name: "jest"};
         const dutyRoster = shallow(<DutyRoster pioneers={[pioneer]} chores={[chore]}/>);
 
-        expect(dutyRoster.find(DutyTable).props()['duties']).toEqual([{pioneer, chore}]);
+        expect(dutyRoster.find(DutyGrid).props()['duties']).toEqual([{pioneer, chore}]);
     });
 
     test('given associate and one pioneer and one chore get one duty', () => {
@@ -45,7 +45,7 @@ describe('DutyRoster', function () {
 
         const results = shallow(<DutyRoster chores={chores} pioneers={pioneers}/>);
 
-        expect(results.find(DutyTable).props().duties.length).toEqual(1);
+        expect(results.find(DutyGrid).props().duties.length).toEqual(1);
     });
 
     test('given no duty roster is saved, show saved button', () => {

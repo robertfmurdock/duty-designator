@@ -18,12 +18,12 @@ export function stubCorral() {
 
 export function stubRoster() {
     const duties = [{
-        pioneer: {name: "Dewy Dooter", id: uuid()},
-        chore: {name: "Horseshoer", description: "shoe horses", id: uuid()},
+        pioneer: {name: "Dewy Dooter", id: "10"},
+        chore: {name: "Horseshoer", description: "shoe horses", id: "102"},
         completed: false
     }, {
-        pioneer: {name: "Rosy Rosee", id: uuid()},
-        chore: {name: "Burrito builder", description: "Build burritos", id: uuid()},
+        pioneer: {name: "Rosy Rosee", id: "11"},
+        chore: {name: "Burrito builder", description: "Build burritos", id: "101"},
         completed: true
     }];
 
