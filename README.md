@@ -50,3 +50,16 @@ unzip initialData.zip
 mongoimport --type=csv --file=chores.csv --headerline -ddutyDB -cchores
 mongoimport --type=csv --file=pioneers.csv --headerline -ddutyDB -cpioneers
 ```
+
+### Exposing local ports to external ips
+
+Get your ip, e.g.
+
+ `ifconfig en0 inet`
+ 
+ Then
+
+`<sudo> ssh <user>@localhost -L <your ip>:<external port>:127.0.0.1:8080`
+
+Note:  sudo is only required for exposing ports below 1024
+
