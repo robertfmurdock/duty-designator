@@ -1,4 +1,4 @@
-import {insertPioneer, removePioneer, setLocalStorageDutyRoster} from "../support/integrationHelpers";
+import {insertPioneer, removePioneer, setLocalStorageDutyRoster} from "../support/apiHelpers";
 import uuid from 'uuid/v4';
 
 context('On statistics page', () => {

@@ -3,23 +3,27 @@ import {shallow} from 'enzyme';
 import DutyRoster from "./DutyRoster";
 import DutyTable from "./DutyTable";
 import {format} from 'date-fns';
-import {loadStuff} from "../utilities/services/localStorageService";
+import FetchService from "../utilities/services/fetchService";
+import {wrapInPromise} from "../utilities/testUtils";
 
 describe('DutyRoster', function () {
+    let fetchMock;
     beforeEach(() => {
-        localStorage.clear();
+        fetchMock = FetchService.put = jest.fn().mockReturnValue(wrapInPromise({}));
     });
 
     it('will persist new duty roster', function () {
         const pioneer = {name: "jack"};
         const chore = {name: "jest"};
-        const date = format(new Date(), "MM/dd/yyyy");
+        const date = format(new Date(), "yyyy-MM-dd");
         const history = {push: jest.fn()};
-        const dutyRoster = shallow(<DutyRoster pioneers={[pioneer]} chores={[chore]} history={history}/>);
+        const dutyRoster = shallow(
+            <DutyRoster pioneers={[pioneer]} chores={[chore]} dutyRoster={null} history={history}/>
+        );
 
         dutyRoster.find('#save').simulate('click');
 
-        expect(loadStuff(date).dutyRoster).toStrictEqual([{pioneer, chore}]);
+        expect(fetchMock).toBeCalledWith(0, `/api/roster/${date}`, {date, duties: [{pioneer, chore}]}, undefined);
     });
 
     test('given no chores returns nothing', () => {
@@ -45,7 +49,7 @@ describe('DutyRoster', function () {
     });
 
     test('given no duty roster is saved, show saved button', () => {
-        const dutyRoster = shallow(<DutyRoster chores={["codin"]} pioneers={["Pioneer Jeb"]}/>);
+        const dutyRoster = shallow(<DutyRoster chores={["codin"]} pioneers={["Pioneer Jeb"]} dutyRoster={null}/>);
         expect(dutyRoster.find('#save').length).toEqual(1);
     });
 

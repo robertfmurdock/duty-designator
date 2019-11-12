@@ -7,12 +7,3 @@ export const loadStuff = (key) => {
         return undefined;
     }
 };
-
-export const saveStuff = (stuff, key) => {
-    try {
-        const serializedState = JSON.stringify(stuff);
-        localStorage.setItem(key, serializedState);
-    } catch (err) {
-        console.log(err)
-    }
-};

@@ -1,13 +1,14 @@
 import {format, subDays} from 'date-fns';
-import {deleteCorral} from "../support/apiHelpers";
+import {deleteCorral, deleteRoster} from "../support/apiHelpers";
 import {apiDateFormat} from "../support/stubs";
-import {insertPioneer, insertChore, removePioneer, removeChore} from "../support/integrationHelpers";
+import {insertPioneer, insertChore, removePioneer, removeChore} from "../support/apiHelpers";
 
 const uuid = require('uuid/v4');
 
 async function deleteToday() {
     const today = format(new Date(), apiDateFormat);
     await deleteCorral(today);
+    await deleteRoster(today);
 }
 
 context('Actions', () => {
@@ -61,6 +62,7 @@ context('Actions', () => {
             yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             await deleteToday();
+            await deleteRoster(format(yesterday, apiDateFormat));
             await deleteCorral(format(yesterday, apiDateFormat));
             chore = {id: uuid(), name: "Cow tipper", description: "Give some tips to cows", title: 'Tipper'};
             await insertChore(chore);
@@ -194,6 +196,11 @@ context('Actions', () => {
     });
 
     describe('visiting historical duty rosters', () => {
+
+        beforeEach(async function () {
+            await deleteToday();
+        });
+
         it('there will be no respin or save buttons', () => {
             cy.visit("http://localhost:8080/roster/10102010");
             cy.get("#respin").should('have.length', 0);

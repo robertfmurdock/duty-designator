@@ -1,7 +1,7 @@
 import {format} from "date-fns";
 import {apiDateFormat, stubCorral} from "../support/stubs";
 import {deleteCorral, insertCorral} from "../support/apiHelpers";
-import {insertPioneer, insertChore, removeChore, removePioneer} from "../support/integrationHelpers";
+import {insertPioneer, insertChore, removeChore, removePioneer} from "../support/apiHelpers";
 
 const uuid = require('uuid/v4');
 

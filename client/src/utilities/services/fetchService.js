@@ -3,8 +3,8 @@ const FetchService = {
         return await this.timedFetch(timeout, url, "GET", undefined, controller);
     },
 
-    async post(timeout, url, body, controller) {
-        return await this.timedFetch(timeout, url, "POST", body, controller);
+    async put(timeout, url, body, controller) {
+        return await this.timedFetch(timeout, url, "PUT", body, controller);
     },
 
     async timedFetch(timeout, url, method, body, controller) {

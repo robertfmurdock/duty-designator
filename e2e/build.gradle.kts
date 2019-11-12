@@ -12,6 +12,13 @@ node {
 }
 
 tasks {
+    val testResultsClean by creating(Delete::class) {
+        setDelete("../test-results/e2e")
+    }
+
+    val clean by creating {
+        dependsOn(testResultsClean)
+    }
 
     val yarn by getting(YarnTask::class) {
     }
