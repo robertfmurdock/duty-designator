@@ -30,34 +30,15 @@ context('On the Duty Roster Page', () => {
         it('creates a new roster when save is clicked', () => {
             cy.get("#save").click();
 
-            cy.get("#saved-confirmation").should('have.length', 1);
-            cy.get("#save").should('have.length', 0);
-
-
+            assertSaveDisabled();
 
             cy.get('.duty').then(duty => {
-                const duties = [...duty].map(el => {
-                    const pioneerId = el.getElementsByClassName('duty-pioneer-name')[0]
-                        .getAttribute('data-pioneer-id');
-                    const choreId = el.getElementsByClassName('duty-chore-name')[0]
-                        .getAttribute('data-chore-id');
-                    return {pioneerId, choreId};
-                });
-
+                const duties = collectDutyIds(duty);
                 cy.reload();
-                cy.get("#saved-confirmation").should('have.length', 1);
-                cy.get("#save").should('have.length', 0);
 
-                const reloadedDuties = [...duty].map(el => {
-                    const pioneerId = el.getElementsByClassName('duty-pioneer-name')[0]
-                        .getAttribute('data-pioneer-id');
-                    const choreId = el.getElementsByClassName('duty-chore-name')[0]
-                        .getAttribute('data-chore-id');
-                    return {pioneerId, choreId};
-                });
+                assertSaveDisabled();
 
-
-                expect(duties).to.deep.eq(reloadedDuties);
+                expect(duties).to.deep.eq(collectDutyIds(duty));
             });
         });
     });
@@ -82,3 +63,25 @@ context('On the Duty Roster Page', () => {
         });
     });
 });
+
+function assertSaveDisabled() {
+    cy.get("#saved-confirmation").should('have.length', 1);
+    cy.get("#save").should('have.length', 0);
+}
+
+function getAttribute(el, className, attrName) {
+    return el.getElementsByClassName(className)[0]
+        .getAttribute(attrName);
+}
+
+function getDutyIds(el) {
+    const pioneerId = getAttribute(el, 'duty-pioneer-name', 'data-pioneer-id');
+    const choreId = getAttribute(el, 'duty-chore-name', 'data-chore-id');
+    return {pioneerId, choreId};
+}
+
+function collectDutyIds(duty) {
+    return [...duty].map(el => {
+        return getDutyIds(el);
+    });
+}

@@ -1,8 +1,10 @@
 {
   "chromeWebSecurity": false,
-    "reporter": "junit",
-    "reporterOptions": {
-      "mochaFile": "../test-results/e2e/test-output.xml",
-      "toConsole": true
-    }
+  "reporter": "junit",
+  "reporterOptions": {
+    "mochaFile": "../test-results/e2e/test-output.xml",
+    "toConsole": true
+  },
+  "video": false,
+  "videoCompression": false
 }
