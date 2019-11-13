@@ -1,5 +1,7 @@
 import {stubCorral, stubRoster} from "../support/stubs";
-import {deleteRoster, insertCorral, insertRoster} from "../support/apiHelpers";
+import {deleteRoster, deleteToday, insertCorral, insertRoster} from "../support/apiHelpers";
+import {assertSaveDisabled, collectDutyIds} from "../page-objects/RosterPage";
+import {format} from "date-fns";
 
 context('On the Duty Roster Page', () => {
 
@@ -62,26 +64,24 @@ context('On the Duty Roster Page', () => {
             });
         });
     });
+
+    describe('visiting specific duty roster', () => {
+        beforeEach(async function () {
+            await deleteToday();
+        });
+
+        it('there will be no respin or save buttons', () => {
+            cy.visit("http://localhost:8080/roster/10102010");
+            cy.get("#respin").should('have.length', 0);
+            cy.get("#save").should('have.length', 0);
+        });
+
+        it('will redirect user to home if date is today', () => {
+            const today = format(new Date(), 'MMddyyyy');
+            cy.visit(`http://localhost:8080/roster/${today}`);
+            cy.url().should('eq', 'http://localhost:8080/corral');
+        });
+    });
+
 });
 
-function assertSaveDisabled() {
-    cy.get("#saved-confirmation").should('have.length', 1);
-    cy.get("#save").should('have.length', 0);
-}
-
-function getAttribute(el, className, attrName) {
-    return el.getElementsByClassName(className)[0]
-        .getAttribute(attrName);
-}
-
-function getDutyIds(el) {
-    const pioneerId = getAttribute(el, 'duty-pioneer-name', 'data-pioneer-id');
-    const choreId = getAttribute(el, 'duty-chore-name', 'data-chore-id');
-    return {pioneerId, choreId};
-}
-
-function collectDutyIds(duty) {
-    return [...duty].map(el => {
-        return getDutyIds(el);
-    });
-}

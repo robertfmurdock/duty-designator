@@ -1,15 +1,9 @@
-import {format, subDays} from 'date-fns';
-import {deleteCorral, deleteRoster} from "../support/apiHelpers";
+import {format} from 'date-fns';
+import {deleteCorral, deleteRoster, deleteToday} from "../support/apiHelpers";
 import {apiDateFormat} from "../support/stubs";
 import {insertPioneer, insertChore, removePioneer, removeChore} from "../support/apiHelpers";
 
 const uuid = require('uuid/v4');
-
-async function deleteToday() {
-    const today = format(new Date(), apiDateFormat);
-    await deleteCorral(today);
-    await deleteRoster(today);
-}
 
 context('Actions', () => {
 
@@ -173,43 +167,6 @@ context('Actions', () => {
 
         afterEach(async () => {
             await removePioneer(pioneer)
-        });
-    });
-
-    describe('forward and back buttons', () => {
-        const yesterday = format(subDays(new Date(), 1), 'MMddyyyy');
-
-        beforeEach(() => {
-            cy.visit('http://localhost:8080');
-            cy.get(".back-btn").click();
-        });
-
-        it('back button will take you to the historial roster page for yesterday', () => {
-            cy.url().should('eq', `http://localhost:8080/roster/${yesterday}`);
-        });
-
-        it('will take you to the historical roster for today', () => {
-            cy.get(".back-btn").click();
-            cy.get(".forward-btn").click();
-            cy.url().should('eq', `http://localhost:8080/roster/${yesterday}`);
-        });
-    });
-
-    describe('visiting historical duty rosters', () => {
-        beforeEach(async function () {
-            await deleteToday();
-        });
-
-        it('there will be no respin or save buttons', () => {
-            cy.visit("http://localhost:8080/roster/10102010");
-            cy.get("#respin").should('have.length', 0);
-            cy.get("#save").should('have.length', 0);
-        });
-
-        it('will redirect user to home if date is today', () => {
-            const today = format(new Date(), 'MMddyyyy');
-            cy.visit(`http://localhost:8080/roster/${today}`);
-            cy.url().should('eq', 'http://localhost:8080/corral');
         });
     });
 });
