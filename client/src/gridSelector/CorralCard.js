@@ -11,7 +11,7 @@ export default function CorralCard({item, removable, onRemove}) {
                 variant="body1"
                 color="textPrimary"
                 noWrap={false}
-                style={{hyphens: 'auto'}}
+                style={{hyphens: 'auto', wordBreak: 'break-word'}}
             >
                 {item.name}
             </Typography>
