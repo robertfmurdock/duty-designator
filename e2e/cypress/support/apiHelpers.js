@@ -1,3 +1,6 @@
+import {format} from "date-fns";
+import {apiDateFormat} from "./stubs";
+
 export async function insertCorral(corral) {
     await fetch(`http://localhost:8080/api/corral/${corral.date}`, {
         method: "PUT",
@@ -55,4 +58,10 @@ export async function deleteRoster(date) {
 
 export function setLocalStorageDutyRoster(date, dutyRoster) {
     localStorage.setItem(date, JSON.stringify({dutyRoster}));
+}
+
+export async function deleteToday() {
+    const today = format(new Date(), apiDateFormat);
+    await deleteCorral(today);
+    await deleteRoster(today);
 }
