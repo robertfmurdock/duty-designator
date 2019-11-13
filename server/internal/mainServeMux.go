@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
+	"os"
 )
 
 type ServerConfig struct {
@@ -54,7 +55,11 @@ func apiMux(hc handlerContext) *http.ServeMux {
 }
 
 func getDBClient() (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	mongoHost := os.Getenv("DUTY_MONGODB")
+	if mongoHost == "" {
+		mongoHost = "localhost"
+	}
+	clientOptions := options.Client().ApplyURI("mongodb://" + mongoHost + ":27017")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 
 	if err != nil {
