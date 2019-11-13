@@ -9,8 +9,7 @@ describe('ChoreCorral', () => {
         {name: "Corraling Kevin", id: "4", description: "Kevin needs to be corralled"}
     ];
 
-    it('has a ChoreGrid selector with passed chores', ()=>{
-
+    it('has a ChoreGrid selector with passed chores', () => {
         const corral = shallow(<ChoreCorral {...{chores: sampleChores}}/>);
 
         expect(corral.find(GridSelector).props().items).toEqual(sampleChores)
@@ -18,7 +17,9 @@ describe('ChoreCorral', () => {
 
     it('when OnClickCard is clicked setModalOpen prop is called', () => {
         let clicked = false;
-        const setModalOpenSpy = () => {clicked = true};
+        const setModalOpenSpy = () => {
+            clicked = true
+        };
         const corral = shallow(<ChoreCorral {...{chores: sampleChores}} addChoreHandler={setModalOpenSpy}/>);
 
         corral.find(GridSelector).dive().find(OnClickCard).dive()

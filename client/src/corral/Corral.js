@@ -6,7 +6,6 @@ import {format} from "date-fns";
 import PioneerCorral from "../pioneers/PioneerCorral";
 import ChoreCorral from "../chores/ChoreCorral";
 import TodaysWagonWheel from "../dashboard/wheel/TodaysWagonWheel";
-import Grid from "@material-ui/core/Grid";
 
 export default function Corral(props) {
     const [pioneers, setPioneers] = useState(props.pioneers || []);
@@ -21,19 +20,13 @@ export default function Corral(props) {
 
     return <div>
         <Container style={{maxWidth: 1600}}>
-                <Grid container>
-                    <Grid item xs={5}>
-                        {pioneerCorral(pioneers, setPioneers)}
-                    </Grid>
-                    <Grid item xs={2}>
-                        <TodaysWagonWheel date={new Date()}/>
-                        {resetButton(setPioneers, setChores, setDataLoaded)}
-                        {saddleUpButton(pioneers, chores, history)}
-                    </Grid>
-                    <Grid item xs={5}>
-                        {choreCorral(chores, setChores, setModalOpen)}
-                    </Grid>
-                </Grid>
+            <TodaysWagonWheel date={new Date()}/>
+            {pioneerCorral(pioneers, setPioneers)}
+            <br/>
+            {choreCorral(chores, setChores, setModalOpen)}
+            <br/>
+                  {resetButton(setPioneers, setChores, setDataLoaded)}
+                   {saddleUpButton(pioneers, chores, history)}
             {addChoreModal(modalOpen, setModalOpen, chores, setChores)}
             <br/>
             <Box>
