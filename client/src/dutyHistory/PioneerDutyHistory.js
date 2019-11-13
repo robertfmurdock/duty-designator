@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {Container, Typography} from "@material-ui/core";
 import FetchService from "../utilities/services/fetchService";
-import {loadStuff} from "../utilities/services/localStorageService";
 import DutyHistoryTable from "./DutyHistoryTable";
 import {parse, closestTo, format} from "date-fns";
 
@@ -12,8 +11,8 @@ export default function PioneerDutyHistory(props) {
 
     if (!dataLoaded) {
         setPioneerFromServer(props.id, pioneer, setPioneer);
-        setPioneerFromLocalStorage(props.id, setPioneer, setChoreCounts);
-        setDataLoaded(true); // will need to be moved to take async fetch into account
+        calculations(props.id, props.rosterHistory, setPioneer, setChoreCounts);
+        setDataLoaded(true);
     }
 
     return <Container>
@@ -42,9 +41,9 @@ function generateInitialChoreCount(chore, date) {
     return Object.assign(chore, {count: 1, date});
 }
 
-const matchChoreById = choreId => choreCount => choreCount.id === choreId
+const matchChoreById = choreId => choreCount => choreCount.id === choreId;
 
-const parseDate = date => parse(date, "MM/dd/yyyy", new Date())
+const parseDate = date => parse(date, "yyyy-MM-dd", new Date());
 
 const formattedMostRecentDate = (parsedChoreDate, parsedDutyDate) => {
     const mostRecentDate = closestTo(new Date(), [
@@ -52,8 +51,8 @@ const formattedMostRecentDate = (parsedChoreDate, parsedDutyDate) => {
         parsedDutyDate
     ]);
 
-    return format(mostRecentDate, "MM/dd/yyyy");
-}
+    return format(mostRecentDate, "yyyy-MM-dd");
+};
 
 function mostRecentlyDone(countedChoreDate, dutyDate) {
     const parsedChoreDate = parseDate(countedChoreDate);
@@ -83,16 +82,18 @@ function countChoreFrequency(duties, pioneer) {
     }, []);
 }
 
-const datedDuty = datedRoster => datedRoster.dutyRoster.map(duty =>
-    Object.assign(duty, {date: datedRoster.date}));
+const datedDuty = roster => {
+    if(roster.duties === null) {
+        return [];
+    }
+    return roster.duties.map(duty => Object.assign(duty, {date: roster.date}));
+};
 
-function setPioneerFromLocalStorage(id, setPioneer, setChoreCounts) {
-    let rosters = Object.keys(localStorage)
-        .map(date => ({date, dutyRoster: loadStuff(date).dutyRoster}))
-        .filter(datedRoster => datedRoster.dutyRoster !== false)
+function calculations(id, rosters, setPioneer, setChoreCounts) {
+    const datedDuties = rosters
         .map(datedDuty);
 
-    let duties = flattenList(rosters);
+    let duties = flattenList(datedDuties);
     const dutyWithMatchedPioneerId = duties.find(duty => duty.pioneer.id === id);
 
     if (dutyWithMatchedPioneerId) {

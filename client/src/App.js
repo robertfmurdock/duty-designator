@@ -83,6 +83,14 @@ async function loadDutyRoster(date) {
     }
 }
 
+async function loadRosterHistory() {
+    try {
+        return await FetchService.get(0, `/api/roster/`, undefined);
+    } catch (err) {
+        return null;
+    }
+}
+
 const DutyRosterPage = () => {
     const history = useHistory();
     const location = useLocation();
@@ -185,5 +193,20 @@ const HistoricalRosterPage = () => {
 
 const PioneerHistory = () => {
     const {id} = useParams();
-    return <PioneerDutyHistory id={id}/>
+    const [dataLoading, setDataLoading] = useState(null);
+    const [data, setData] = useState(null);
+
+    if (!dataLoading) {
+        loadRosterHistory()
+            .then(rosterHistory => {
+                setData({rosterHistory})
+            });
+        setDataLoading(true);
+    }
+
+    if (!data) {
+        return <Loading/>
+    }
+
+    return <PioneerDutyHistory id={id} rosterHistory={data.rosterHistory}/>
 };

@@ -136,7 +136,32 @@ func Test_handleGetRosterWillReturn404WhenNoRecordsExist(t *testing.T) {
 	if recorder.Code != http.StatusNotFound {
 		t.Errorf("Status code should have been not found but was %v", recorder.Code)
 	}
+}
 
+func Test_loadRecordListWillGiveYouLatestVersionOfEachRecord(t *testing.T) {
+	if err := client.Database("dutyDB").Collection("rosters").Drop(context.Background()); err != nil {
+		t.Errorf("Failed to drop. %v", err)
+		return
+	}
+	dutyRoster1Earlier, dutyRoster1Later := generateRosterWithSameDateDifferentData("12/15/99")
+	dutyRoster2Earlier, dutyRoster2Later := generateRosterWithSameDateDifferentData("theYear3000")
+	hc := &handlerContext{dbClient: client}
+	for _, record := range []dutyRosterRecord{dutyRoster1Earlier, dutyRoster2Earlier, dutyRoster1Later, dutyRoster2Later} {
+		if err := saveRoster(record, hc); err != nil {
+			t.Errorf("Failed to save %v", err)
+			return
+		}
+	}
+
+	records, err := loadRosterRecordList(hc)
+	if err != nil {
+		t.Errorf("Failed to load %v", err)
+	}
+
+	expectedRecords := []dutyRosterRecord{dutyRoster1Later, dutyRoster2Later}
+	if !cmp.Equal(records, expectedRecords) {
+		t.Errorf("Expected records were incorrect %v", cmp.Diff(records, expectedRecords))
+	}
 }
 
 func stringUuid() string {

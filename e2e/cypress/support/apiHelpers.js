@@ -56,10 +56,6 @@ export async function deleteRoster(date) {
     });
 }
 
-export function setLocalStorageDutyRoster(date, dutyRoster) {
-    localStorage.setItem(date, JSON.stringify({dutyRoster}));
-}
-
 export async function deleteToday() {
     const today = format(new Date(), apiDateFormat);
     await deleteCorral(today);

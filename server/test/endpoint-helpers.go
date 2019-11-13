@@ -153,6 +153,15 @@ func jsonArrayContains(s []map[string]string, e map[string]string) bool {
 	return false
 }
 
+func sliceContains(s []interface{}, e interface{}) bool {
+	for _, a := range s {
+		if cmp.Equal(a, e) {
+			return true
+		}
+	}
+	return false
+}
+
 func performGetCorralRequest(date string) (*map[string]interface{}, error) {
 	responseRecorder, err := performRequest(http.MethodGet, fmt.Sprintf("/api/corral/%s", date), nil)
 	if err != nil {
@@ -197,6 +206,22 @@ func performGetRoster(date string) (map[string]interface{}, error) {
 	}
 
 	var actualResponseBody map[string]interface{}
+	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
+		return nil, fmt.Errorf("could not parse server results: %w, %s", err, responseRecorder.Body.Bytes())
+	}
+	return actualResponseBody, nil
+}
+
+func performGetRosterList() ([]interface{}, error) {
+	responseRecorder, err := performRequest(http.MethodGet, "/api/roster/", nil)
+	if err != nil {
+		return nil, err
+	}
+	if err := verifySuccessfulRequest(responseRecorder); err != nil {
+		return nil, err
+	}
+
+	var actualResponseBody []interface{}
 	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
 		return nil, fmt.Errorf("could not parse server results: %w, %s", err, responseRecorder.Body.Bytes())
 	}

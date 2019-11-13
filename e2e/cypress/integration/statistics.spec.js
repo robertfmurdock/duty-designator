@@ -1,4 +1,4 @@
-import {insertPioneer, removePioneer, setLocalStorageDutyRoster} from "../support/apiHelpers";
+import {insertPioneer, insertRoster, removePioneer} from "../support/apiHelpers";
 import uuid from 'uuid/v4';
 
 context('On statistics page', () => {
@@ -72,11 +72,15 @@ context('On statistics page', () => {
         const dyeHairChore = {name: "Dye hair blue", id: uuid()};
         const cosmosaur = {name: "Get yourself to space!", id: uuid()};
 
+        beforeEach(async () => {
+            await Promise.all([
+                insertRoster({date: "2010-10-10", duties: [{pioneer, chore: dyeHairChore}]}),
+                insertRoster({date: "2010-11-10", duties: [{pioneer, chore: dyeHairChore}]}),
+                insertRoster({date: "2010-12-10", duties: [{pioneer, chore: cosmosaur}]})
+            ])
+        });
+
         beforeEach(() => {
-            localStorage.clear();
-            setLocalStorageDutyRoster("10/10/2010", [{pioneer, chore: dyeHairChore}]);
-            setLocalStorageDutyRoster("10/11/2010", [{pioneer, chore: dyeHairChore}]);
-            setLocalStorageDutyRoster("10/12/2010", [{pioneer, chore: cosmosaur}]);
             cy.visit(`http://localhost:8080/pioneer/${pioneer.id}/history`);
         });
 

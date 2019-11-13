@@ -49,8 +49,12 @@ func apiMux(hc handlerContext) *http.ServeMux {
 	apiMux.Handle("/chore", hc.methodRoute(choreHandler))
 	apiMux.Handle("/chore/", hc.methodRoute(choreByIdHandler))
 	apiMux.Handle("/corral/", hc.methodRoute(corralHandler))
-	apiMux.Handle("/roster/", hc.methodRoute(rosterHandler))
+	restRoute(apiMux, "/roster", hc.methodRoute(rosterHandler))
 	return apiMux
+}
+
+func restRoute(mux *http.ServeMux, prefix string, handler http.Handler) {
+	mux.Handle(fmt.Sprintf("%v/", prefix), http.StripPrefix(prefix, handler))
 }
 
 func getDBClient() (*mongo.Client, error) {

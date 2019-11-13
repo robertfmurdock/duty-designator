@@ -323,3 +323,40 @@ func TestDeleteRosterWillRenderSubsequentGetsWith404(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 }
+
+func TestGetDutyRosterListWillReturnMultipleDutyRosters(t *testing.T) {
+	dutyRoster1 := map[string]interface{}{
+		"date": "2019-11-12",
+		"duties": []interface{}{map[string]interface{}{
+			"pioneer":   map[string]interface{}{"name": "Fuel-synergy", "id": uuid.New().String()},
+			"chore":     map[string]interface{}{"name": "Rustle the cattle", "id": uuid.New().String(), "description": "2", "title": ""},
+			"completed": true,
+		}},
+	}
+	dutyRoster2 := map[string]interface{}{
+		"date": "2019-11-13",
+		"duties": []interface{}{map[string]interface{}{
+			"pioneer":   map[string]interface{}{"name": "Fuel-synergy", "id": uuid.New().String()},
+			"chore":     map[string]interface{}{"name": "Rustle the cattle", "id": uuid.New().String(), "description": "2", "title": ""},
+			"completed": true,
+		}},
+	}
+	for _, roster := range []map[string]interface{}{dutyRoster1, dutyRoster2} {
+		if err := performPutRoster(roster); err != nil {
+			t.Errorf("Cannot put roster. %v", err)
+			return
+		}
+	}
+
+	loadedRosters, err := performGetRosterList()
+	if err != nil {
+		t.Errorf("Cannot get roster %v", err)
+	}
+
+	if !sliceContains(loadedRosters, dutyRoster1) {
+		t.Errorf("Slice %v\n did not contain: %v", loadedRosters, dutyRoster1)
+	}
+	if !sliceContains(loadedRosters, dutyRoster2) {
+		t.Errorf("Slice %v\n did not contain: %v", loadedRosters, dutyRoster2)
+	}
+}

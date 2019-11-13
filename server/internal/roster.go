@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"github.com/google/go-cmp/cmp"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,17 +26,36 @@ func rosterHandler(request *http.Request) mongoHandler {
 
 func getRosterHandler(writer http.ResponseWriter, request *http.Request, hc *handlerContext) error {
 	date := path.Base(request.URL.Path)
-	record, err := loadRosterRecord(date, hc)
 
+	if cmp.Equal(date, "/") {
+		return getRosterList(hc, writer)
+	} else {
+		return getRosterById(date, hc, writer)
+	}
+}
+
+func getRosterList(hc *handlerContext, writer http.ResponseWriter) error {
+	records, err := loadRosterRecordList(hc)
 	if err != nil {
 		return err
 	}
 
+	presentationRosters := make([]presentationDutyRoster, len(records))
+	for index, thing := range records {
+		presentationRosters[index] = thing.toPresentation()
+	}
+	return writeAsJson(writer, presentationRosters)
+}
+
+func getRosterById(date string, hc *handlerContext, writer http.ResponseWriter) error {
+	record, err := loadRosterRecord(date, hc)
+	if err != nil {
+		return err
+	}
 	if record == nil || record.RecordType == removed {
 		writer.WriteHeader(http.StatusNotFound)
 		return nil
 	}
-
 	return writeAsJson(writer, record.toPresentation())
 }
 
@@ -68,7 +88,7 @@ func saveRoster(dutyRoster dutyRosterRecord, hc *handlerContext) error {
 }
 
 func loadRosterRecord(date string, hc *handlerContext) (*dutyRosterRecord, error) {
-	dutyCollection := hc.dutyDb().Collection("rosters")
+	dutyCollection := hc.rosterCollection()
 	result := dutyCollection.FindOne(context.Background(), bson.M{"date": date},
 		&options.FindOneOptions{Sort: bson.M{"timestamp": -1}})
 
@@ -82,6 +102,39 @@ func loadRosterRecord(date string, hc *handlerContext) (*dutyRosterRecord, error
 	}
 
 	return &roster, nil
+}
+
+func (hc *handlerContext) rosterCollection() *mongo.Collection {
+	return hc.dutyDb().Collection("rosters")
+}
+
+func loadRosterRecordList(hc *handlerContext) ([]dutyRosterRecord, error) {
+	dutyCollection := hc.rosterCollection()
+	cursor, err := dutyCollection.Find(context.Background(), bson.M{}, &options.FindOptions{Sort: bson.M{"timestamp": 1}})
+	if err != nil {
+		return nil, err
+	}
+
+	var closeErr error
+	defer func() { closeErr = cursor.Close(context.Background()) }()
+
+	var records []dutyRosterRecord
+	if err := cursor.All(context.Background(), &records); err != nil {
+		return nil, err
+	}
+	return getUniqueRecords(records), closeErr
+}
+
+func getUniqueRecords(records []dutyRosterRecord) []dutyRosterRecord {
+	theMap := map[string]dutyRosterRecord{}
+	for _, record := range records {
+		theMap[record.Date] = record
+	}
+	uniqueRecords := make([]dutyRosterRecord, 0, len(theMap))
+	for _, thing := range theMap {
+		uniqueRecords = append(uniqueRecords, thing)
+	}
+	return uniqueRecords
 }
 
 func insertRemoveRosterRecord(recordDate string, timestamp time.Time, hc *handlerContext) error {
