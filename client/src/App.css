@@ -5,3 +5,11 @@ body {
 .App {
     text-align: center;
 }
+
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}

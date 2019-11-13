@@ -2,13 +2,34 @@ import React from "react";
 import Card from "@material-ui/core/Card";
 import Icon from "@mdi/react";
 import {mdiPlus} from "@mdi/js";
+import IconButton from "@material-ui/core/IconButton";
 
-export default function OnClickCard (props) {
+export default function OnClickCard(props) {
     const {clickEventHandler} = props;
-    return <Card className={'open-add-chore-modal-button'} onClick={clickEventHandler}
-                 style={{height: "100%", minWidth: 128, maxWidth: 128, textAlign: "center" }}>
+    const styles = {
+        iconCard: {
+            height: "100%",
+            position: 'relative',
+            textAlign: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+        },
+        iconButton: {
+            width: 100,
+            height: 100
+        },
+        icon: {
+            width: '100%',
+            height: '100%'
+        }
+    };
 
-        <Icon path={mdiPlus} style={{minWidth: "50%", maxWidth: "50%", margin: "12.5%"}}
-        />
+    return <Card className={'open-add-chore-modal-button'} onClick={clickEventHandler}
+                 style={styles.iconCard}>
+        <IconButton style={styles.iconButton}>
+            <Icon path={mdiPlus} style={styles.icon}/>
+        </IconButton>
     </Card>
 }
