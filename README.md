@@ -63,3 +63,15 @@ Get your ip, e.g.
 
 Note:  sudo is only required for exposing ports below 1024
 
+## Docker
+
+### Initializing docker volume
+The docker volume for persistant data can be initialized or reset to a set of chores and pioneers with
+
+```
+docker build . -f Dockerfile-mongoinit
+docker run -v duty-designator_dutydb-data:/data/db -v "$(pwd)"/initmongo/:/home/db <image>
+```
+
+### Starting docker
+`docker-compose up`
