@@ -1,16 +1,12 @@
 import {format} from "date-fns";
-import {apiDateFormat, stubCorral} from "../support/stubs";
-import {deleteCorral, insertCorral} from "../support/apiHelpers";
+import {apiDateFormat, stubCorral, stubRoster} from "../support/stubs";
+import {deleteCorral, insertCorral, insertRoster} from "../support/apiHelpers";
 import {insertPioneer, insertChore, removeChore, removePioneer} from "../support/apiHelpers";
 
 const uuid = require('uuid/v4');
 
 context('On the Chore Corral Page', () => {
     describe('Given no duty roster for today', () => {
-
-        beforeEach(() => {
-            localStorage.clear();
-        });
 
         it('When visiting corral, we see corral', () => {
             cy.visit('http://localhost:8080/corral');
@@ -20,11 +16,8 @@ context('On the Chore Corral Page', () => {
 
     describe('Given a duty roster for today', () => {
 
-        beforeEach(() => {
-            const date = format(new Date(), 'MM/dd/yyyy');
-            localStorage.setItem(date, JSON.stringify({
-                dutyRoster: []
-            }))
+        beforeEach(async () => {
+            await insertRoster(stubRoster())
         });
 
         it('When visiting corral, we see corral', () => {

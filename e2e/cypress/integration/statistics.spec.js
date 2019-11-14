@@ -53,7 +53,6 @@ context('On statistics page', () => {
         });
 
         beforeEach(() => {
-            localStorage.clear();
             cy.visit(`http://localhost:8080/pioneer/${pioneer.id}/history`);
         });
 
@@ -67,7 +66,7 @@ context('On statistics page', () => {
         });
     });
 
-    describe('relying on localstorage to fetch pioneer and duty history', () => {
+    describe('given pioneer and duty history', () => {
         const pioneer = {name: "Very Blue Name", id: uuid()};
         const dyeHairChore = {name: "Dye hair blue", id: uuid()};
         const cosmosaur = {name: "Get yourself to space!", id: uuid()};

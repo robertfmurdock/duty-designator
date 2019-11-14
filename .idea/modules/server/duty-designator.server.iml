@@ -4,6 +4,7 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../server">
+      <excludeFolder url="file://$MODULE_DIR$/../../../server/.gogradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../server/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../server/build" />
     </content>

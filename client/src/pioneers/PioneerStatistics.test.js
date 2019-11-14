@@ -13,7 +13,6 @@ describe('pioneer statistics', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        localStorage.clear();
         fetchMock.mockReturnValue(wrapInPromise(([])));
     });
 

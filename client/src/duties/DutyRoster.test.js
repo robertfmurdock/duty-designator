@@ -57,22 +57,17 @@ describe('DutyRoster', function () {
         const pioneer = {name: "jack"};
         const chore = {name: "jest"};
         const date = format(new Date(), "MM/dd/yyyy");
-        localStorage.setItem(date, JSON.stringify({dutyRoster: [{pioneer, chore}]}));
 
-        const dutyRoster = shallow(<DutyRoster/>);
+        const dutyRoster = shallow(<DutyRoster dutyRoster={{date, duties: [{pioneer, chore}]}}/>);
 
         expect(dutyRoster.find('#save').length).toEqual(0);
         expect(dutyRoster.find('#saved-confirmation').length).toEqual(1);
     });
 
     test('respin will redirect to the corral', () => {
-        const pioneer = {name: "jack"};
-        const chore = {name: "jest"};
-        const date = format(new Date(), "MM/dd/yyyy");
-        localStorage.setItem(date, JSON.stringify({dutyRoster: [{pioneer, chore}]}));
-
         const pushSpy = jest.fn();
         const dutyRoster = shallow(<DutyRoster history={{push: pushSpy}}/>);
+
         dutyRoster.find("#respin").simulate("click");
         expect(pushSpy.mock.calls.length).toBe(1);
         expect(pushSpy.mock.calls[0][0]).toEqual('/corral');
