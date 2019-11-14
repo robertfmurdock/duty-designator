@@ -6,5 +6,10 @@ services:
       - "8080:8080"
   mongodb:
     image: mongo:latest
+    volumes:
+      - dutydb-data:/data/db
     ports:
       - "27017:27017"
+
+volumes:
+    dutydb-data:
