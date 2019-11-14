@@ -1,0 +1,5 @@
+FROM mongo:latest
+
+WORKDIR /home/db
+
+CMD ./init-mongo-db.sh
