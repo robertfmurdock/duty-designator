@@ -66,6 +66,8 @@ Note:  sudo is only required for exposing ports below 1024
 ## Docker
 
 ### Initializing docker volume
+Unzip `initialData.zip` and make sure it is in `initmongo/`
+
 The docker volume for persistant data can be initialized or reset to a set of chores and pioneers with
 
 ```
