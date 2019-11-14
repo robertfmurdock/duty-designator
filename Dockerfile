@@ -11,7 +11,6 @@ COPY client/public ./client/public
 RUN mkdir server
 COPY server/main.go ./server
 COPY server/internal ./server/internal
-COPY server/vendor ./server/vendor
 COPY scripts/ ./
 
 ENV DUTY_HOST=duty-designator

@@ -1,4 +1,3 @@
 cd server
-echo "[Building server]"
-ls -lahtr
+go get 
 go build main.go
