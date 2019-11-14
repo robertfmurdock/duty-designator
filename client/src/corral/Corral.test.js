@@ -1,9 +1,9 @@
 import {shallow} from "enzyme";
-import {AddChoreModal, ChoreTable, PioneerTable} from "../dashboard";
+import {AddChoreModal} from "../dashboard";
 import React from "react";
 import Corral from "./Corral";
 import FetchService from "../utilities/services/fetchService";
-import {waitUntil, wrapInPromise} from "../utilities/testUtils";
+import {waitUntil} from "../utilities/testUtils";
 import PioneerCorral from "../pioneers/PioneerCorral";
 import ChoreCorral from "../chores/ChoreCorral";
 import GridSelector from "../gridSelector/GridSelector";
@@ -49,10 +49,7 @@ describe('Corral', function () {
                 {id: 'nothing', name: 'Odd Day Rob'}
             ];
 
-            let fetchMock = FetchService.get = jest.fn();
-            fetchMock.mockReturnValue(wrapInPromise(pioneers));
-
-            corral = shallow(<Corral/>);
+            corral = shallow(<Corral pioneers={pioneers} chores={[]}/>);
         });
 
         it('shows a list of pioneers', () => {
@@ -75,7 +72,12 @@ describe('Corral', function () {
             expect(corral.find(PioneerCorral).props()["pioneers"]).toEqual(expectedRemaining)
         });
 
-        it('Reset button presents default page', async () => {
+        it('Reset button will fetch pioneers again', async () => {
+            let fetchMock = FetchService.get = jest.fn();
+            fetchMock.mockReturnValue(Promise.resolve(pioneers));
+
+            corral = shallow(<Corral/>);
+
             let pioneerToRemove = pioneers[0];
             simulateRemovePioneer(pioneerToRemove);
 
@@ -104,9 +106,7 @@ describe('Corral', function () {
                 {id: '4', name: 'Put away dishes'},
             ];
 
-            let fetchMock = FetchService.get = jest.fn();
-            fetchMock.mockReturnValue(wrapInPromise(chores));
-            corral = shallow(<Corral/>);
+            corral = shallow(<Corral pioneers={[]} chores={chores}/>);
         });
 
         it('will send chores to chore table', () => {

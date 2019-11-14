@@ -1,22 +1,17 @@
 import {Box, Button, Container} from "@material-ui/core";
 import React, {useState} from "react";
 import {AddChoreModal} from "../dashboard";
-import FetchService from "../utilities/services/fetchService";
 import {format} from "date-fns";
 import PioneerCorral from "../pioneers/PioneerCorral";
 import ChoreCorral from "../chores/ChoreCorral";
 import TodaysWagonWheel from "../dashboard/wheel/TodaysWagonWheel";
+import FetchService from "../utilities/services/fetchService";
 
 export default function Corral(props) {
     const [pioneers, setPioneers] = useState(props.pioneers || []);
     const [chores, setChores] = useState(props.chores || []);
-    const [dataLoaded, setDataLoaded] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const {history} = props;
-
-    if (dataLoaded === false) {
-        handleDataLoad(props, setDataLoaded, setPioneers, setChores);
-    }
 
     return <div>
         <Container style={{maxWidth: 1600}}>
@@ -25,8 +20,8 @@ export default function Corral(props) {
             <br/>
             {choreCorral(chores, setChores, setModalOpen)}
             <br/>
-                  {resetButton(setPioneers, setChores, setDataLoaded)}
-                   {saddleUpButton(pioneers, chores, history)}
+            {resetButton(setPioneers, setChores)}
+            {saddleUpButton(pioneers, chores, history)}
             {addChoreModal(modalOpen, setModalOpen, chores, setChores)}
             <br/>
             <Box>
@@ -34,35 +29,6 @@ export default function Corral(props) {
             </Box>
         </Container>
     </div>;
-}
-
-function handleDataLoad(props, setDataLoaded, setPioneers, setChores) {
-    if (hasProvidedData(props)) {
-        setDataLoaded(true);
-    } else {
-        startDataLoad(setPioneers, setChores, setDataLoaded);
-    }
-}
-
-function hasProvidedData(props) {
-    return !!props.pioneers && !!props.chores;
-}
-
-function startDataLoad(setPioneers, setChores, setDataLoaded) {
-    getData(setPioneers, setChores)
-        .then(results => {
-            const [pioneers, chores] = results;
-            setPioneers(pioneers);
-            setChores(chores);
-            setDataLoaded(true);
-        });
-}
-
-function getData() {
-    return Promise.all([
-        FetchService.get(0, "/api/pioneer", undefined),
-        FetchService.get(0, "/api/chore", undefined)
-    ]);
 }
 
 function pioneerCorral(pioneers, setPioneers) {
@@ -87,10 +53,25 @@ const choreCorral = (chores, setChores, setModalOpen) => (
     />
 );
 
-function resetButton(setPioneers, setChores, setDataLoaded) {
-    return button("reset-button", "Reset", () => startDataLoad(setPioneers, setChores, setDataLoaded));
+function resetButton(setPioneers, setChores) {
+    return button("reset-button", "Reset", () => startDataLoad(setPioneers, setChores));
 }
 
+function startDataLoad(setPioneers, setChores) {
+    getData(setPioneers, setChores)
+        .then(results => {
+            const [pioneers, chores] = results;
+            setPioneers(pioneers);
+            setChores(chores);
+        });
+}
+
+function getData() {
+    return Promise.all([
+        FetchService.get(0, "/api/pioneer", undefined),
+        FetchService.get(0, "/api/chore", undefined)
+    ]);
+}
 async function putCorral(today, pioneers, chores, history) {
     await fetch(`/api/corral/${today}`, {
         method: "PUT",
