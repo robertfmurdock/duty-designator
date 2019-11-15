@@ -1,7 +1,7 @@
 version: "3"
 services:
   duty-designator:
-    image: riordanx0/duty-designator:latest
+    build: .
     ports:
       - "8080:8080"
 
