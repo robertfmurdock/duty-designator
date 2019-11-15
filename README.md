@@ -65,7 +65,7 @@ Note:  sudo is only required for exposing ports below 1024
 
 ## Docker
 
-### Initializing docker volume
+### Initializing/modifying database while containers are not running
 Unzip `initialData.zip` and make sure it is in `initmongo/`
 
 The docker volume for persistant data can be initialized or reset to a set of chores and pioneers with
@@ -74,6 +74,16 @@ The docker volume for persistant data can be initialized or reset to a set of ch
 docker build . -f Dockerfile-mongoinit
 docker run -v duty-designator_dutydb-data:/data/db -v "$(pwd)"/initmongo/:/home/db <image>
 ```
+
+### Initializing/modifying database while containers are running
+
+Run the handy script below to load up the contents of initmongo
+Note:  Change your container instance name appropriately if not ..._1
+
+```
+initmongo/modify-running-container.sh
+ 
+ ```
 
 ### Starting docker
 `docker-compose up`
