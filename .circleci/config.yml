@@ -52,8 +52,32 @@ jobs:
       - store_artifacts:
           destination: e2e-screenshots
           path: e2e/cypress/screenshots
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - "*"
+  build-docker:
+    docker:
+      - image: docker:latest
+    steps:
+      - attach_workspace:
+          at: ./
+      - setup_remote_docker:
+          docker_layer_caching:
+      - run: |
+          TAG=latest
+          docker build -t riordanx0/duty-designator:$TAG .     
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push riordanx0/duty-designator:$TAG
+
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
+      - build-docker:
+          requires:
+            - build
+          filters:
+            branches:
+              only: dockerizing
