@@ -12,6 +12,7 @@ export default function DutyCard(props) {
             data-pioneer-id={duty.pioneer.id}
             style={workBreak}
             title={duty.pioneer.name}
+            titleTypographyProps={{variant: "h4"}}
         />
 
         <CardContent style={{paddingTop: 0}}>
