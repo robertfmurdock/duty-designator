@@ -1,7 +1,7 @@
 import com.moowork.gradle.node.yarn.YarnTask
 
 plugins {
-    id("com.github.node-gradle.node") version "1.3.0"
+    id("com.github.node-gradle.node") version "2.2.4"
 }
 
 node {
