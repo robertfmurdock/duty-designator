@@ -196,6 +196,15 @@ func performPutRoster(roster map[string]interface{}) error {
 	return verifySuccessfulRequest(responseRecorder)
 }
 
+
+func performPostPuppy(puppy map[string]interface{}) error {
+	responseRecorder, err := performRequest(http.MethodPost, fmt.Sprintf("/api/pound/"), puppy)
+	if err != nil {
+		return err
+	}
+	return verifySuccessfulRequest(responseRecorder)
+}
+
 func performGetRoster(date string) (map[string]interface{}, error) {
 	responseRecorder, err := performRequest(http.MethodGet, fmt.Sprintf("/api/roster/%s", date), nil)
 	if err != nil {
@@ -214,6 +223,22 @@ func performGetRoster(date string) (map[string]interface{}, error) {
 
 func performGetRosterList() ([]interface{}, error) {
 	responseRecorder, err := performRequest(http.MethodGet, "/api/roster/", nil)
+	if err != nil {
+		return nil, err
+	}
+	if err := verifySuccessfulRequest(responseRecorder); err != nil {
+		return nil, err
+	}
+
+	var actualResponseBody []interface{}
+	if err := json.Unmarshal(responseRecorder.Body.Bytes(), &actualResponseBody); err != nil {
+		return nil, fmt.Errorf("could not parse server results: %w, %s", err, responseRecorder.Body.Bytes())
+	}
+	return actualResponseBody, nil
+}
+
+func performGetPuppiesInPound() ([]interface{}, error) {
+	responseRecorder, err := performRequest(http.MethodGet, "/api/pound/", nil)
 	if err != nil {
 		return nil, err
 	}

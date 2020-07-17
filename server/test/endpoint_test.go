@@ -360,3 +360,25 @@ func TestGetDutyRosterListWillReturnMultipleDutyRosters(t *testing.T) {
 		t.Errorf("Slice %v\n did not contain: %v", loadedRosters, dutyRoster2)
 	}
 }
+
+func TestCanSendPuppyToThePound(t *testing.T) {
+	puppyJson := map[string]interface{}{
+		"name": "Fido",
+		"id": uuid.New().String(),
+	}
+
+	if err := performPostPuppy(puppyJson); err != nil {
+		t.Errorf("Cannot post puppy %v", err)
+		return
+	}
+
+	loadedPuppies, err := performGetPuppiesInPound()
+
+	if err != nil {
+		t.Errorf("Cannot get puppies %v", err)
+	}
+
+	if !sliceContains(loadedPuppies, puppyJson) {
+		t.Errorf("Get puppies did not return the pounded puppy. List %v did not contain %v", loadedPuppies, puppyJson)
+	}
+}

@@ -90,13 +90,11 @@ func putCorralHandler(writer http.ResponseWriter, request *http.Request, hc *han
 	}
 
 	corral.Timestamp = time.Now()
-	return saveCorral(corral, hc)
+	return saveCorral(hc, corral)
 }
 
-func saveCorral(record corralRecord, hc *handlerContext) error {
-	choreCollection := hc.dutyDb().Collection("corrals")
-	_, err := choreCollection.InsertOne(context.Background(), record)
-	return err
+func saveCorral(hc *handlerContext, record corralRecord) error {
+	return insertIntoCollection(hc.dutyDb(), record, "corrals")
 }
 
 func insertRemoveCorralRecord(recordDate string, timestamp time.Time, hc *handlerContext) error {
@@ -105,5 +103,5 @@ func insertRemoveCorralRecord(recordDate string, timestamp time.Time, hc *handle
 		Timestamp:  timestamp,
 		RecordType: removed,
 	}
-	return saveCorral(removeRecord, hc)
+	return saveCorral(hc, removeRecord)
 }

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -39,16 +38,8 @@ func TestPostChore_WillWriteToDb(t *testing.T) {
 }
 
 func loadChoresFromDb(t *testing.T) []choreRecord {
-	collection := client.Database("dutyDB").Collection("chores")
-	cursor, err := collection.Find(context.TODO(), bson.D{})
-	if err != nil {
-		t.Errorf("MongoDB find error: %s", err)
-	}
 	var choreRecords []choreRecord
-	err = cursor.All(context.TODO(), &choreRecords)
-	if err != nil {
-		t.Errorf("MongoDB load error: %s", err)
-	}
+	loadRecordsFromCollection(t, "chores", &choreRecords)
 	return choreRecords
 }
 

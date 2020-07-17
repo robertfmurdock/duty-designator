@@ -16,7 +16,7 @@ func Test_saveCorralWillInsertRecordInCollection(t *testing.T) {
 		Pioneers: []pioneerRecord{},
 		Chores:   []choreRecord{},
 	}
-	if err := saveCorral(corral, &handlerContext{dbClient: client}); err != nil {
+	if err := saveCorral(&handlerContext{dbClient: client}, corral); err != nil {
 		t.Errorf("Could not save corral %v", err)
 	}
 
@@ -27,10 +27,10 @@ func Test_saveCorralWillInsertRecordInCollection(t *testing.T) {
 func Test_saveCorralWithSameDateMultipleTimesWillNotRemovePriorRecords(t *testing.T) {
 	corralEarlier, corralLater := generateCorralWithSameDateDifferentData("sometime")
 	hc := &handlerContext{dbClient: client}
-	if err := saveCorral(corralEarlier, hc); err != nil {
+	if err := saveCorral(hc, corralEarlier); err != nil {
 		t.Errorf("Could not save corral %v", err)
 	}
-	if err := saveCorral(corralLater, hc); err != nil {
+	if err := saveCorral(hc, corralLater); err != nil {
 		t.Errorf("Could not save corral %v", err)
 	}
 
@@ -62,10 +62,10 @@ func generateCorralWithSameDateDifferentData(date string) (corralRecord, corralR
 func Test_loadCorralWhenMultipleRecordsWithDateExistWillPresentTheLatestTimestampOne(t *testing.T) {
 	corralEarlier, corralLater := generateCorralWithSameDateDifferentData("whenever")
 	hc := &handlerContext{dbClient: client}
-	if err := saveCorral(corralEarlier, hc); err != nil {
+	if err := saveCorral(hc, corralEarlier); err != nil {
 		t.Errorf("Could not save corral %v", err)
 	}
-	if err := saveCorral(corralLater, hc); err != nil {
+	if err := saveCorral(hc, corralLater); err != nil {
 		t.Errorf("Could not save corral %v", err)
 	}
 
