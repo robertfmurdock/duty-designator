@@ -31,4 +31,3 @@ func pullFromCursor(t *testing.T, cursor *mongo.Cursor, results interface{}) {
 		t.Errorf("MongoDB load error: %s", err)
 	}
 }
-

@@ -10,4 +10,3 @@ func insertIntoCollection(database *mongo.Database, record interface{}, collecti
 	_, err := choreCollection.InsertOne(context.Background(), record)
 	return err
 }
-

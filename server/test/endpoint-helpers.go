@@ -196,7 +196,6 @@ func performPutRoster(roster map[string]interface{}) error {
 	return verifySuccessfulRequest(responseRecorder)
 }
 
-
 func performPostPuppy(puppy map[string]interface{}) error {
 	responseRecorder, err := performRequest(http.MethodPost, fmt.Sprintf("/api/pound/"), puppy)
 	if err != nil {

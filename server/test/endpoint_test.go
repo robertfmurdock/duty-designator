@@ -364,7 +364,7 @@ func TestGetDutyRosterListWillReturnMultipleDutyRosters(t *testing.T) {
 func TestCanSendPuppyToThePound(t *testing.T) {
 	puppyJson := map[string]interface{}{
 		"name": "Fido",
-		"id": uuid.New().String(),
+		"id":   uuid.New().String(),
 	}
 
 	if err := performPostPuppy(puppyJson); err != nil {
